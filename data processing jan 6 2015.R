@@ -32,7 +32,7 @@ metamaster2=ddply(metamaster,1,.progress="text",function(x) {
   z=z[!is.na(z[,7]),] } ) 
 
 #bring in restrt col from mary's file
-mo<-read.csv("/Users/maryo/Dropbox/nceas_bdef/Scaling Relationship/metaanalysis of B/analysis HMM 2012/input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
+mo<-read.csv("./input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
 restrt <- ddply(mo, .(Entry, Mno, restrt), summarize, mean(YEmono))
 metamaster3 <- merge(restrt, metamaster2, by.x = "Entry", by.y = "Entry", all = TRUE)
 
