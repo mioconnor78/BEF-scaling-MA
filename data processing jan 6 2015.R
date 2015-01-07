@@ -81,6 +81,14 @@ SST2$MaxTscale <- as.numeric(as.character(SST2$MaxTscale))
 SST2$Entry <- as.integer((SST2$Entry))
 SST2$Study <- as.factor((SST2$Study))
 
+## outliers based on previous analysis
+dim(SST2)
+SST2 <- subset(SST2, SST2$Study!=177, select=1:31, drop=TRUE) # the outlier in modF1 results, determined by idenfitying the row of the residual value, in a dataframe
+SST2 <- subset(SST2, SST2$Study!=83, select=1:31, drop=TRUE)
+SST2 <- subset(SST2, SST2$Mno!=796, select=1:31, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
+SST2 <- subset(SST2, SST2$Mno!=826, select=1:31, drop=TRUE) # searching for the outlier in plot(modF1)
+
+## extra stuff
 write.csv(SST2, 'SST2new.csv')
 
 ## troubleshooting linear models:

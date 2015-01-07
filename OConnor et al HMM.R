@@ -7,7 +7,7 @@
 
 library(lme4)
 library(MuMIn)
-library(qpcR)
+#library(qpcR)
 
 # removing outliers based on residual plots
 SST2 <- subset(SST2, SST2$Mno!=796, select=1:57, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
@@ -97,14 +97,26 @@ AIC.sum$modFMii <- AIC(modFMii)
 AIC.sum
 
 # calculating weights and delta AIC
-weights <- akaike.weights(AIC.sum)
-results <- as.data.frame(rbind(weights$deltaAIC, weights$rel.LL, weights$weights))
-names(results) <- c('modFM', 'modBtrophic', 'modBrt', 'modBall', 'modExp', 'modBasic', 'modFMi') #, 'modFMii'
-rownames(results) <- c('deltaAIC', 'relLL','weights')
+#round(Weights(AICc(modFM, modBtrophic, modBrt, modBall, modExp, modBasic)))
+model.sel(modFM, modBtrophic, modBrt, modBall, modExp, modBasic)
+
+#weights <- akaike.weights(AIC.sum) #requires qpcR, which isn't working
+#results <- as.data.frame(rbind(weights$deltaAIC, weights$rel.LL, weights$weights))
+#names(results) <- c('modFM', 'modBtrophic', 'modBrt', 'modBall', 'modExp', 'modBasic', 'modFMi') #, 'modFMii'
+#rownames(results) <- c('deltaAIC', 'relLL','weights')
 results
 
+#SST2 (after code merge). different results...
+            logLik    AICc   delta weight
+modFM       -1114.846 2301.1  0.00 1     
+modBtrophic -1137.202 2316.9 15.79 0     
+modBall     -1135.115 2321.0 19.83 0     
+modBasic    -1165.581 2353.3 52.17 0     
+modExp      -1155.863 2354.3 53.11 0     
+modBrt      -1163.294 2360.9 59.80 0       
+
 #SST2
-> results
+> results (before code merge)
 modFM modBtrophic       modBrt   modBall       modExp     modBasic       modFMi  modFMii
 deltaAIC 9.492287829   0.0000000 1.771517e+01 3.6930563 2.358546e+01 10.692942333 2.342200e+02 4342.987
 relLL    0.008685121   1.0000000 1.422980e-04 0.1577840 7.559315e-06  0.004764936 1.379683e-51    0.000
