@@ -60,6 +60,7 @@ SST2<-subset(SST2, SST2$Tscale!="", select=1:25, drop=TRUE)
 SST2<-subset(SST2, SST2$Yunits!='proportional change', select=1:25, drop=TRUE) 
 SST2 <- SST[which(SST2$Yunits!='rate'),]
 SST2<-subset(SST2, SST2$value!='NA', select=1:25, drop=TRUE) 
+SST2<-subset(SST2, SST2$value!= '0', select=1:25, drop=TRUE) 
 
 ### need to estimate the duration of each experiment:
 maxTime <- ddply(SST2, .(Entry, Tscale), summarise, TFinal = 'Y')
@@ -82,10 +83,14 @@ SST2$Study <- as.factor((SST2$Study))
 
 write.csv(SST2, 'SST2new.csv')
 
+## troubleshooting linear models:
 study.test <- ddply(SST2, .(Study, Ref), summarise, (count(Entry)))
 study.test2 <- ddply(SST2, .(Study, Entry), summarise, (mean(Entry)))
 
+modBasic <- lm(logY ~ logS, data=data, na.action=na.omit)
 
+SST2[SST2$logY=='Inf',]
+SST2[SST2$logY=='-Inf',]
 
 
 ## 1.1 load and format the datafile
