@@ -87,9 +87,76 @@ SST2 <- subset(SST2, SST2$Study!=177, select=1:31, drop=TRUE) # the outlier in m
 SST2 <- subset(SST2, SST2$Study!=83, select=1:31, drop=TRUE)
 SST2 <- subset(SST2, SST2$Mno!=796, select=1:31, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
 SST2 <- subset(SST2, SST2$Mno!=826, select=1:31, drop=TRUE) # searching for the outlier in plot(modF1)
+SST2 <- SST2[,-(4)]
+
+head(SST2)
+write.csv(SST2, 'SST2new.csv')
+
+## consolidating values on the y-axis
+plot(SST2$logY ~ SST2$logS, main = 'SST2new')
+Y.units
+plot(SST2[SST2$Yunits=='?g CO2-C g-1',]$logY ~ SST2[SST2$Yunits=='?g CO2-C g-1',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='?g CO2-C respired g-1 soil h-1',]$logY ~ SST2[SST2$Yunits=='?g CO2-C respired g-1 soil h-1',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='?g O2 g_1 leaf DM s_1',]$logY ~ SST2[SST2$Yunits=='?g O2 g_1 leaf DM s_1',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='\xb5g C mg C-1 h-1',]$logY ~ SST2[SST2$Yunits=='\xb5g C mg C-1 h-1',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='\xb5g N g-1 soil day-1',]$logY ~ SST2[SST2$Yunits=='\xb5g N g-1 soil day-1',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='\xb5L CO2 h-1',]$logY ~ SST2[SST2$Yunits=='\xb5L CO2 h-1',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='\xb5M m-2 h-1',]$logY ~ SST2[SST2$Yunits=='\xb5M m-2 h-1',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='cover m-2',]$logY ~ SST2[SST2$Yunits=='cover m-2',]$logS, main = 'SST2new') # looks good
+plot(SST2[SST2$Yunits=='day-1',]$logY ~ SST2[SST2$Yunits=='day-1',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='g day-1',]$logY ~ SST2[SST2$Yunits=='g day-1',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='g g-1',]$value ~ SST2[SST2$Yunits=='g g-1',]$logS, main = 'SST2new') # can be multiplied to g/mg?
+plot(1000*SST2[SST2$Yunits=='g g-1',]$value ~ SST2[SST2$Yunits=='g g-1',]$logS, main = 'SST2new') # = 1000* g/g, or mg/g
+plot(SST2[SST2$Yunits=='g L-1',]$value ~ SST2[SST2$Yunits=='g L-1',]$logS, main = 'SST2new')
+plot(1000*SST2[SST2$Yunits=='g L-1' & SST2$value<=1000,]$value ~ SST2[SST2$Yunits=='g L-1' & SST2$value<=1000,]$logS, main = 'SST2new') # can be scaled to mg/L
+plot(SST2[SST2$Yunits=='g m-2',]$logY ~ SST2[SST2$Yunits=='g m-2',]$logS, main = 'SST2new')
+plot(SST2[SST2$Yunits=='g O2 g-1 hr-1',]$logY ~ SST2[SST2$Yunits=='g O2 g-1 hr-1',]$logS, main = 'SST2new')
+
+## rescaling entries if their values are extremely low or high
+try1 <- ddply(SST2, .(Entry), summarise, min(value))
+try2 <- ddply(SST2, .(Entry), summarise, max(value))
+names(try1) <- c('Entry', 'minval')
+names(try2) <- c('Entry', 'maxval')
+merge(try1, try2, by.x = "Entry", by.y = "Entry") -> try3
+try3$convert.min <- ifelse(try1$minval < 1, '1', '0')
+try3$convert.max <- ifelse(try2$maxval > 22000, '1', '0')
+merge(SST3, try3, by.x = "Entry", by.y = "Entry") -> SST4
+head(SST4)
+
+# great. Now need to take all entries with a 1 and multiply their vals by 1000.
+SST4$values.rs <- as.numeric(as.character(ifelse(SST4$convert == 1, SST4$value*1000, SST4$value)))
+SST4$values.rs <- as.numeric(as.character(ifelse(SST4$convert.max == 1, SST4$value/1000, SST4$values.rs)))
+SST4$logY.rs <- log(SST4$values.rs)
+head(SST4)
+plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 
 
+## working out the rescaling; this is now consolidated above
 
+## rescaling entries if their values are extremely low
+try1 <- ddply(SST2, .(Entry), summarise, min(value))
+dim(try1)
+names(try1) <- c('Entry', 'minval')
+try1[(order(try1$minval)),]
+try1$convert <- ifelse(try1$minval < 1, '1', '0')
+merge(SST2, try1, by.x = "Entry", by.y = "Entry") -> SST3
+head(SST3)
+
+
+# great. Now need to take all entries with a 1 and multiply their vals by 1000.
+SST3$values.rs <- as.numeric(as.character(ifelse(SST3$convert == 1, SST3$value*1000, SST3$value)))
+SST3$logY.rs <- log(SST3$values.rs)
+head(SST3)
+plot(SST3$logY.rs ~ SST2$logS, main = 'SST3.rs')
+
+## repeat rescaling for high values
+try2 <- ddply(SST2, .(Entry), summarise, max(value))
+dim(try2)
+names(try2) <- c('Entry', 'maxval')
+try2[(order(try2$maxval)),]
+try2$convert.max <- ifelse(try2$maxval > 22000, '1', '0')
+merge(SST3, try2, by.x = "Entry", by.y = "Entry") -> SST4
+head(SST4)
 
 ## extra stuff
 write.csv(SST2, 'SST2new.csv')

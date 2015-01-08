@@ -26,13 +26,6 @@ metamaster2=ddply(metamaster,1,.progress="text",function(x) {
   z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value/y[y$variable=="Y1","value"]) 
   z=z[!is.na(z[,7]),] } ) 
 
-#Mary trying to create a similar datafile in which value is absolute response rather than proportional...
-
-metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
-  y=melt(x,id.vars=c(2:4,7:8),measure.vars=c(99:126)) 
-  y$value=as.numeric(as.character(y$value))
-  z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value) 
-  z=z[!is.na(z[,7]),] } ) 
 
 
 #Remove all studies with <2 levels of richness
@@ -70,7 +63,7 @@ getAICtab=function(modList) {
     AICweight=round(modLik/sum(modLik),3) } ) } 
 
 #Run for reduced dataset and subset by Ycat
-mods=dlply(metamaster.reduced,"Ygen",modFit)
+mods=dlply(SST4,"Ygen",modFit)
 
 
 #Show the AIC Table of Results
