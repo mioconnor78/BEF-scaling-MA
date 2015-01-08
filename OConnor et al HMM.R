@@ -7,6 +7,7 @@
 
 library(lme4)
 library(MuMIn)
+library(AICcmodavg)
 #library(qpcR)
 
 #########################################################################################
@@ -69,6 +70,8 @@ modBasic <- lmer(logY.rs ~ logS*log(Tscale) + (1 + logS|Entry) + (1 + logS|Study
 ###### Comparing models ##############
 ######################################
 
+model.sel(modFM, modBtrophic, modBrt, modBall, modExp, modBasic)
+
 # In this section I am calculating AICc by hand, and accounting for degrees of freedom in the random effects according to Bolker et al. http://glmm.wikidot.com/faq
 #AICc = -2*logLik(mod) + 2*K*(n/(n-K-1))
 
@@ -90,60 +93,11 @@ AIC.sum$modFMii <- AIC(modFMii)
 
 AIC.sum
 
-# calculating weights and delta AIC
-#round(Weights(AICc(modFM, modBtrophic, modBrt, modBall, modExp, modBasic)))
-model.sel(modFM, modBtrophic, modBrt, modBall, modExp, modBasic)
 
-#weights <- akaike.weights(AIC.sum) #requires qpcR, which isn't working
-#results <- as.data.frame(rbind(weights$deltaAIC, weights$rel.LL, weights$weights))
-#names(results) <- c('modFM', 'modBtrophic', 'modBrt', 'modBall', 'modExp', 'modBasic', 'modFMi') #, 'modFMii'
-#rownames(results) <- c('deltaAIC', 'relLL','weights')
-results
+## model averaging:
+model.avg(modBtrophic, modBall, modBasic, modFM, modExp) -> m.avg  #modFM, 
 
-#SST2 (after code merge). different results...
-            logLik    AICc   delta weight
-modFM       -1114.846 2301.1  0.00 1     
-modBtrophic -1137.202 2316.9 15.79 0     
-modBall     -1135.115 2321.0 19.83 0     
-modBasic    -1165.581 2353.3 52.17 0     
-modExp      -1155.863 2354.3 53.11 0     
-modBrt      -1163.294 2360.9 59.80 0       
-
-#SST2
-> results (before code merge)
-modFM modBtrophic       modBrt   modBall       modExp     modBasic       modFMi  modFMii
-deltaAIC 9.492287829   0.0000000 1.771517e+01 3.6930563 2.358546e+01 10.692942333 2.342200e+02 4342.987
-relLL    0.008685121   1.0000000 1.422980e-04 0.1577840 7.559315e-06  0.004764936 1.379683e-51    0.000
-weights  0.007414410   0.8536911 1.214785e-04 0.1346988 6.453320e-06  0.004067783 1.177823e-51    0.000
-
-
-#SST2nc
-modFM modBtrophic       modBrt   modBall       modExp     modBasic       modFMi  modFMii
-deltaAIC 7.49927119   0.0000000 1.897615e+01 3.5123883 2.182002e+01 12.224708046 1.985566e+02 4315.648
-relLL    0.02352632   1.0000000 7.574994e-05 0.1727009 1.827443e-05  0.002215330 7.655599e-44    0.000
-weights  0.01962920   0.8343508 6.320203e-05 0.1440931 1.524728e-05  0.001848362 6.387456e-44    0.000
-
-
-
-
-
-
-model.avg(modBtrophic, modBall) -> m.avg  #modFM, 
-
-Call:
-  model.avg.default(object = modBtrophic, modBall)
-
-Component models: 
-  ‘1/2/3/5/6/7/8/10/11’     ‘1/2/3/4/5/6/7/8/9/10/11’
-
-Coefficients: 
-  (Intercept)             logS      log(Tscale)             Sys1             TG12             TG13             TG14         HigherTY 
-5.393812723      0.188949067     -0.005001719     -0.923645493     -1.535731706      0.317716990     -0.971956144     -0.235696176 
-log(Tscale):logS        logS:Sys1        logS:TG12        logS:TG13        logS:TG14    HigherTY:logS       restrtincr        restrtred 
-0.030255839      0.088800715      0.152902403     -0.303286499      0.066875787      0.021028595      0.186423211     -0.534005118 
-logS:restrtincr   logS:restrtred 
--0.013008265     -0.075334776 
-> confint(m.avg)
+ confint(m.avg)
 2.5 %      97.5 %
   (Intercept)       4.841334172  5.94629127
 logS              0.101470097  0.27642804
@@ -167,6 +121,7 @@ logS:restrtred   -0.258997042  0.10832749
 
 
 > confint(modBtrophic) #for nc dataset
+
 Computing profile confidence intervals ...
 2.5 %      97.5 %
   .sig01            0.865944654  0.99065108
@@ -287,279 +242,3 @@ box()
 
 
 
-
-
-#### summary of the best model: ModF1
-> summary(modF1)
-Linear mixed model fit by maximum likelihood ['lmerMod']
-Formula: logY ~ logS * Sys1 + logS * TG1 + logS * HigherT + logS * log(Tscale) +      (1 + logS | Mno) + (1 + logS | Study) 
-Data: data 
-
-AIC       BIC    logLik  deviance 
-2167.066  2282.155 -1062.533  2125.066 
-
-Random effects:
-  Groups   Name        Variance Std.Dev. Corr 
-Mno      (Intercept) 0.84596  0.9198        
-logS        0.01624  0.1275   -0.20
-Study    (Intercept) 2.35819  1.5356        
-logS        0.04377  0.2092   0.17 
-Residual             0.03333  0.1826        
-Number of obs: 1773, groups: Mno, 559; Study, 90
-
-Fixed effects:
-  Estimate Std. Error t value
-(Intercept)       5.397708   0.281406  19.181
-logS              0.188052   0.044462   4.230
-Sys1             -0.925327   0.421490  -2.195
-TG12             -1.535717   0.449546  -3.416
-TG13              0.326702   0.882771   0.370
-TG14             -0.967673   0.754008  -1.283
-HigherTY         -0.237471   0.269809  -0.880
-log(Tscale)      -0.004844   0.069866  -0.069
-logS:Sys1         0.089479   0.066343   1.349
-logS:TG12         0.152894   0.093031   1.643
-logS:TG13        -0.303618   0.149250  -2.034
-logS:TG14         0.066833   0.115680   0.578
-logS:HigherTY     0.021382   0.046706   0.458
-logS:log(Tscale)  0.030209   0.012424   2.432
-
-Correlation of Fixed Effects:
-  (Intr) logS   Sys1   TG12   TG13   TG14   HghrTY lg(Ts) lgS:S1 lS:TG12 lS:TG13 lS:TG14 lS:HTY
-logS         0.026                                                                                       
-Sys1        -0.522 -0.012                                                                                
-TG12        -0.228 -0.006 -0.147                                                                         
-TG13        -0.119 -0.008 -0.106  0.092                                                                  
-TG14        -0.202  0.006 -0.135  0.158  0.107                                                           
-HigherTY    -0.638  0.038  0.235  0.303  0.015  0.134                                                    
-log(Tscale)  0.198 -0.035 -0.211 -0.151 -0.126 -0.188 -0.061                                             
-logS:Sys1   -0.009 -0.545  0.054  0.022  0.004 -0.032 -0.027  0.040                                      
-logS:TG12   -0.010 -0.138  0.021 -0.073 -0.011 -0.004  0.016  0.000 -0.249                               
-logS:TG13   -0.008 -0.094  0.006 -0.014  0.036  0.002 -0.011 -0.003 -0.146  0.118                        
-logS:TG14    0.007 -0.242 -0.032 -0.008  0.002  0.065 -0.014  0.035 -0.064  0.156   0.109                
-logS:HghrTY  0.035 -0.701 -0.022  0.011 -0.010 -0.012 -0.050  0.028  0.299  0.157   0.038   0.163        
-lgS:lg(Tsc) -0.030  0.250  0.031  0.007  0.000  0.028  0.026 -0.091 -0.285 -0.094  -0.097  -0.258  -0.104
-
-
-#confint.merMod(modFM)  # returns the same values as confint(modFM)
-Computing profile confidence intervals ...
-2.5 %      97.5 %
-  .sig01            0.861434181  0.98458813
-.sig02           -0.327564241 -0.05828934
-.sig03            0.104146030  0.15056943
-.sig04            1.294743923  1.83681362
-.sig05           -0.104616163  0.42480762
-.sig06            0.168414312  0.25856906
-.sigma            0.172559139  0.19347406
-(Intercept)       4.844401981  5.95897336
-logS              0.099001850  0.27565299
-Sys1             -1.764606517 -0.09497573
-TG12             -2.425821992 -0.65130768
-TG13             -1.433824995  2.06635157
-TG14             -2.465628734  0.52182158
-HigherTY         -0.771287951  0.29250381
-log(Tscale)      -0.144909871  0.13751441
-logS:Sys1        -0.041086807  0.22221434
-logS:TG12        -0.031107828  0.33621777
-logS:TG13        -0.603120800 -0.01024197
-logS:TG14        -0.160330592  0.29963184
-logS:HigherTY    -0.070598814  0.11411579
-logS:log(Tscale)  0.005027134  0.05484957
-
-
-
-###### Calculating R2, based on nakagawa and schielzeth 
-###### the sample code online includes the code mod@X, but this doesn't appear to work in the new lme4. I have figured out (!!) that the equiavalent that works is model.matrix(mod)
-
-## January 21: I now notice that nakagawa adn schielzeth say this doesn't apply to random slopes. so i shoudl be including those components. They recommend estimating variance for the equivalent, random intercetps only model. 
-
-mod<-modFMi
-## for model F1
-Fixed <- fixef(mod)[2]*model.matrix(mod)[,2] + fixef(mod)[3]*model.matrix(mod)[,3] + fixef(mod)[4]*model.matrix(mod)[,4] + fixef(mod)[5]*model.matrix(mod)[,5] + fixef(mod)[6]*model.matrix(mod)[,6] + fixef(mod)[7]*model.matrix(mod)[,7] + fixef(mod)[8]*model.matrix(mod)[,8] + fixef(mod)[9]*model.matrix(mod)[,9] + fixef(mod)[10]*model.matrix(mod)[,10] + fixef(mod)[11]*model.matrix(mod)[,11] + fixef(mod)[12]*model.matrix(mod)[,12] + fixef(mod)[13]*model.matrix(mod)[,13] + fixef(mod)[14]*model.matrix(mod)[,14] + fixef(mod)[15]*model.matrix(mod)[,15] + fixef(mod)[16]*model.matrix(mod)[,16] + fixef(mod)[17]*model.matrix(mod)[,17] + fixef(mod)[18]*model.matrix(mod)[,18] #+ fixef(mod)[19]*model.matrix(mod)[,19] + fixef(mod)[20]*model.matrix(mod)[,20] + fixef(mod)[21]*model.matrix(mod)[,21] + fixef(mod)[22]*model.matrix(mod)[,22] + fixef(mod)[23]*model.matrix(mod)[,23] + fixef(mod)[24]*model.matrix(mod)[,24] 
-
-#Fixed <- fixef(mod)[2]*model.matrix(mod)[,2] 
-
-VarF <- var(Fixed)
-
-# R2GLMM(m) - marginal R2GLMM
-# Equ. 26, 29 and 30
-# VarCorr() extracts variance components
-# attr(VarCorr(lmer.model),'sc')^2 extracts the residual variance
-VarF/(VarF + VarCorr(mod)$Mno[1] + VarCorr(mod)$Study[1] + attr(VarCorr(mod), "sc")^2)
-
-# R2GLMM(c) - conditional R2GLMM for full model
-# Equ. XXX, XXX
-# my note: for variable slopes and intercepts, we want two parameters per random effect (intercept and logS). I don't think we indclude a correlation term.
-# the output of VarCorr(mod)$Mno is variances/covariances, then stdev. Some useful code from when I didn't understand this: 
-# print(summary(mod)$varcor) -> res
-# as.numeric(res[,3]) -> res1
-# attr(VarCorr(mod)$Mno, "stddev") would also work; except that gives STdevs, and we want variances, so stdevs squared.
-# (VarF + res1[1]^2 + res1[2]^2 + res1[3]^2 + res1[4]^2)/(VarF + res1[1]^2 + res1[2]^2 + res1[3]^2 + res1[4]^2 + res1[5]^2)
-
-(VarF + VarCorr(mod)$Mno[1] + VarCorr(mod)$Study[1])/(VarF + VarCorr(mod)$Mno[1] + VarCorr(mod)$Study[1] + attr(VarCorr(mod), "sc")^2)
-
-
-## why R2GLMM(m) so much lower than what Brad gets for averaging individual fits?
-
-
-
-
-
-
-
-##1. Preliminary examination of intercepts and slopes for each reported SST response
-## following Pinheiro and Bates Ch 4
-SST1.1<-as.data.frame(cbind(SST2[,1], SST2[,54], SST2[,51]))
-#SST1.2<-SST1.1[-which(SST1.1$Mno==826),]
-names(SST1.1)<-c('Mno', 'logY', 'logS')
-SST1<-groupedData(logY~logS|Mno, SST1.1, order.groups=TRUE)
-test<-lmList(logY~logS|Mno, data=SST1, na.action=na.omit)
-
-pairs(test, id=0.01) 
-head(coef(test))
-mean(coef(test)[,2], na.rm=TRUE)
-
-length(coef(test)[,2]) #230
-
-plot(coef(test)[,1], coef(test)[,2], xlab='intercept', ylab='slope')
-hist(coef(test)[,2], breaks=40, xlab='slope', main = 'Slopes from lmList individual model fitting')
-abline(v=mean(coef(test)[,2]), col=2)
-
-plot(intervals(test)) #about half the Mnos here have 2 richness levels, and i think that's preventing intervals from working. so i will make another file (above, SST3) with only studies that have >2 richness levels and do the whole anlyais on that, then rerun with teh full dataset.
-
-### high overlap in confidence intervals suggests no need for random effects. We have large need for random intercepts, and possible need for random slopes.  
-
-
-
-
-
-#estimating confidence intervals; this takes a while, and I"m not sure what the sigmas are.
-mod<-modF1
-confint(mod)
-Computing profile confidence intervals ...
-2.5 %    97.5 %
-  .sig01       0.8620486 0.9904851
-.sig02              NA        NA
-.sig03              NA 0.0533406
-.sig04       1.4965251 2.0741551
-.sig05      -0.1867722 0.3124404
-.sig06       0.2296943 0.3386019
-.sigma       0.3227170 0.3496987
-(Intercept)  4.5429167 5.3086167
-logS         0.1661482 0.2986802
-
-### ok, need to get the coefs for fixed and random effects for each observation (Mno | Study). the ranef extractor returns the conditional modes (which is our best estimate of the random effects)
-str(ranef(modFM))
-par(mfrow=c(1,2))
-dotplot(ranef(modFM, condVar = TRUE))
-qqmath(ranef(modFM, condVar = TRUE)) # figure this out
-
-##### Producing experiment-level slope estimates #########
-##########################################################
-
-rand.cat <- data.frame(cbind(as.numeric(as.character(data$Mno)), as.numeric(as.character(data$Study))))
-names(rand.cat) <- c('Mno', 'Study')
-rand.cat1 <- ddply(rand.cat, .(Mno), summarize, mean(Study)) 
-
-rand.cat <- ddply(data, .(Mno, Study, Sys1, TG, HigherT, restrt), summarize, mean(logY))
-#rand.cat$Syst <- rand.cat$Sys1
-names(rand.cat) <- c('Mno', 'Study', 'Syst','TG', 'HT', 'restrt', 'meanlogY')
-Mno.coefs <- data.frame(coef(modBtrophic)$Mno)
-Mno.coefs$Mno <- rownames(Mno.coefs)
-#names(Mno.coefs)<-c('Int', 'LogS', 'System', 'HT', 'LogS.Sys1', 'LogS.HT', 'Mno1')
-S <- cbind(rand.cat, Mno.coefs)
-
-S$Sys.term <- ifelse(S$Syst == '1', S$logS.Sys1, 0)
-S$TG.term<-ifelse(S$TG == '2', S$logS.TG12, 0)
-S$TG.term<-ifelse(S$TG == '3', S$logS.TG13, S$TG.term)
-S$TG.term<-ifelse(S$TG == '4', S$logS.TG14, S$TG.term)
-#S$units <- ifelse(S$Units == 'density', S$logS.unit.types2density, 0)
-#S$units <- ifelse(S$Units == 'perc.cover', S$logS.unit.types2perc.cover, S$units)
-S$HT.term <- ifelse(S$HigherT == 'Y', S$logS.HT, 0)
-#S$Res.term <- ifelse(S$restrt == 'incr', S$logS.restrtincr, 0)
-#S$Res.term <- ifelse(S$restrt == 'red', S$logS.restrtred, S$Res.term)
-
-#now add Study ranefs
-St.ranefs <- data.frame(coef(modBtrophic)$Study)
-St.ranefs$Study <- rownames(St.ranefs)
-St.ranefs1 <- data.frame(St.ranefs$Study, St.ranefs$logS)
-S2 <- merge(S, St.ranefs1, by.x = 'Study', by.y = 'St.ranefs.Study', all= FALSE)
-S <- S2
-b <- as.numeric(fixef(modBtrophic)[2])
-S$slope <- S$logS + S$Sys.term + S$TG.term + S$HT.term + S$logS.log.Tscale. + (S$St.ranefs.logS - b)
-hist(S$slope, breaks = 40, col = 'gray', freq = TRUE, main = 'Estimated b values', xlab = expression(beta[1][.ij] + beta[3][.ij] + mu[0][.i] + mu[0][.j] + mu[1][.i] + mu[1][.j]), xlim = c(-0.7, 1.4), ylim = c(0, 100), cex.lab = 1.2, axes = FALSE, ylab = 'Number of experiments') #
-axis(1, at =c(-0.7, 0, 0.7, 1.4), lwd = 2, pos = 0)
-axis(2, lwd = 2, pos = -0.7, las = 2)
-
-summary(S$slope)  # ok, this is genreally working, though something is not quite right. the mean from this is 0.26, but the mean slope from the base model is 0.23. OK, the difference between these two is that the fixef for logS was counted twice - once in Mno and once in Study. that is now corrected by subtracting b in the final term above.
-abline(v = mean(S$slope), lwd = 2)
-
-par(new=T)
-hist(S[(S$TG=='1'),]$slope, breaks = 20, xlim = c(-1, 1.5), ylim = c(0, 100), col = 3, axes = FALSE, xlab = '', ylab = '', main = '')
-
-par(new=T)
-hist(S[(S$TG=='4'),]$slope, breaks = 40, xlim = c(-1, 1.5), ylim = c(0, 100), col = 4, axes = FALSE, xlab = '', ylab = '', main = '')
-
-par(new=T)
-hist(S[(S$TG=='2'),]$slope, breaks = 20, xlim = c(-1, 1.5), ylim = c(0, 100), col = 5, axes = FALSE, xlab = '', ylab = '', main = '')
-
-par(new=T)
-hist(S[(S$TG=='3'),]$slope, breaks = 40, xlim = c(-1, 1.5), ylim = c(0, 100), col = 2, axes = FALSE, xlab = '', ylab = '', main = '')
-
-
-#histograms with stacked bars
-qplot(S$slope, binwidth = 0.025, fill = as.factor(S$TG))
-
-
-
-summary(S$slope)
-
-length(S[(S$TG=='3'),]$slope)
-help(hist)
-
-
-### calculating CIs for the estimates:
-n<-length(S$slope)
-est<- mean(S$slope)
-se <- sd((S$slope/sqrt(n)))
-in.95 <- est + qt(c(0.025, 0.975), n-1)*se
-abline(v = in.95[1], lwd = 2, lty = 2)
-abline(v = in.95[2], lwd = 2, lty = 2)
-
-
-
-#######
-#trophic group summary: what are the carnivore data?
-#checking area x duration relationship
-lm(log(SST2$MaxTscale)~log(SST2$Vol)) -> vol.mod
-lm(log(SST2$MaxTscale)~log(SST2$Area)) -> area.mod
-summary(vol.mod)
-summary(area.mod)
-
-par(mfrow = c(2,1))
-plot(log(SST2$MaxTscale)~log(SST2$Vol))
-abline(coef(vol.mod[1]),coef(vol.mod[2]))
-text(2, 4, 'p < 0.001, m = -0.4')
-
-plot(log(SST2$MaxTscale)~log(SST2$Area))
-abline(coef(area.mod[1]),coef(area.mod[2]))
-text(2, 4, 'p < 0.001, m = 0.2')
-
-par(mfrow = c(2,1))
-plot(log(SST2$MaxTscale)~log(SST2$SPscale))
-lm(log(SST2$MaxTscale)~log(SST2$SPscale+1)) -> spcalemod
-abline(coef(vol.mod[1]),coef(vol.mod[2]))
-text(2, 4, 'p < 0.001, m = -0.4')
-
-plot(log(SST2$MaxTscale)~log(SST2$Area))
-abline(coef(area.mod[1]),coef(area.mod[2]))
-text(2, 4, 'p < 0.001, m = 0.2')
-
-
-
-#### plotting the power function
-a <- 1
-b <- .5
-seq(0, 200, 0.1) -> x
-pwer <- function(x) a*x^b
-plot(pwer(x)~x, ylim = c(0, 120))

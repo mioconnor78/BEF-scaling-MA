@@ -75,11 +75,11 @@ SST2$logMaxTime <- log(as.numeric(as.character(SST2$MaxTscale)))
 ## transform columns
 SST2$logY <- log(SST2$value)
 SST2$logS <- log(SST2$richness)
-SST2$TG1 <- as.factor(SST2$FTG)
+SST2$TG1 <- as.numeric(as.character(SST2$FTG))
 SST2$Tscale <- as.numeric(as.character(SST2$Tscale))
 SST2$Smax <- as.numeric(as.character(SST2$Smax))
 SST2$MaxTscale <- as.numeric(as.character(SST2$MaxTscale))
-SST2$Entry <- as.integer((SST2$Entry))
+SST2$Entry <- as.factor((SST2$Entry))
 SST2$Study <- as.factor((SST2$Study))
 SST2 <- SST2[,-(4)]
 
@@ -92,32 +92,29 @@ merge(try1, try2, by.x = "Entry", by.y = "Entry") -> try3
 #try3$convert.min <- ifelse(try3$minval < 1, '1', '0')
 #try3$convert.max <- ifelse(try3$maxval > 22000, '1', '0')
 try3$convert.min <- ifelse(try3$maxval < 10, '1', '0')
-try3$convert.max <- ifelse(try3$minval > 20000, '1', '0')
+try3$convert.max <- ifelse(try3$minval > 22000, '1', '0')
 try3[(order(try3$minval)),]
-try3<-try3[,-(2:4)]
-merge(SST3, try3, by.x = "Entry", by.y = "Entry") -> SST4
-head(SST4)
+try3<-try3[,-(2:3)]
+merge(SST2, try3, by.x = "Entry", by.y = "Entry") -> SST4
 
-# great. Now need to take all entries with a 1 and multiply their vals by 1000.
 SST4$values.rs <- as.numeric(as.character(ifelse(SST4$convert.min == 1, SST4$value*1000, SST4$value)))
 SST4$values.rs <- as.numeric(as.character(ifelse(SST4$convert.max == 1, SST4$value/1000, SST4$values.rs)))
 SST4$logY.rs <- log(SST4$values.rs)
 head(SST4)
 plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 
-
+## remove outliers based on previous analysis using visual inspection of plot(modBasic)
+dim(SST4)
+SST4 <- subset(SST4, SST4$Study!=177, select=1:36, drop=TRUE) 
+SST4 <- subset(SST4, SST4$Mno!=796, select=1:36, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
+SST4 <- subset(SST4, SST4$Mno!=826, select=1:36, drop=TRUE) # searching for the outlier in plot(modF1)
+SST4 <- subset(SST4, SST4$Study!=83, select=1:36, drop=TRUE)
 
 ## the units column will be wrong for these rescaled values, but in the model we use 'unit.types', and that class should still be fine.
 ## upon inspection, I can see that some studies (e.g., 8) will have some rescaled values and some not rescaled, which would bring the intercepts together. shouldn't be a problem.
 
 
-## outliers no longer a problem with rescaled values
-## remove outliers based on previous analysis using visual inspection of plot(modBasic)
-dim(SST4)
-SST2 <- subset(SST2, SST2$Study!=177, select=1:38, drop=TRUE) # the outlier in modF1 results, determined by idenfitying the row of the residual value, in a dataframe
-SST2 <- subset(SST2, SST2$Study!=83, select=1:38, drop=TRUE)
-SST2 <- subset(SST2, SST2$Mno!=796, select=1:38, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
-SST2 <- subset(SST2, SST2$Mno!=826, select=1:38, drop=TRUE) # searching for the outlier in plot(modF1)
+
 
 
 
