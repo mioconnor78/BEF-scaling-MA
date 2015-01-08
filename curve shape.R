@@ -26,12 +26,8 @@ metamaster2=ddply(metamaster,1,.progress="text",function(x) {
   z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value/y[y$variable=="Y1","value"]) 
   z=z[!is.na(z[,7]),] } ) 
 
-
-
 #Remove all studies with <2 levels of richness
 metamaster.reduced=ddply(metamaster2,1:6,function(x) if(length(x$value)<3) NULL else x)
-
-
 
 #Overall form
 
