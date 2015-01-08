@@ -88,6 +88,9 @@ SST2 <- subset(SST2, SST2$Study!=83, select=1:31, drop=TRUE)
 SST2 <- subset(SST2, SST2$Mno!=796, select=1:31, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
 SST2 <- subset(SST2, SST2$Mno!=826, select=1:31, drop=TRUE) # searching for the outlier in plot(modF1)
 
+
+
+
 ## extra stuff
 write.csv(SST2, 'SST2new.csv')
 

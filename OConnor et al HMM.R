@@ -9,12 +9,6 @@ library(lme4)
 library(MuMIn)
 #library(qpcR)
 
-# removing outliers based on residual plots
-SST2 <- subset(SST2, SST2$Mno!=796, select=1:57, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
-SST2 <- subset(SST2, SST2$Study!=177, select=1:57, drop=TRUE) # the outlier in modF1 results, determined by idenfitying the row of the residual value, in a dataframe
-SST2 <- subset(SST2, SST2$Study!=83, select=1:57, drop=TRUE) # the problematic detritivore study
-SST2 <- subset(SST2, SST2$Mno!=826, select=1:57, drop=TRUE) # searching for the outlier in plot(modF1)
-
 #########################################################################################
 ### 2. Hierarchical mixed effects model
 #########################################################################################
