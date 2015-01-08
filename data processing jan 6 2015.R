@@ -92,26 +92,6 @@ SST2 <- SST2[,-(4)]
 head(SST2)
 write.csv(SST2, 'SST2new.csv')
 
-## consolidating values on the y-axis
-plot(SST2$logY ~ SST2$logS, main = 'SST2new')
-Y.units
-plot(SST2[SST2$Yunits=='?g CO2-C g-1',]$logY ~ SST2[SST2$Yunits=='?g CO2-C g-1',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='?g CO2-C respired g-1 soil h-1',]$logY ~ SST2[SST2$Yunits=='?g CO2-C respired g-1 soil h-1',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='?g O2 g_1 leaf DM s_1',]$logY ~ SST2[SST2$Yunits=='?g O2 g_1 leaf DM s_1',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='\xb5g C mg C-1 h-1',]$logY ~ SST2[SST2$Yunits=='\xb5g C mg C-1 h-1',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='\xb5g N g-1 soil day-1',]$logY ~ SST2[SST2$Yunits=='\xb5g N g-1 soil day-1',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='\xb5L CO2 h-1',]$logY ~ SST2[SST2$Yunits=='\xb5L CO2 h-1',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='\xb5M m-2 h-1',]$logY ~ SST2[SST2$Yunits=='\xb5M m-2 h-1',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='cover m-2',]$logY ~ SST2[SST2$Yunits=='cover m-2',]$logS, main = 'SST2new') # looks good
-plot(SST2[SST2$Yunits=='day-1',]$logY ~ SST2[SST2$Yunits=='day-1',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='g day-1',]$logY ~ SST2[SST2$Yunits=='g day-1',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='g g-1',]$value ~ SST2[SST2$Yunits=='g g-1',]$logS, main = 'SST2new') # can be multiplied to g/mg?
-plot(1000*SST2[SST2$Yunits=='g g-1',]$value ~ SST2[SST2$Yunits=='g g-1',]$logS, main = 'SST2new') # = 1000* g/g, or mg/g
-plot(SST2[SST2$Yunits=='g L-1',]$value ~ SST2[SST2$Yunits=='g L-1',]$logS, main = 'SST2new')
-plot(1000*SST2[SST2$Yunits=='g L-1' & SST2$value<=1000,]$value ~ SST2[SST2$Yunits=='g L-1' & SST2$value<=1000,]$logS, main = 'SST2new') # can be scaled to mg/L
-plot(SST2[SST2$Yunits=='g m-2',]$logY ~ SST2[SST2$Yunits=='g m-2',]$logS, main = 'SST2new')
-plot(SST2[SST2$Yunits=='g O2 g-1 hr-1',]$logY ~ SST2[SST2$Yunits=='g O2 g-1 hr-1',]$logS, main = 'SST2new')
-
 ## rescaling entries if their values are extremely low or high
 try1 <- ddply(SST2, .(Entry), summarise, min(value))
 try2 <- ddply(SST2, .(Entry), summarise, max(value))
@@ -130,104 +110,6 @@ SST4$logY.rs <- log(SST4$values.rs)
 head(SST4)
 plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 
-
-## working out the rescaling; this is now consolidated above
-
-## rescaling entries if their values are extremely low
-try1 <- ddply(SST2, .(Entry), summarise, min(value))
-dim(try1)
-names(try1) <- c('Entry', 'minval')
-try1[(order(try1$minval)),]
-try1$convert <- ifelse(try1$minval < 1, '1', '0')
-merge(SST2, try1, by.x = "Entry", by.y = "Entry") -> SST3
-head(SST3)
-
-
-# great. Now need to take all entries with a 1 and multiply their vals by 1000.
-SST3$values.rs <- as.numeric(as.character(ifelse(SST3$convert == 1, SST3$value*1000, SST3$value)))
-SST3$logY.rs <- log(SST3$values.rs)
-head(SST3)
-plot(SST3$logY.rs ~ SST2$logS, main = 'SST3.rs')
-
-## repeat rescaling for high values
-try2 <- ddply(SST2, .(Entry), summarise, max(value))
-dim(try2)
-names(try2) <- c('Entry', 'maxval')
-try2[(order(try2$maxval)),]
-try2$convert.max <- ifelse(try2$maxval > 22000, '1', '0')
-merge(SST3, try2, by.x = "Entry", by.y = "Entry") -> SST4
-head(SST4)
-
-## extra stuff
-write.csv(SST2, 'SST2new.csv')
-
-## troubleshooting linear models:
-study.test <- ddply(SST2, .(Study, Ref), summarise, (count(Entry)))
-study.test2 <- ddply(SST2, .(Study, Entry), summarise, (mean(Entry)))
-
-modBasic <- lm(logY ~ logS, data=data, na.action=na.omit)
-
-SST2[SST2$logY=='Inf',]
-SST2[SST2$logY=='-Inf',]
-
-
-## 1.1 load and format the datafile
-mo<-read.csv("/Users/maryo/Dropbox/nceas_bdef/Scaling Relationship/metaanalysis of B/analysis HMM 2012/input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
-mo1<-mo[,-(2:49)]
-head(mo1)
-names(mo1)<-c('Mno',seq(1,72,1))
-stacked<-stack(mo1)
-length(mo1[,2])
-stacked<-stacked[-(1:1415),]
-### Mno is a unique identifer for each row in the meta-master
-Mno<-mo1$Mno
-stacked$Mno<-Mno
-names(stacked)<-c('Y','richness', 'Mno')
-stacked$richness.n<-rep(1:72, each=length(stacked[,1])/72)
-
-mo2<-mo[,-(49:121)]
-both<-merge(stacked, mo2, by.x='Mno', by.y = 'Mno', all=T) 
-
-## 1.2 cleaning up
-both$Y<-as.numeric(as.character(both$Y))
-both$richness.n<-as.numeric(as.character(both$richness.n)) 
-both$logS<-log(both$richness.n)
-both$Smax<-as.factor(both$Smax)
-both$Mno<-as.numeric(as.character(both$Mno))
-both$Smax1<-as.numeric(as.character(both$Smax))
-both$Sys1<-as.numeric(as.character(both$Sys1))
-both$TG1<-as.factor((both$TG))
-
-## 1.3 Removing row types that are problematic for analysis
-## i'm going to remove proportional change responses; they are often negative, which presents a problem for log transformation.
-both<-subset(both, both$HigherT!="", select=1:54, drop=TRUE)
-## We can't really inlcude spatial scale or body size; we loose all the non-plant trophic levels. so options here would be to go get the body size data, or just do that analysis for plants (though i suspect it's been done)
-# get rid of Tscale vals = 0
-both<-subset(both, both$Tscale!="", select=1:54, drop=TRUE) 
-both<-subset(both, both$Yunits!='proportional change', select=1:54, drop=TRUE) 
-both<-subset(both, both$Y!='NA', select=1:54, drop=TRUE) 
-negs<-both[which(both$Y<=0),]
-## only 3 negatives and 23 Y=0, and they are not SST vals, so i'm going to remove them for now
-both<-subset(both, both$Y>0, select=1:54, drop=TRUE) 
-both$logY<-log(both$Y) 
-
-## 1.5 make datafile of just SST and top down only
-SSTa<-subset(both, both$Ygen=='SST', select=1:57, drop=TRUE)
-#SST<-subset(SST, SST$FinalT=='Y', select=1:57, drop=TRUE) # this gives us a dataset using only final years.
-SSTa<-subset(SSTa, SSTa$TDBU=='TD', select=1:57, drop=TRUE) # removing 'bottom up' studies
-SSTa<-subset(SSTa, SSTa$Slevels>1, select=1:57, drop=TRUE) 
-
-#restrt <- ddply(SSTa, .(Entry, Mno, restrt), summarize, mean(logY))
-#SSTb <- merge(restrt, SST2, by.x = "Entry", by.y = "Entry", all = TRUE)
-
-# explored these as outliers, but they are not, or I ended up removing the whole study:
-#SST2<-subset(SST, SST$Study!=27, select=1:57, drop=TRUE) # the study that contains 796 and other extreme values
-#SST2<-subset(SST2, SST2$Mno!=543, select=1:57, drop=TRUE) # removing the outlying Mno from study 177; nope, both are outliers.
-#SST2 <- subset(SST2, SST2$Mno!=962, select=1:57, drop=TRUE) # this is the offender from study 83
-
-#re: outliers: could remove both studies 177 and 83; OR, keep both and remove just the lowest value from study 83 (962 seems to be the offender)
-
-
-
+#extra stuff
 SST2nc <- subset(SST2, SST2$FTG!="C", select=1:60, drop=TRUE) # the problematic detritivore study
 
