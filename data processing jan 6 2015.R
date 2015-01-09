@@ -75,7 +75,7 @@ SST2$logMaxTime <- log(as.numeric(as.character(SST2$MaxTscale)))
 ## transform columns
 SST2$logY <- log(SST2$value)
 SST2$logS <- log(SST2$richness)
-SST2$TG1 <- as.numeric(as.character(SST2$FTG))
+SST2$TG1 <- as.factor(SST2$FTG)
 SST2$Tscale <- as.numeric(as.character(SST2$Tscale))
 SST2$Smax <- as.numeric(as.character(SST2$Smax))
 SST2$MaxTscale <- as.numeric(as.character(SST2$MaxTscale))
@@ -91,9 +91,9 @@ names(try2) <- c('Entry', 'maxval')
 merge(try1, try2, by.x = "Entry", by.y = "Entry") -> try3
 #try3$convert.min <- ifelse(try3$minval < 1, '1', '0')
 #try3$convert.max <- ifelse(try3$maxval > 22000, '1', '0')
-try3$convert.min <- ifelse(try3$maxval < 10, '1', '0')
+try3$convert.min <- ifelse(try3$maxval < 1, '1', '0')
 try3$convert.max <- ifelse(try3$minval > 22000, '1', '0')
-try3[(order(try3$minval)),]
+sorted <- try3[(order(try3$minval)),]
 try3<-try3[,-(2:3)]
 merge(SST2, try3, by.x = "Entry", by.y = "Entry") -> SST4
 
