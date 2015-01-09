@@ -7,7 +7,6 @@
 
 ## Analysis of the relationship between SST and S for Cardinale et al BEF database
 ## Analysis of data without considering Taxon as an intercept predictor
-## same as other Aug 24th, except in this version I will remove more outliers
 
 ## load data and libraries
 library(plyr)
@@ -15,7 +14,7 @@ library(ggplot2)
 library(reshape2)
 
 ### adapting lefcheck's code for data processing:
-##  I had to clean the metamaster file:
+## I had to clean the metamaster file:
 # removing extra levels in FinalT column and HigherT and consolidating to Y or N
 # added HigherT values for Bret-Harte and Erskine, Gtim of 10 days to fungi studies
 # converted FTG to numerical such that: (C = '3', P = '1', H = '2', D = '4', M = '5', O = '6'))
@@ -38,7 +37,6 @@ metamaster3 <- merge(restrt, metamaster2, by.x = "Entry", by.y = "Entry", all = 
 SST<-subset(metamaster3, metamaster2$Ygen=='SST', select=1:23, drop=TRUE)
 
 ## simplifying Yunits: try to categorize units (e.g., n.density, m.density )
-### this is amazing what i did here; i often want to do this but i forget that i already did it.
 unit.type<-c('normalized mass', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux','mass.normalized flux', 'vol flux','mass flux', 'cover','rate','mass rate', 'normalized mass', 'mass.normalized flux','mass','mass', 'mass.normalized flux', 'vol flux', 'vol flux', 'cover', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux', 'normalized mass', 'normalized mass', 'mass.normalized flux','mass', 'mass.normalized flux','mass.normalized flux', 'normalized mass', 'mass flux', 'rate','rate','rate','mass.vol', 'mass', 'density', 'density', 'density', 'density', 'density','proportional change', 'mass.normalized flux','rate')
 Y.units<-c(levels(SST$Yunits))
 unit.types<-as.data.frame(cbind(Y.units, unit.type))
@@ -89,8 +87,6 @@ try2 <- ddply(SST2, .(Entry), summarise, max(value))
 names(try1) <- c('Entry', 'Study','units','minval')
 names(try2) <- c('Entry', 'maxval')
 merge(try1, try2, by.x = "Entry", by.y = "Entry") -> try3
-#try3$convert.min <- ifelse(try3$minval < 1, '1', '0')
-#try3$convert.max <- ifelse(try3$maxval > 22000, '1', '0')
 try3$convert.min <- ifelse(try3$maxval < 1, '1', '0')
 try3$convert.max <- ifelse(try3$minval > 22000, '1', '0')
 sorted <- try3[(order(try3$minval)),]
@@ -110,14 +106,9 @@ SST4 <- subset(SST4, SST4$Mno!=796, select=1:36, drop=TRUE) # based on looking a
 SST4 <- subset(SST4, SST4$Mno!=826, select=1:36, drop=TRUE) # searching for the outlier in plot(modF1)
 SST4 <- subset(SST4, SST4$Study!=83, select=1:36, drop=TRUE)
 
-## the units column will be wrong for these rescaled values, but in the model we use 'unit.types', and that class should still be fine.
+## the units column will be wrong for rescaled values, but in the model we use 'unit.types', and that class should still be fine.
 ## upon inspection, I can see that some studies (e.g., 8) will have some rescaled values and some not rescaled, which would bring the intercepts together. shouldn't be a problem.
 
 
-
-
-
-
-#extra stuff
-SST2nc <- subset(SST2, SST2$FTG!="C", select=1:60, drop=TRUE) # the problematic detritivore study
-
+#remove carnivores
+SST5 <- subset(SST4, SST4$FTG!="C", select=1:36, drop=TRUE) 

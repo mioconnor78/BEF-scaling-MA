@@ -93,9 +93,12 @@ AIC.sum$modFMii <- AIC(modFMii)
 
 AIC.sum
 
+summary(modBtrophic)
+confint(modBtrophic)
 
 ## model averaging:
-model.avg(modBtrophic, modBall, modBasic, modFM, modExp) -> m.avg  #modFM, 
+model.avg(modBtrophic, modBall, modBasic) -> m.avg  #modFM, 
+m.avg
 
  confint(m.avg)
 2.5 %      97.5 %
