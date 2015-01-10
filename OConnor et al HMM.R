@@ -1,7 +1,7 @@
 #######################################################################
 ### Modeling uncertainty in the biodiversity ecosystem functioning relationship
 ### O'Connor, Gonzalez, et al
-### data formatting in preparation for mixed effects analysis
+### mixed effects analysis
 ### Jan 06 2015; Author: Mary O'Connor
 #######################################################################
 

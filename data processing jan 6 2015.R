@@ -122,3 +122,18 @@ SST5 <- subset(SST4, SST4$TG1!="3", select=1:36, drop=TRUE)
 
 ## some exploration
 plot(SST4[(SST4$TG1=='3'),]$logY.rs ~ SST4[(SST4$TG1=='3'),]$logS)
+
+
+## data summary
+length(unique(SST4$Entry))
+
+ddply(SST4, .(Sys1), summarize, length(unique(Entry)))
+ddply(SST4, .(Sys1), summarize, length(unique(Study)))
+ddply(SST4, .(TG1), summarize, length(unique(Entry)))
+ddply(SST4, .(TG1), summarize, length(unique(Study)))
+ddply(SST4, .(HigherT), summarize, length(unique(Entry)))
+ddply(SST4, .(HigherT), summarize, length(unique(Study)))
+ddply(SST4, .(unit.types2), summarize, length(unique(Entry)))
+ddply(SST4, .(unit.types2), summarize, length(unique(Study)))
+ddply(SST4, .(restrt), summarize, length(unique(Entry)))
+ddply(SST4, .(restrt), summarize, length(unique(Study)))
