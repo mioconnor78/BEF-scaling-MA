@@ -41,8 +41,8 @@ data <- SST5
 
 # Full model 
 modFM<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
-#modFMi<-lmer(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
-#modFMii<-lm(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1), data=data, na.action=na.omit)
+modFMi<-lmer(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+modFMii<-lm(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1), data=data, na.action=na.omit)
 
 # biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
 modBtrophic<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
@@ -70,8 +70,7 @@ modBasic <- lmer(logY.rs ~ logS*log(Tscale) + (1 + logS|Entry) + (1 + logS|Study
 ###### Comparing models ##############
 ######################################
 
-model.sel(modFM, modBtrophic, modBrt, modBall, modExp, modBasic)
-
+model.sel(modFM, modBtrophic, modBrt, modBall, modExp, modBasic, modFMi, modFMii)
 # In this section I am calculating AICc by hand, and accounting for degrees of freedom in the random effects according to Bolker et al. http://glmm.wikidot.com/faq
 #AICc = -2*logLik(mod) + 2*K*(n/(n-K-1))
 
@@ -104,33 +103,9 @@ confint(m.avg)
 
 summary(modBtrophic)
 
+confint(modBtrophic) 
 
-confint(modBtrophic) #for nc dataset
-
-Computing profile confidence intervals ...
-2.5 %      97.5 %
-  .sig01            0.865944654  0.99065108
-.sig02           -0.336965667 -0.06703099
-.sig03            0.104264253  0.14989400
-.sig04            1.310848054  1.87638920
-.sig05           -0.190321903  0.38353087
-.sig06            0.138845702  0.22532603
-.sigma            0.171615809  0.19219702
-(Intercept)       4.859911524  5.99317578
-logS              0.098037492  0.25906306
-log(Tscale)      -0.139413186  0.15443089
-Sys1             -1.908792384 -0.16557751
-TG12             -2.425629034 -0.62367844
-TG14             -2.464870169  0.57282053
-HigherTY         -0.769443687  0.31361959
-logS:log(Tscale) -0.005240245  0.04360586
-logS:Sys1        -0.032189069  0.20986242
-logS:TG12         0.007243528  0.35288929
-logS:TG14        -0.115569499  0.29987000
-logS:HigherTY    -0.052932534  0.11895928
-
-
-
+### Figure 2 ####
 estimates <- as.data.frame(m.avg[3])
 var.names<-rownames(estimates)
 var.names<-c('Intercept', 'logS', 'Ecosystem - Aq', 'TG: Herbivore', 'TG: Carnivore', 'TG: Detritovore', 'Consumer present', '+ Resource', '- Resource', 'log(Time in gen)', 'logS*Ecosystem', 'logS*Herbivore', 'logS*Carnivore', 'logS*Detritovore', 'logS*Consumer pres', 'logS * + Resource', 'logS* - Resource', 'logS*log(Time in gen)', 'units Density', 'units % Cover', 'log(Smax)', 'logS*Density', 'logS*mass', 'logS*log(Smax)')
@@ -168,25 +143,31 @@ mtext(side = 1, "Model-Averaged Coefficient", line = 3)                         
 mtext(side = 3, "Model-averaged coefficients of\n logY = f(logS)", line = 1)   # add title
 box()                                                                                                   # add lines around the plot
 
-#### could plot just slope coefficients...
+##############################################
+#### plot just slope coefficients...
 ###############################################
 
 estimates <- as.data.frame(m.avg[3])
 var.names<-rownames(estimates)
-## varnames SST2
-var.names<-c('Intercept', 'ln(S)', 'ln(Duration)',  'Ecosystem - Aq', 'TG: Herbivore', 'TG: Predator', 'TG: Detritivore', '+ Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator', 'ln(S)*Detritivore', 'ln(S)* + Consumer',  '+ Resource', '- Resource',  'ln(S) * + Resource', 'ln(S)* - Resource')
+## varnames SST4 w/ preds
+var.names<-c('Intercept', 'ln(S)', 'ln(Duration)',  'Ecosystem - T', 'TG: Herbivore', 'TG: Predator', 'TG: Detritivore', '+ Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator', 'ln(S)*Detritivore', 'ln(S)* +Consumer',  '+Resource', '-Resource',  'ln(S) * +Resource', 'ln(S)* -Resource')
 estimates$var.names<-var.names
 sl.est <- estimates[-1,]
 sl.est <- sl.est[-(3:7),]
 sl.est <- sl.est[-(9:10),]
 
 
-## varnames SST2nc
-var.names<-c('Intercept', 'ln(S)', 'ln(Duration)',  'Ecosystem - Aq', 'TG: Herbivore', 'TG: Detritivore', '+ Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', 'ln(S)* + Consumer',  '+ Resource', '- Resource',  'ln(S) * + Resource', 'ln(S)* - Resource')
+## varnames SST5 (w/o preds)
+estimates <- as.data.frame(m.avg[3])
+var.names<-c('Intercept', 'ln(S)', 'ln(Duration)',  'Ecosystem - Aq', 'TG: Herbivore', 'TG: Detritivore', '+ Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', 'ln(S)* +Consumer',  '+Resource', '-Resource',  'ln(S) * +Resource', 'ln(S)* -Resource')
 estimates$var.names<-var.names
 sl.est <- estimates[-1,]
 sl.est <- sl.est[-(3:6),]
 sl.est <- sl.est[-(8:9),]
+# add blank line for where preds would be
+sl.est <- rbind(sl.est[1:5,], c('','','','','',''), sl.est[6:nrow(sl.est),])
+row.names(sl.est) <- c('ln(S)', 'ln(Duration)',  'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', '','ln(S)*Detritivore', 'ln(S)* +Consumer', 'ln(S) * +Resource', 'ln(S)* -Resource')
+
 
 ## plotting from http://www.carlislerainey.com/Blog_Files/Blog_CoefficientPlots.R
 # set the graphical parameters
@@ -204,26 +185,26 @@ plot(NULL,                              		# create empty plot
      axes = F, xlab = NA, ylab = NA)       		# turn off axes and labels
 
 # add the data
-est <- sl.est[,1] #[-1]   
-abline(v = 0, lty = 3, lwd = 3, col = "grey")                                             # conveniently store the estimates (minus the constant)
-#se <- estimates[,2]                                        		# conveniently store the std. errors (minus the constant)
-for (i in 1:length(est)) {                                            # loop over a counter the length of the estimate vector
-  points(est[i], i, pch = 19, cex = 1)                               # add the points to the plot
-  #lines(c(est[i] + 1.64*se[i], est[i] - 1.64*se[i]), c(i, i))         # add the 90% confidence intervals (1.64)
+est <- sl.est[,1]   # conveniently store the estimates (minus the constant)
+abline(v = 0, lty = 3, lwd = 3, col = "grey")                                             
+#se <- estimates[,2]      # conveniently store the std. errors (minus the constant)
+for (i in 1:length(est)) {      # loop over a counter the length of the estimate vector
+  points(est[i], i, pch = 19, cex = 1)           
+  #lines(c(est[i] + 1.64*se[i], est[i] - 1.64*se[i]), c(i, i))   # add the 90% confidence intervals (1.64)
   lines(c(sl.est$avg.model.Upper.CI[i], sl.est$avg.model.Lower.CI[i]), c(i, i))
-  #lines(c(est[i] + .67*se[i], est[i] - .67*se[i]), c(i, i), lwd = 3)  # add the 50% confidence intervals
-  text(-1, i, sl.est$var.names[i], xpd = T, cex = 1.2, adj = c(0.5,0.5))                      # add the variable names
+  text(-1, i, sl.est$var.names[i], xpd = T, cex = 0.9, adj = c(0.5,0.5))                      
 }
 
 # add axes and labels
-axis(side = 1)                                                                                          # add bottom axis
-#abline(v = 0, lty = 3, lwd = 3, col = "grey")                                                                    # add verticle line
+axis(side = 1, cex.axis = 0.8)                                                                                          # add bottom axis
+# abline(v = 0, lty = 3, lwd = 3, col = "grey")                                                                    # add verticle line
 mtext(side = 1, "Model-Averaged Coefficients", line = 3, cex = 1.2)                                # label bottom axis
-#mtext(side = 3, paste("Model-averaged Coefficients\n for terms in the BEFR", expression(beta[1][ij]), '+', expression(Beta[3][ij])), line = 1)   # add title
+# mtext(side = 3, paste("Model-averaged Coefficients\n for terms in the BEFR", expression(beta[1][ij]), '+', expression(Beta[3][ij])), line = 1)   # add title
 mtext(side = 3, "B. Predator Studies Removed", line = 1, cex = 1.2)   # add title
 box()                                      
 
-
+# A. Full dataset
+# B. Predator Studies Removed
 
 
 
