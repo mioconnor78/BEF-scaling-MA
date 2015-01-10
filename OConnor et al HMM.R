@@ -37,7 +37,7 @@ library(AICcmodavg)
 ###### The set of models ##########
 ###################################
 
-data <- SST4
+data <- SST5
 
 # Full model 
 modFM<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
@@ -97,33 +97,15 @@ summary(modBtrophic)
 confint(modBtrophic)
 
 ## model averaging:
-model.avg(modBtrophic, modBall, modBasic) -> m.avg  #modFM, 
+model.avg(modBtrophic, modBall) -> m.avg  #modFM, 
 m.avg
 
- confint(m.avg)
-2.5 %      97.5 %
-  (Intercept)       4.841334172  5.94629127
-logS              0.101470097  0.27642804
-log(Tscale)      -0.141891715  0.13188828
-Sys1             -1.749689109 -0.09760188
-TG12             -2.416489626 -0.65497379
-TG13             -1.412528428  2.04796241
-TG14             -2.449345785  0.50543350
-HigherTY         -0.764572105  0.29317975
-log(Tscale):logS  0.005903297  0.05460838
-logS:Sys1        -0.041347946  0.21894937
-logS:TG12        -0.029441297  0.33524610
-logS:TG13        -0.595874969 -0.01069803
-logS:TG14        -0.159874529  0.29362610
-HigherTY:logS    -0.070576414  0.11263360
-restrtincr       -0.060417097  0.43326352
-restrtred        -1.563966609  0.49595637
-logS:restrtincr  -0.065772764  0.03975623
-logS:restrtred   -0.258997042  0.10832749
+confint(m.avg)
+
+summary(modBtrophic)
 
 
-
-> confint(modBtrophic) #for nc dataset
+confint(modBtrophic) #for nc dataset
 
 Computing profile confidence intervals ...
 2.5 %      97.5 %

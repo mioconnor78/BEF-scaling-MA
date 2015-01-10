@@ -43,22 +43,29 @@ unit.types<-as.data.frame(cbind(Y.units, unit.type))
 step1<-unit.types$unit.type[match(SST$Yunits, unit.types$Y.units)]
 SST$unit.types<-as.factor(step1)
 
-unit.type2<-c('biomass', 'flux', 'flux', 'flux','flux', 'flux','flux', 'perc.cover','flux','flux', 'biomass', 'flux','biomass','biomass', 'flux','biomass', 'biomass', 'flux', 'flux', 'perc.cover', 'flux', 'flux', 'flux', 'biomass', 'biomass', 'flux','biomass', 'flux','flux','flux','flux', 'biomass', 'biomass','biomass','density', 'density', 'density', 'density', 'density', 'proportional change', 'flux', 'flux')
+unit.type2<-c('biomass', 'flux', 'flux', 'flux','flux', 'flux','flux', 'perc.cover','flux','flux', 'biomass', 'flux','biomass','biomass', 'flux','flux', 'flux', 'biomass', 'flux', 'flux', 'flux', 'biomass', 'biomass', 'flux', 'biomass', 'flux','flux', 'biomass','flux','flux','flux', 'biomass', 'biomass','biomass','density', 'density', 'density', 'density', 'density', 'proportional change', 'flux', 'flux')
 unit.types2<-as.data.frame(cbind(Y.units, unit.type2))
 step2<-unit.types2$unit.type2[match(SST$Yunits, unit.types2$Y.units)]
 SST$unit.types2<-as.factor(step2)
 
 ## removing levels or values not relevant for this analysis
 SST<-subset(SST, SST$TDBU=='TD', select=1:25, drop=TRUE) # removing 'bottom up' studies
-SST2<-subset(SST, SST$Slevels>1, select=1:25, drop=TRUE) 
+SST1<-SST[-which(SST$Entry=='616'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
+SST1<-SST1[-which(SST1$Entry=='617'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
+SST1<-SST1[-which(SST1$Entry=='618'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
+SST1<-SST1[-which(SST1$Entry=='619'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations 
+SST1<-SST1[-which(SST1$Entry=='250'),] # removing entry for Mikola 1998 because a) I can't understand where it came from when i read the paper, and b) the data from the figures in the paper is present in other entries
+SST1<-SST1[-which(SST1$Entry=='246'),] # Mikola 1998, ditto entry 250
+SST2<-subset(SST1, SST1$value!='NA', select=1:25, drop=TRUE) 
+SST2<-subset(SST2, SST2$value!= '0', select=1:25, drop=TRUE) 
+SST2<-subset(SST2, SST2$Slevels>1, select=1:25, drop=TRUE) 
 SST2<-subset(SST2, SST2$HigherT!="", select=1:25, drop=TRUE)
 SST2<-subset(SST2, SST2$HigherT!=".", select=1:25, drop=TRUE)
 # get rid of Tscale vals = 0
 SST2<-subset(SST2, SST2$Tscale!="", select=1:25, drop=TRUE) 
 SST2<-subset(SST2, SST2$Yunits!='proportional change', select=1:25, drop=TRUE) 
 SST2 <- SST2[which(SST2$Yunits!='rate'),]
-SST2<-subset(SST2, SST2$value!='NA', select=1:25, drop=TRUE) 
-SST2<-subset(SST2, SST2$value!= '0', select=1:25, drop=TRUE) 
+
 
 ### need to estimate the duration of each experiment:
 maxTime <- ddply(SST2, .(Entry, Tscale), summarise, TFinal = 'Y')
@@ -111,4 +118,7 @@ SST4 <- subset(SST4, SST4$Study!=83, select=1:36, drop=TRUE)
 
 
 #remove carnivores
-SST5 <- subset(SST4, SST4$FTG!="C", select=1:36, drop=TRUE) 
+SST5 <- subset(SST4, SST4$TG1!="3", select=1:36, drop=TRUE) 
+
+## some exploration
+plot(SST4[(SST4$TG1=='3'),]$logY.rs ~ SST4[(SST4$TG1=='3'),]$logS)
