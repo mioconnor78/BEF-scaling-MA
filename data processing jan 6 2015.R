@@ -2,7 +2,7 @@
 ### Modeling uncertainty in the biodiversity ecosystem functioning relationship
 ### O'Connor, Gonzalez, et al
 ### data formatting in preparation for mixed effects analysis
-### Jan 22 2014; Author: Mary O'Connor
+### Jan 2015; Author: Mary O'Connor
 #######################################################################
 
 ## Analysis of the relationship between SST and S for Cardinale et al BEF database

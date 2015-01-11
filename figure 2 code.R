@@ -5,14 +5,215 @@
 ### Jan 06 2015; Author: Mary O'Connor
 #######################################################################
 
-## requires model results as input
-## plotting from http://www.carlislerainey.com/Blog_Files/Blog_CoefficientPlots.R
-## ok, we want a 2-panel figure, one panel for the w/ the full best model and one for model avg.coefs. one set can be in grey. let's try that. 
+## a four panel figure: 2 cols for w/ and w/o preds, and 2 rows for intercept and slope coefs
+##############################################################################################
 
-# a full figure with intercept coefs
+## MO: I know how painful and inefficient this code is! I would love it (and learn from it) if someone felt like presenting an alternative approach to generating this figure. I know there are better ways.
+
+
+par(
+  family = "serif",  
+  oma = c(0,0,0,0),  # Since it is a single plot, I set the outer margins to zero.
+  #mar = c(5,8,4,2),  # Inner margins are set through a little trial and error.
+  mfcol = c(2,2)
+)
+
+#layout(matrix(c(1,2,3,4)), 1, 1, byrow = FALSE)
+
+# Figure 2A: SST4 slopes
+estimates <- as.data.frame(m.avg.4[3])
+estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
+rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+est.sl <- estimates[estimates$slint == 'S',]
+est.int <- estimates[estimates$slint == 'I',]
+
+est.B <- as.data.frame(as.numeric(round(fixef(modBtrophic4),3)))
+est.B$se <- as.numeric(round(sqrt(diag(vcov(modBtrophic4))),3))
+names(est.B) <- c('est', 'se')
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
+row.names(est.B) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
+
+est.B.sl <- est.B[est.B$slint == 'S',]
+est.B.int <- est.B[est.B$slint == 'I',]
+
+#par(mar=(c(5,7.5,4,0)))
+par(mar=(c(5,9.5,4,0)))
+plot(NULL,                                
+     xlim = c(-0.4, 0.6),                      		
+     ylim = c(.7, length(est.sl[,1]) + .3), 	
+     axes = F, xlab = NA, ylab = NA)
+
+# add the data
+est <- as.numeric(est.sl[,1]) 
+se <- as.numeric(est.sl[,2] )                                         
+ests.B <- as.numeric(est.B.sl[,1])
+ses.B <- as.numeric(est.B.sl[,2])
+var.names<-rownames(est.B.sl)
+
+b <- 0.2
+for (i in 1:length(est)) {                                            
+  points(est[i], i, pch = 19, cex = .75)                              
+  points(ests.B[i], i+b, pch = 19, cex = .75, col = 'gray60') 
+  lines(c(est[i] + 1.94*se[i], est[i] - 1.94*se[i]), c(i, i))         # add 90% CIs
+  lines(c(ests.B[i] + 1.94*ses.B[i], ests.B[i] - 1.94*ses.B[i]), c(i+b, i+b), col = 'gray60')         
+  text(-.5, i, adj = c(1,0), var.names[i], xpd = T, cex = 1)        # add the variable names
+  text(0.55, length(est.B.sl[,1]), 'A', cex = 1.5)
+}
+
+# add axes and labels
+axis(side = 1)                                                                                         
+abline(v = 0, lty = 3, col = "grey40")                                                                   
+mtext(side = 1, "Slope coefficients", line = 3)                                              
+mtext(side = 3, "Predator Studies Included", line = 1)   # add title
+box()                                          
+
+## Panel C: SST4 Ints ###
+par(mar=(c(8,9.5,1,0)))
+plot(NULL,                                
+     xlim = c(-3, 4),                        	
+     ylim = c(.7, length(est.int[,1]) + .3), 	
+     axes = F, xlab = NA, ylab = NA)
+
+# add the data
+est <- as.numeric(est.int[,1]) 
+se <- as.numeric(est.int[,2] )                                         
+ests.B <- as.numeric(est.B.int[,1])
+ses.B <- as.numeric(est.B.int[,2])
+var.names<-rownames(est.B.int)
+
+b <- 0.2
+for (i in 1:length(est)) {                                            
+  points(est[i], i, pch = 19, cex = .75)                              
+  points(ests.B[i], i+b, pch = 19, cex = .75, col = 'gray60') 
+  lines(c(est[i] + 1.94*se[i], est[i] - 1.94*se[i]), c(i, i))         # add 90% CIs
+  lines(c(ests.B[i] + 1.94*ses.B[i], ests.B[i] - 1.94*ses.B[i]), c(i+b, i+b), col = 'gray60')         
+  text(-3.7, i, adj = c(1,0), var.names[i], xpd = T, cex = 1)        # add the variable names
+  text(3.5, length(est.B.int[,1]), 'C', cex = 1.5)
+}
+
+# add axes and labels
+axis(side = 1)                                                                                      
+abline(v = 0, lty = 3, col = "grey40")                                                                    
+mtext(side = 1, "Intercept Coefficients", line = 3)                                              
+#mtext(side = 3, "C. With Predators", line = 1)   # add title
+box()                    
+
+
+## Panel B
+# SST5 slopes
+estimates <- as.data.frame(m.avg.5[3])
+estimates <- rbind(estimates[1:5,], c('','','','','',''), estimates[6:nrow(estimates),])  #these rows only needed for SST5 (no carnivores)
+estimates <- rbind(estimates[1:11,], c('','','','','',''), estimates[12:nrow(estimates),])
+estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
+rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+est.sl <- estimates[estimates$slint == 'S',]
+est.int <- estimates[estimates$slint == 'I',]
+
+est.B <- as.data.frame(as.numeric(round(fixef(modBtrophic5),3)))
+est.B$se <- as.numeric(round(sqrt(diag(vcov(modBtrophic5))),3))
+names(est.B) <- c('est', 'se')
+
+#the parameters in estimates and est.B have to line up
+rownames(est.B)
+rownames(estimates)
+
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B[1:5,], c('','','','','',''), est.B[6:nrow(est.B),]) #these rows only needed for SST5 (no carnivores)
+est.B <- rbind(est.B[1:11,], c('','','','','',''), est.B[12:nrow(est.B),])
+row.names(est.B) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
+est.B.sl <- est.B[est.B$slint == 'S',]
+est.B.int <- est.B[est.B$slint == 'I',]
+
+
+par(mar=(c(5,5.5,4,4)))
+plot(NULL,                                
+     xlim = c(-0.4, 0.6),                        	
+     ylim = c(.7, length(est.sl[,1]) + .3), 	
+     axes = F, xlab = NA, ylab = NA)
+
+# add the data
+est <- as.numeric(est.sl[,1]) 
+se <- as.numeric(est.sl[,2] )                                         
+ests.B <- as.numeric(est.B.sl[,1])
+ses.B <- as.numeric(est.B.sl[,2])
+var.names<-rownames(est.B.sl)
+
+b <- 0.2
+for (i in 1:length(est)) {                                            
+  points(est[i], i, pch = 19, cex = .75)                              
+  points(ests.B[i], i+b, pch = 19, cex = .75, col = 'gray60') 
+  lines(c(est[i] + 1.94*se[i], est[i] - 1.94*se[i]), c(i, i))         # add 90% CIs
+  lines(c(ests.B[i] + 1.94*ses.B[i], ests.B[i] - 1.94*ses.B[i]), c(i+b, i+b), col = 'gray60')         
+  #text(-.8, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
+  text(0.55, length(est.sl[,1]), 'B', cex = 1.5)
+}
+
+# add axes and labels
+axis(side = 1)                                                                                      
+abline(v = 0, lty = 3, col = "grey40")                                                                   
+mtext(side = 1, "Slope coefficients", line = 3)                                             
+mtext(side = 3, "Predator Studies Excluded", line = 1)   # add title
+box()                            
+
+
+### Panel D: SST5 intercepts
+par(mar=(c(8,5.5,1,4)))
+plot(NULL,                                
+     xlim = c(-3, 4),                          
+     ylim = c(.7, length(est.B.int[,1]) + .3), 	
+     axes = F, xlab = NA, ylab = NA)
+
+# add the data
+est <- as.numeric(est.int[,1]) 
+se <- as.numeric(est.int[,2] )                                         
+ests.B <- as.numeric(est.B.int[,1])
+ses.B <- as.numeric(est.B.int[,2])
+var.names<-rownames(est.B.int)
+
+b <- 0.2
+for (i in 1:length(est)) {                                            
+  points(est[i], i, pch = 19, cex = .75)                              
+  points(ests.B[i], i+b, pch = 19, cex = .75, col = 'gray60') 
+  lines(c(est[i] + 1.94*se[i], est[i] - 1.94*se[i]), c(i, i))         # add 90% CIs
+  lines(c(ests.B[i] + 1.94*ses.B[i], ests.B[i] - 1.94*ses.B[i]), c(i+b, i+b), col = 'gray60')         
+  #text(-3.6, i, adj = c(1,0), var.names[i], xpd = T, cex = 1)     
+  text(3.5, length(est.B.int[,1]), 'D', cex = 1.5)
+}
+
+# add axes and labels
+axis(side = 1)                                                                                        
+abline(v = 0, lty = 3, col = "grey40")                                                                 
+mtext(side = 1, "Intercept coefficients", line = 3)                                             
+#mtext(side = 3, "D. Without Predators", line = 1)   
+box()                    
+
+
+###### END OF PLOT #####
+
+
+
+
+
+
+## general data preparation, though it is embedded above so this code is extra
+## plotting from http://www.carlislerainey.com/Blog_Files/Blog_CoefficientPlots.R
+
 estimates <- as.data.frame(m.avg[3])
-var.names<-rownames(estimates)
-var.names<-c('Intercept', 'logS', 'Ecosystem - Aq', 'TG: Herbivore', 'TG: Carnivore', 'TG: Detritovore', 'Consumer present', '+ Resource', '- Resource', 'log(Time in gen)', 'logS*Ecosystem', 'logS*Herbivore', 'logS*Carnivore', 'logS*Detritovore', 'logS*Consumer pres', 'logS * + Resource', 'logS* - Resource', 'logS*log(Time in gen)', 'units Density', 'units % Cover', 'log(Smax)', 'logS*Density', 'logS*mass', 'logS*log(Smax)')
+estimates <- rbind(estimates[1:5,], c('','','','','',''), estimates[6:nrow(estimates),])  #these rows only needed for SST5 (no carnivores)
+estimates <- rbind(estimates[1:11,], c('','','','','',''), estimates[12:nrow(estimates),])
+estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
+rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+est.sl <- estimates[estimates$slint == 'S',]
+est.int <- estimates[estimates$slint == 'I',]
+
 
 est.B <- as.data.frame(as.numeric(round(fixef(modBtrophic),3)))
 est.B$se <- as.numeric(round(sqrt(diag(vcov(modBtrophic))),3))
@@ -26,108 +227,13 @@ est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
-row.names(est.B) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+est.B <- rbind(est.B[1:5,], c('','','','','',''), est.B[6:nrow(est.B),]) #these rows only needed for SST5 (no carnivores)
+est.B <- rbind(est.B[1:11,], c('','','','','',''), est.B[12:nrow(est.B),])
+row.names(est.B) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
 #est.B <- as.data.frame(est.B)
-var.names<-rownames(est.B)
 
-# set the graphical parameters
-par(
-  family = "serif",  # I don't plot in anything but serif
-  oma = c(0,0,0,0),  # Since it is a single plot, I set the outer margins to zero.
-  mar = c(5,10,4,2)  # Inner margins are set through a little trial and error.
-)
-
-# create an empty plot for total customization
-plot(NULL,                                  # create empty plot
-     xlim = c(-3, 4),                      		# set xlim by guessing
-     ylim = c(.7, length(estimates[,1]) + .3), 	# set ylim by the number of variables
-     axes = F, xlab = NA, ylab = NA)       		# turn off axes and labels
-
-# add the data
-est <- estimates[,1] #[-1] # conveniently store the estimates (minus the constant)
-se <- estimates[,2]                                        		# conveniently store the std. errors (minus the constant)
-ests.B <- as.numeric(est.B[,1])
-ses.B <- as.numeric(est.B[,2])
-
-b <- 0.2
-for (i in 1:length(est)) {                                            
-  points(est[i], i, pch = 19, cex = .75)                              
-  points(ests.B[i], i+b, pch = 19, cex = .75, col = 'gray60') 
-  lines(c(est[i] + 1.94*se[i], est[i] - 1.94*se[i]), c(i, i))         # add 90% CIs
-  lines(c(ests.B[i] + 1.94*ses.B[i], ests.B[i] - 1.94*ses.B[i]), c(i+b, i+b), col = 'gray60')         
-  #lines(c(estimates$avg.model.Upper.CI[i], estimates$avg.model.Lower.CI[i]), c(i, i))
-  text(-3.6, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
-
-}
-
-# add axes and labels
-axis(side = 1)                                                                                          # add bottom axis
-abline(v = 0, lty = 3, col = "grey40")                                                                    # add verticle line
-mtext(side = 1, "Model-Averaged Coefficient", line = 3)                                              # label bottom axis
-mtext(side = 3, "Model-averaged coefficients of\n logY = f(logS)", line = 1)   # add title
-box()                                                                                                   # add lines around the plot
-
-##############################################
-#### plot just slope coefficients...
-###############################################
-
-estimates <- as.data.frame(m.avg[3])
-var.names<-rownames(estimates)
-## varnames SST4 w/ preds
-var.names<-c('Intercept', 'ln(S)', 'ln(Duration)',  'Ecosystem - T', 'TG: Herbivore', 'TG: Predator', 'TG: Detritivore', '+ Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator', 'ln(S)*Detritivore', 'ln(S)* +Consumer',  '+Resource', '-Resource',  'ln(S) * +Resource', 'ln(S)* -Resource')
-estimates$var.names<-var.names
-sl.est <- estimates[-1,]
-sl.est <- sl.est[-(3:7),]
-sl.est <- sl.est[-(9:10),]
-
-
-## varnames SST5 (w/o preds)
-estimates <- as.data.frame(m.avg[3])
-var.names<-c('Intercept', 'ln(S)', 'ln(Duration)',  'Ecosystem - Aq', 'TG: Herbivore', 'TG: Detritivore', '+ Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', 'ln(S)* +Consumer',  '+Resource', '-Resource',  'ln(S) * +Resource', 'ln(S)* -Resource')
-estimates$var.names<-var.names
-sl.est <- estimates[-1,]
-sl.est <- sl.est[-(3:6),]
-sl.est <- sl.est[-(8:9),]
-# add blank line for where preds would be
-sl.est <- rbind(sl.est[1:5,], c('','','','','',''), sl.est[6:nrow(sl.est),])
-row.names(sl.est) <- c('ln(S)', 'ln(Duration)',  'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', '','ln(S)*Detritivore', 'ln(S)* +Consumer', 'ln(S) * +Resource', 'ln(S)* -Resource')
-
-
-## plotting from http://www.carlislerainey.com/Blog_Files/Blog_CoefficientPlots.R
-# set the graphical parameters
-par(
-  family = "serif",  # I don't plot in anything but serif
-  oma = c(0,0,0,0),  # Since it is a single plot, I set the outer margins to zero.
-  mar = c(5,10,4,2)  # Inner margins are set through a little trial and error.
-  #mfrow = c(1,1)
-)
-
-# create an empty plot for total customization
-plot(NULL,                              		# create empty plot
-     xlim = c(-0.6, 0.6),                      		# set xlim by guessing
-     ylim = c(.7, length(sl.est[,1]) + .3), 	# set ylim by the number of variables
-     axes = F, xlab = NA, ylab = NA)       		# turn off axes and labels
-
-# add the data
-est <- sl.est[,1]   # conveniently store the estimates (minus the constant)
-abline(v = 0, lty = 3, lwd = 3, col = "grey")                                             
-#se <- estimates[,2]      # conveniently store the std. errors (minus the constant)
-for (i in 1:length(est)) {      # loop over a counter the length of the estimate vector
-  points(est[i], i, pch = 19, cex = 1)           
-  #lines(c(est[i] + 1.64*se[i], est[i] - 1.64*se[i]), c(i, i))   # add the 90% confidence intervals (1.64)
-  lines(c(sl.est$avg.model.Upper.CI[i], sl.est$avg.model.Lower.CI[i]), c(i, i))
-  text(-1, i, sl.est$var.names[i], xpd = T, cex = 0.9, adj = c(0.5,0.5))                      
-}
-
-# add axes and labels
-axis(side = 1, cex.axis = 0.8)                                                                                          # add bottom axis
-# abline(v = 0, lty = 3, lwd = 3, col = "grey")                                                                    # add verticle line
-mtext(side = 1, "Model-Averaged Coefficients", line = 3, cex = 1.2)                                # label bottom axis
-# mtext(side = 3, paste("Model-averaged Coefficients\n for terms in the BEFR", expression(beta[1][ij]), '+', expression(Beta[3][ij])), line = 1)   # add title
-mtext(side = 3, "B. Predator Studies Removed", line = 1, cex = 1.2)   # add title
-box()                                      
-
-# A. Full dataset
-# B. Predator Studies Removed
+est.B.sl <- est.B[est.B$slint == 'S',]
+est.B.int <- est.B[est.B$slint == 'I',]
 
 

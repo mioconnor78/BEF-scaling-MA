@@ -59,13 +59,6 @@ modExp<-lmer(logY.rs ~ logS*log(Tscale) + logS*unit.types2 + logS*log(Smax) + lo
 # basic model (The level-1 model level-2 that includes with random effects only)
 modBasic <- lmer(logY.rs ~ logS*log(Tscale) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 
-#modBasic1 <- lmer(logY ~ logS*log(Tscale) + (1|Mno) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
-
-#modBasic2 <- lmer(logY ~ logS*log(Tscale) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
-
-#modBasic3 <- lm(logY ~ logS*log(Tscale), data = data, na.action = na.omit)
-
-
 
 ###### Comparing models ##############
 ######################################
@@ -81,7 +74,6 @@ q <- 2*2
 K <- function(x) length(fixef(x)) + (q*(q+1)/2)
 AICc.mem <- function(x) -2*as.numeric(logLik(x)) + 2*K(x)*(length(data$logY)/(length(data$logY)-K(x)-1))
 AICc.mem(modFM)
-
 AIC.sum <- as.data.frame(cbind(AICc.mem(modFM), AICc.mem(modBtrophic), AICc.mem(modBrt), AICc.mem(modBall), AICc.mem(modExp), AICc.mem(modBasic)))
 names(AIC.sum) <- c('modFM', 'modBtrophic', 'modBrt', 'modBall', 'modExp', 'modBasic')
 
@@ -95,9 +87,6 @@ AIC.sum$modFMii <- AIC(modFMii)
 
 AIC.sum
 
-summary(modBtrophic)
-confint(modBtrophic)
-
 ## model averaging:
 model.avg(modBtrophic, modBall) -> m.avg  #modFM, 
 m.avg
@@ -109,3 +98,14 @@ summary(modBtrophic)
 confint(modBtrophic) 
 
 
+## save model objects for different datasets for Figure 2 plotting
+data <- SST4
+modBtrophic4<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+modBall<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+m.avg.4 <- model.avg(modBtrophic4, modBall)
+
+
+data <- SST5
+modBtrophic5<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+modBall<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+m.avg.5 <- model.avg(modBtrophic5, modBall)
