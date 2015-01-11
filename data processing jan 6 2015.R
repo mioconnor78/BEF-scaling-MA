@@ -120,11 +120,15 @@ SST4 <- subset(SST4, SST4$Study!=83, select=1:36, drop=TRUE)
 #remove carnivores
 SST5 <- subset(SST4, SST4$TG1!="3", select=1:36, drop=TRUE) 
 
+### DATA PROCESSING IS COMPLETE ###
+
+
+
 ## some exploration
 plot(SST4[(SST4$TG1=='3'),]$logY.rs ~ SST4[(SST4$TG1=='3'),]$logS)
 
 
-## data summary
+## data summary for Table S1
 length(unique(SST4$Entry))
 
 ddply(SST4, .(Sys1), summarize, length(unique(Entry)))
