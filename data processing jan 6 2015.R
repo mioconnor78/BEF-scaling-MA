@@ -137,3 +137,8 @@ ddply(SST4, .(unit.types2), summarize, length(unique(Entry)))
 ddply(SST4, .(unit.types2), summarize, length(unique(Study)))
 ddply(SST4, .(restrt), summarize, length(unique(Entry)))
 ddply(SST4, .(restrt), summarize, length(unique(Study)))
+
+
+refs <- ddply(SST, .(Ref), summarize, length(Entry))
+write.csv(refs, 'refs.csv')
+
