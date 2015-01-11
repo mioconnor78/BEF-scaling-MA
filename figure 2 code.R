@@ -22,8 +22,8 @@ par(
 
 # Figure 2A: SST4 slopes
 estimates <- as.data.frame(m.avg.4[3])
-estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
-rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S', 'I', 'S')
+rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(MaxDur)', 'ln(S)*ln(MaxDur)')
 est.sl <- estimates[estimates$slint == 'S',]
 est.int <- estimates[estimates$slint == 'I',]
 
@@ -34,8 +34,10 @@ est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
-row.names(est.B) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
-est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
+row.names(est.B) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(MaxDur)', 'ln(S)*ln(MaxDur)')
+est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S', 'I', 'S')
 
 est.B.sl <- est.B[est.B$slint == 'S',]
 est.B.int <- est.B[est.B$slint == 'I',]
@@ -108,8 +110,8 @@ box()
 estimates <- as.data.frame(m.avg.5[3])
 estimates <- rbind(estimates[1:5,], c('','','','','',''), estimates[6:nrow(estimates),])  #these rows only needed for SST5 (no carnivores)
 estimates <- rbind(estimates[1:11,], c('','','','','',''), estimates[12:nrow(estimates),])
-estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
-rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S', 'I', 'S')
+rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(MaxDuration)', 'ln(S)*ln(MaxDuration)')
 est.sl <- estimates[estimates$slint == 'S',]
 est.int <- estimates[estimates$slint == 'I',]
 
@@ -125,10 +127,12 @@ est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B[1:5,], c('','','','','',''), est.B[6:nrow(est.B),]) #these rows only needed for SST5 (no carnivores)
 est.B <- rbind(est.B[1:11,], c('','','','','',''), est.B[12:nrow(est.B),])
-row.names(est.B) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
-est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
+row.names(est.B) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource''ln(MaxDur)', 'ln(S)*ln(MaxDur)')
+est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S', 'I','S')
 est.B.sl <- est.B[est.B$slint == 'S',]
 est.B.int <- est.B[est.B$slint == 'I',]
 

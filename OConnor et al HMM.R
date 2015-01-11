@@ -37,12 +37,12 @@ library(AICcmodavg)
 ###### The set of models ##########
 ###################################
 
-data <- SST5
+data <- SST4
 
 # Full model 
 modFM<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
-modFMi<-lmer(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
-modFMii<-lm(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1), data=data, na.action=na.omit)
+#modFMi<-lmer(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+#modFMii<-lm(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1), data=data, na.action=na.omit)
 
 # biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
 modBtrophic<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
@@ -53,17 +53,21 @@ modBrt<-lmer(logY.rs ~ logS*log(Tscale) + logS*restrt + logS*log(MaxTscale+1) + 
 # all biological fixed factors: ecosystem, trophic group, consumer presence, resource addition/reduction (adding Sys, TG, higherT, res and random effects to the level-2 model)
 modBall<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 
+modBallT<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+
 # Experimental design factors (units, smax, time scale) [adding Duration.max, Smax and units to the level 2 model]
 modExp<-lmer(logY.rs ~ logS*log(Tscale) + logS*unit.types2 + logS*log(Smax) + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # basic model (The level-1 model level-2 that includes with random effects only)
 modBasic <- lmer(logY.rs ~ logS*log(Tscale) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasici <- lmer(logY.rs ~ logS*log(Tscale) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasicii <- lm(logY.rs ~ logS*log(Tscale), data=data, na.action=na.omit)
 
 
 ###### Comparing models ##############
 ######################################
 
-model.sel(modFM, modBtrophic, modBrt, modBall, modExp, modBasic, modFMi, modFMii)
+model.sel(modFM, modBtrophic, modBrt, modBall, modExp, modBasic, modBallT)
 
 
 # In this section I am calculating AICc by hand, and accounting for degrees of freedom in the random effects according to Bolker et al. http://glmm.wikidot.com/faq
@@ -79,16 +83,20 @@ names(AIC.sum) <- c('modFM', 'modBtrophic', 'modBrt', 'modBall', 'modExp', 'modB
 
 #for fewer random effects
 q <- 2 * 1
-AIC.sum$modFMi <- AICc.mem(modFMi)
+#AIC.sum$modBasici <- 
+  AICc.mem(modBasici)
 
 q <- 1
-AIC.sum$modFMii <- AIC(modFMii)
+#AIC.sum$modBasicii <- 
+  AIC(modBasicii)
 #AIC.sum$modBasic3 <- AICc.mem(modBasic3)
+
+AICc.mem(modBasic)
 
 AIC.sum
 
 ## model averaging:
-model.avg(modBtrophic, modBall) -> m.avg  #modFM, 
+model.avg(modBtrophic, modBall, modBallT) -> m.avg  #modFM, 
 m.avg
 
 confint(m.avg)
@@ -102,10 +110,12 @@ confint(modBtrophic)
 data <- SST4
 modBtrophic4<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 modBall<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
-m.avg.4 <- model.avg(modBtrophic4, modBall)
+modBallT<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+m.avg.4 <- model.avg(modBtrophic4, modBall, modBallT)
 
 
 data <- SST5
 modBtrophic5<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 modBall<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
-m.avg.5 <- model.avg(modBtrophic5, modBall)
+modBallT<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+m.avg.5 <- model.avg(modBtrophic5, modBall, modBallT)

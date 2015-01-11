@@ -95,7 +95,7 @@ names(try1) <- c('Entry', 'Study','units','minval')
 names(try2) <- c('Entry', 'maxval')
 merge(try1, try2, by.x = "Entry", by.y = "Entry") -> try3
 try3$convert.min <- ifelse(try3$maxval < 1, '1', '0')
-try3$convert.max <- ifelse(try3$minval > 22000, '1', '0')
+try3$convert.max <- ifelse(try3$minval > 10000, '1', '0')
 sorted <- try3[(order(try3$minval)),]
 try3<-try3[,-(2:3)]
 merge(SST2, try3, by.x = "Entry", by.y = "Entry") -> SST4
@@ -112,7 +112,7 @@ SST4 <- subset(SST4, SST4$Study!=177, select=1:36, drop=TRUE)
 SST4 <- subset(SST4, SST4$Mno!=796, select=1:36, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
 SST4 <- subset(SST4, SST4$Mno!=826, select=1:36, drop=TRUE) # searching for the outlier in plot(modF1)
 SST4 <- subset(SST4, SST4$Study!=83, select=1:36, drop=TRUE)
-
+plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 ## the units column will be wrong for rescaled values, but in the model we use 'unit.types', and that class should still be fine.
 ## upon inspection, I can see that some studies (e.g., 8) will have some rescaled values and some not rescaled, which would bring the intercepts together. shouldn't be a problem.
 
@@ -146,3 +146,20 @@ ddply(SST4, .(restrt), summarize, length(unique(Study)))
 refs <- ddply(SST, .(Ref), summarize, length(Entry))
 write.csv(refs, 'refs.csv')
 
+
+## exploring error sturcture
+
+plot(SST4$values.rs ~ SST4$richness)
+means <- ddply(SST4, .(Entry), summarise, mean(values.rs))
+names(means) <- c('Entry', 'means')
+vars <- ddply(SST4, .(Entry), summarise, var(values.rs))
+names(vars) <- c('Entry', 'vars')
+means.vars <- merge(means, vars, by.x = 'Entry', by.y = 'Entry')
+par(mfrow = c(2,2))
+plot(means.vars$means, means.vars$vars)
+plot(means.vars$means, means.vars$vars, xlim = c(0, 2000), ylim = c(0, 4000))
+plot(means.vars$means, means.vars$vars, xlim = c(0, 1000), ylim = c(0, 4000))
+lines(lowess(means.vars$means), col = 2)
+plot(mean(SST4$values.rs ~ SST4$richness)
+     
+rich.range <- ddply(SST4, .(Entry), summarise, max(richness))
