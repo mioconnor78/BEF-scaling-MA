@@ -33,10 +33,10 @@ metamaster.reduced=ddply(metamaster2,1:6,function(x) if(length(x$value)<3) NULL 
 
 #Write function to fit models corresponding to different functional forms
 modFit=function(df) {
-  #df=df[!is.na(df$value) & !is.infinite(df$value),]
-  df=groupedData(value~richness|Entry,data=df) # I changed the group to Entry from Ref
+  df=df[!is.na(df$value) & !is.infinite(df$value),]
+  df=groupedData(value~richness|Ref,data=df) # I changed the group to Entry from Ref
   #Fit different models
-  #Null=nlme(value~a,fixed=a~1,random=~a~1,start=c(a=-1),control=nlmeControl(tolerance=1e-04),data=df)
+  Null=nlme(value~a,fixed=a~1,random=~a~1,start=c(a=-1),control=nlmeControl(tolerance=1e-04),data=df)
   Linear=nlme(value~a+b*richness,fixed=a+b~1,random=~a+b~1,start=c(a=1.5,b=1),data=df)
   Logarithmic=nlme(value~a+b*log(richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
   Power=nlme(value~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2.8),data=df)
@@ -61,7 +61,9 @@ getAICtab=function(modList) {
     AICweight=round(modLik/sum(modLik),3) } ) } 
 
 #Run for reduced dataset and subset by Ycat
-mods=dlply(SST4,"Ygen",modFit)
+mods=dlply(metamaster.reduced,"Ygen",modFit)
+
+SST2<-subset(SST2, SST2$Slevels>1, select=1:25, drop=TRUE)
 mods <- modFit(SST4)
 
 #Show the AIC Table of Results
