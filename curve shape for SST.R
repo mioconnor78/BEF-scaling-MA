@@ -61,6 +61,7 @@ getAICtab=function(modList) {
 
 #Run for reduced dataset and subset by Ycat
 mods=dlply(metamaster.reduced,"Ygen",modFit)
+modFit(metamaster.reduced[(metamaster.reduced$Ygen == 'SST'), ])
 
 
 SST2<-subset(SST2, SST2$Slevels>1, select=1:25, drop=TRUE)

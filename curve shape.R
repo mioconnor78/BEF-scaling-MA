@@ -39,7 +39,7 @@ modFit=function(df) {
   Null=nlme(value~a,fixed=a~1,random=~a~1,start=c(a=-1),control=nlmeControl(tolerance=1e-04),data=df)
   Linear=nlme(value~a+b*richness,fixed=a+b~1,random=~a+b~1,start=c(a=1.5,b=1),data=df)
   Logarithmic=nlme(value~a+b*log(richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
-  Power=nlme(value~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2),data=df)
+  Power=nlme(value~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10), data=df)
   #Exponential=nlme(value~exp(a+b*richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
   Saturating=nlme(value~(max(value)*richness)/(k+richness),fixed=k~1,random=k~1,start=c(k=0.5),data=df)
   #Return models in list
@@ -60,7 +60,7 @@ getAICtab=function(modList) {
 
 #Run for reduced dataset and subset by Ycat
 mods=dlply(metamaster.reduced,"Ygen",modFit)
-
+modFit(metamaster.reduced[(metamaster.reduced$Ygen == 'SST'), ])
 
 #Show the AIC Table of Results
 aicVals <- lapply(mods,getAICtab)
