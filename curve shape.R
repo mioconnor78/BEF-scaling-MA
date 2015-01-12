@@ -16,14 +16,14 @@ library(reshape2)
 library(ggplot2)
 
 #Read in meta master
-metamaster=read.csv("./BEF_MetaMaster_2011_08_29.csv")
+metamaster=read.csv("./BEF_MetaMaster_2011_08_29 unmodified.csv")
 
 #Subset data and create response as proportional change in functioning with each increase in richness
 
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
   y=melt(x,id.vars=c(2:4,7:8),measure.vars=c(99:126)) 
   y$value=as.numeric(as.character(y$value))
-  z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value/y[y$variable=="Y1","value"]) 
+  z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value)  #/y[y$variable=="Y1","value"]
   z=z[!is.na(z[,7]),] } ) 
 
 #Remove all studies with <2 levels of richness
@@ -59,12 +59,12 @@ getAICtab=function(modList) {
     AICweight=round(modLik/sum(modLik),3) } ) } 
 
 #Run for reduced dataset and subset by Ycat
-mods=dlply(SST4,"Ygen",modFit)
+mods=dlply(metamaster.reduced,"Ygen",modFit)
 
 
 #Show the AIC Table of Results
 aicVals <- lapply(mods,getAICtab)
-aicVals <- ldply(aicVals)
+#aicVals <- ldply(aicVals)
 aicVals <- ldply(aicVals,function(i) { cbind(model=rownames(i),i) } )
 names(aicVals)[1] <- "Ygen"
 write.csv(aicVals, "AICvalues.csv", row.names=F)

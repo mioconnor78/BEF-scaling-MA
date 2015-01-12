@@ -16,17 +16,18 @@ library(reshape2)
 library(ggplot2)
 
 #Read in meta master
-metamaster=read.csv("./BEF_MetaMaster_2011_08_29.csv")
+#Read in meta master
+metamaster=read.csv("./BEF_MetaMaster_2011_08_29 unmodified.csv")
 
 #Subset data and create response as proportional change in functioning with each increase in richness
 
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
   y=melt(x,id.vars=c(2:4,7:8),measure.vars=c(99:126)) 
   y$value=as.numeric(as.character(y$value))
-  z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value) 
+  z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value)  #/y[y$variable=="Y1","value"]
   z=z[!is.na(z[,7]),] } ) 
 
-#Remove all studies with <2 levels of richness
+#Remove all studies with <3 levels of richness
 metamaster.reduced=ddply(metamaster2,1:6,function(x) if(length(x$value)<3) NULL else x)
 
 #Overall form
@@ -34,23 +35,21 @@ metamaster.reduced=ddply(metamaster2,1:6,function(x) if(length(x$value)<3) NULL 
 #Write function to fit models corresponding to different functional forms
 modFit=function(df) {
   df=df[!is.na(df$value) & !is.infinite(df$value),]
-  df=groupedData(value~richness|Ref,data=df) # I changed the group to Entry from Ref
+  df=groupedData(value~richness|Ref,data=df)
   #Fit different models
-  Null=nlme(value~a,fixed=a~1,random=~a~1,start=c(a=-1),control=nlmeControl(tolerance=1e-04),data=df)
-  Linear=nlme(value~a+b*richness,fixed=a+b~1,random=~a+b~1,start=c(a=1.5,b=1),data=df)
-  Logarithmic=nlme(value~a+b*log(richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
-  Power=nlme(value~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2.8),data=df)
+  # Null=nlme(value~a,fixed=a~1,random=~a~1,start=c(a=-1),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10),data=df)
+  Linear=nlme(value~a+b*richness,fixed=a+b~1,random=~a+b~1,start=c(a=1.5,b=1),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10), data=df)
+  Logarithmic=nlme(value~a+b*log(richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10), data=df)
+  Power=nlme(value~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10),data=df)
   #Exponential=nlme(value~exp(a+b*richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
-  Saturating=nlme(value~(max(value)*richness)/(k+richness),fixed=k~1,random=k~1,start=c(k=0.5),data=df)
+  Saturating=nlme(value~(max(value)*richness)/(k+richness),fixed=k~1,random=k~1,start=c(k=0.5),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10), data=df)
   #Return models in list
-  return(list(
-              #Null=Null,
+  return(list(#Null=Null,
               Linear=Linear, 
               Logarithmic=Logarithmic, 
               Power=Power, 
               #Exponential=Exponential, 
-              Saturating=Saturating))          
-}
+              Saturating=Saturating) ) }
 
 #Write function to extract AIC values and weights from the model list obtained from function modFit
 getAICtab=function(modList) {
@@ -62,6 +61,7 @@ getAICtab=function(modList) {
 
 #Run for reduced dataset and subset by Ycat
 mods=dlply(metamaster.reduced,"Ygen",modFit)
+
 
 SST2<-subset(SST2, SST2$Slevels>1, select=1:25, drop=TRUE)
 mods <- modFit(SST4)
