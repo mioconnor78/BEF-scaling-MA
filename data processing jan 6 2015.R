@@ -163,3 +163,13 @@ lines(lowess(means.vars$means), col = 2)
 plot(mean(SST4$values.rs ~ SST4$richness)
      
 rich.range <- ddply(SST4, .(Entry), summarise, max(richness))
+
+
+x <- 0:100
+
+y <- rnorm(101, x^0.2, .1)
+
+plot(x,y)
+
+summary(lm(log(y) ~ x))
+summary(lm(log(y/mean(y)) ~ x))
