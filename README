@@ -5,7 +5,9 @@ Files in this project:
 
 "OConnor et al HMM.R" is the HMM code for to estimate parameters and predictors of the scaling relationship
 
-"curve shape.R" Jon and Jarrett's code to determine best model form (e.g., power function, etc). The data in put to this file is the same input as for "Data processing Jan 6 2014.R"
+"curve shape.R" Jon and Jarrett's code to determine best model form (e.g., power function, etc). The data input to this file is the metamaster they originally sent (BEF_MetaMaster_2011_08_29 unmodified.csv). JARRETT START HERE.
+
+"curve shape for SST.R" is Mary's attempt to run the curve shape on the SST file. But we should get the basic curve shape file working first. 
 
 BEF_MetaMaster_2011_08_29.cvs is the input file, with the following changes made directly in the file on Jan 7, 2014: 
   - I replaced 'Y ' with 'Y' in FinalT and HigherT columns 
