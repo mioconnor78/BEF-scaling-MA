@@ -21,13 +21,20 @@ metamaster=read.csv("./BEF_MetaMaster_2011_08_29 unmodified.csv")
 #Subset data and create response as proportional change in functioning with each increase in richness
 
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
-  y=melt(x,id.vars=c(2:4,7:8),measure.vars=c(99:126)) 
+  y=melt(x,id.vars=c(2:4,7:8),measure.vars=c(99:126))
   y$value=as.numeric(as.character(y$value))
-  z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value)  #/y[y$variable=="Y1","value"]
+  z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value)
   z=z[!is.na(z[,7]),] } ) 
 
+# add mean vals for standardizing
+mean.vals <- ddply(metamaster2, .(Entry), summarise, mean(value))
+names(mean.vals) <- c('Entry', 'Mean.value')
+metamaster.means <- merge(mean.vals, metamaster2, by.x = 'Entry', by.y = 'Entry')
+metamaster.means$value.st <- metamaster.means$value/metamaster.means$Mean.value
+head(metamaster.means)
+
 #Remove all studies with <2 levels of richness
-metamaster.reduced=ddply(metamaster2,1:6,function(x) if(length(x$value)<3) NULL else x)
+metamaster.reduced=ddply(metamaster.means,1:6,function(x) if(length(x$value)<3) NULL else x)
 
 #Overall form
 
@@ -54,6 +61,29 @@ modFit=function(df) {
               #Exponential=Exponential, 
               Saturating=Saturating) ) }
 
+# modFit rewritten for standardized values 
+modFit=function(df) {
+  df=df[!is.na(df$value.st) & !is.infinite(df$value.st),]
+  df=groupedData(value.st~richness|Entry,data=df) #this should be entry
+  #Fit different models
+  #Null=nlme(value.st~a,fixed=a~1,random=~a~1,start=c(a=-1),control=nlmeControl(tolerance=1e-04),data=df)
+  Linear=nlme(value.st~a+b*richness,fixed=a+b~1,random=~a+b~1,start=c(a=1.5,b=1),data=df)
+  Logarithmic=nlme(value.st~a+b*log(richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
+  if(df$Ygen[1]=="SST"){
+    Power=nlme(value.st~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2.8),data=df, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-16))  
+  }else{
+    Power=nlme(value.st~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2),data=df)  
+  }
+  #Exponential=nlme(value.st~exp(a+b*richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
+  Saturating=nlme(value.st~(max(value.st)*richness)/(k+richness),fixed=k~1,random=k~1,start=c(k=0.5),data=df)
+  #Return models in list
+  return(list(#Null=Null,
+    Linear=Linear, 
+    Logarithmic=Logarithmic, 
+    Power=Power, 
+    #Exponential=Exponential, 
+    Saturating=Saturating) ) }
+
 modFit(metamaster.reduced[(metamaster.reduced$Ygen == 'SST'), ])
 
 #Write function to extract AIC values and weights from the model list obtained from function modFit
@@ -73,6 +103,7 @@ aicVals <- lapply(mods,getAICtab)
 #aicVals <- ldply(aicVals)
 aicVals <- ldply(aicVals,function(i) { cbind(model=rownames(i),i) } )
 names(aicVals)[1] <- "Ygen"
+aicVals
 write.csv(aicVals, "AICvalues.csv", row.names=F)
 
 #Get parameter estimates for best models
