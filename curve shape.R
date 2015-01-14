@@ -45,7 +45,7 @@ modFit=function(df) {
   #Fit different models
   #Null=nlme(value~a,fixed=a~1,random=~a~1,start=c(a=-1),control=nlmeControl(tolerance=1e-04),data=df)
   Linear=nlme(value~a+b*richness,fixed=a+b~1,random=~a+b~1,start=c(a=1.5,b=1),data=df)
-  Logarithmic=nlme(value~a+b*log(richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
+  #Logarithmic=nlme(value~a+b*log(richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
   if(df$Ygen[1]=="SST"){
     Power=nlme(value~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2.8),data=df, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-16))  
   }else{
@@ -56,7 +56,7 @@ modFit=function(df) {
   #Return models in list
   return(list(#Null=Null,
               Linear=Linear, 
-              Logarithmic=Logarithmic, 
+              #Logarithmic=Logarithmic, 
               Power=Power, 
               #Exponential=Exponential, 
               Saturating=Saturating) ) }
