@@ -24,9 +24,9 @@ metamaster=read.csv("./BEF_MetaMaster_2011_08_29.csv")
 
 #Subset data
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
-  y=melt(x,id.vars=c(2:4,6:8,10,14,25,27,33:38,40),measure.vars=c(99:126)) 
+  y=melt(x,id.vars=c(2:4,6:8,10,14,25,27,33:38,40, 157),measure.vars=c(99:126)) 
   y$value=as.numeric(as.character(y$value))
-  z=cbind(y[,1:17],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value) 
+  z=cbind(y[,1:18],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value) 
   z=z[!is.na(z[,7]),] } ) 
 
 # add mean vals for standardizing
@@ -38,18 +38,18 @@ head(metamaster.means)
 
 # or standardize by YSmax?
 smax.vals <- ddply(metamaster2, .(Entry), summarise, mean(YSmax, na.rm = TRUE))
-names(mean.vals) <- c('Entry', 'Mean.value')
-metamaster.means <- merge(metamaster2,mean.vals, by.x = 'Entry', by.y = 'Entry')
-metamaster.means$value.st <- metamaster.means$value/metamaster.means$Mean.value
-head(metamaster.means)
+names(smax.vals) <- c('Entry', 'Smax.value')
+metamaster.smax <- merge(metamaster2,smax.vals, by.x = 'Entry', by.y = 'Entry')
+metamaster.smax$value.st <- metamaster.smax$value/metamaster.smax$Smax.value
+head(metamaster.smax)
 
 
 #bring in restrt col from mary's file
 mo<-read.csv("./input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
 restrt <- ddply(mo, .(Entry, Mno, restrt), summarize, mean(YEmono))
-metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
+metamaster3 <- merge(restrt, metamaster.smax, by.x = "Entry", by.y = "Entry", all = TRUE)
 
-SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:25, drop=TRUE)
+SST<-subset(metamaster3, metamaster.smax$Ygen=='SST', select=1:26, drop=TRUE)
 
 ## simplifying Yunits: try to categorize units (e.g., n.density, m.density )
 unit.type<-c('normalized mass', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux','mass.normalized flux', 'vol flux','mass flux', 'cover','rate','mass rate', 'normalized mass', 'mass.normalized flux','mass','mass', 'mass.normalized flux', 'vol flux', 'vol flux', 'cover', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux', 'normalized mass', 'normalized mass', 'mass.normalized flux','mass', 'mass.normalized flux','mass.normalized flux', 'normalized mass', 'mass flux', 'rate','rate','rate','mass.vol', 'mass', 'density', 'density', 'density', 'density', 'density','proportional change', 'mass.normalized flux','rate')
@@ -64,21 +64,21 @@ step2<-unit.types2$unit.type2[match(SST$Yunits, unit.types2$Y.units)]
 SST$unit.types2<-as.factor(step2)
 
 ## removing levels or values not relevant for this analysis
-SST<-subset(SST, SST$TDBU=='TD', select=1:27, drop=TRUE) # removing 'bottom up' studies
+SST<-subset(SST, SST$TDBU=='TD', select=1:28, drop=TRUE) # removing 'bottom up' studies
 SST1<-SST[-which(SST$Entry=='616'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='617'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='618'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='619'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations 
 SST1<-SST1[-which(SST1$Entry=='250'),] # removing entry for Mikola 1998 because a) I can't understand where it came from when i read the paper, and b) the data from the figures in the paper is present in other entries
 SST1<-SST1[-which(SST1$Entry=='246'),] # Mikola 1998, ditto entry 250
-SST2<-subset(SST1, SST1$value!='NA', select=1:27, drop=TRUE) 
-SST2<-subset(SST2, SST2$value!= '0', select=1:27, drop=TRUE) 
-SST2<-subset(SST2, SST2$Slevels>1, select=1:27, drop=TRUE) 
-SST2<-subset(SST2, SST2$HigherT!="", select=1:27, drop=TRUE)
-SST2<-subset(SST2, SST2$HigherT!=".", select=1:27, drop=TRUE)
+SST2<-subset(SST1, SST1$value!='NA', select=1:28, drop=TRUE) 
+SST2<-subset(SST2, SST2$value!= '0', select=1:28, drop=TRUE) 
+SST2<-subset(SST2, SST2$Slevels>1, select=1:28, drop=TRUE) 
+SST2<-subset(SST2, SST2$HigherT!="", select=1:28, drop=TRUE)
+SST2<-subset(SST2, SST2$HigherT!=".", select=1:28, drop=TRUE)
 # get rid of Tscale vals = 0
-SST2<-subset(SST2, SST2$Tscale!="", select=1:27, drop=TRUE) 
-SST2<-subset(SST2, SST2$Yunits!='proportional change', select=1:27, drop=TRUE) 
+SST2<-subset(SST2, SST2$Tscale!="", select=1:28, drop=TRUE) 
+SST2<-subset(SST2, SST2$Yunits!='proportional change', select=1:28, drop=TRUE) 
 SST2 <- SST2[which(SST2$Yunits!='rate'),]
 
 
@@ -123,10 +123,10 @@ plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 
 ## remove outliers based on previous analysis using visual inspection of plot(modBasic)
 dim(SST4)
-SST4 <- subset(SST4, SST4$Study!=177, select=1:38, drop=TRUE) 
-SST4 <- subset(SST4, SST4$Mno!=796, select=1:38, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
-SST4 <- subset(SST4, SST4$Mno!=826, select=1:38, drop=TRUE) # searching for the outlier in plot(modF1)
-SST4 <- subset(SST4, SST4$Study!=83, select=1:38, drop=TRUE)
+SST4 <- subset(SST4, SST4$Study!=177, select=1:39, drop=TRUE) 
+SST4 <- subset(SST4, SST4$Mno!=796, select=1:39, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
+SST4 <- subset(SST4, SST4$Mno!=826, select=1:39, drop=TRUE) # searching for the outlier in plot(modF1)
+SST4 <- subset(SST4, SST4$Study!=83, select=1:39, drop=TRUE)
 
 SST4$logYst <- log(SST4$value.st)
 ## center the regressor

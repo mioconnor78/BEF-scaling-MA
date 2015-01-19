@@ -19,11 +19,11 @@ library(lmerTest)
 ###### The set of models ##########
 ###################################
 
-data <- SST5
+data <- SST4
 
 ## determine best random effects structure for competing level-1 models (following O'Connor et al 2007)
 
-# basic model (The level-1 model w/ time and logSc and time*logSc)
+# basic model (The level-1 model w/ time and logSc and time*logSc)  # add in fixed ints varying slopes
 modBasic <- lmer(logYst ~ logSc*log(Tscale) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 modBasici <- lmer(logYst ~ logSc*log(Tscale) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
 modBasicii <- lm(logYst ~ logSc*log(Tscale), data=data, na.action=na.omit)
@@ -95,10 +95,10 @@ model.sel(modBasic, modBasic2, modBasic3)
 modFM<-lmer(logYst ~ logSc*log(Tscale) + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
-modBtrophic<-lmer(logYst ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modBtrophic<-lmer(logYst ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + (0 + logSc|Entry) + (0 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
-modBrt<-lmer(logYst ~ logSc*log(Tscale) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modBrt<-lmer(logYst ~ logSc*log(Tscale) + logSc*restrt + logSc*log(MaxTscale+1) + ( + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # all biological fixed factors: ecosystem, trophic group, consumer presence, resource addition/reduction (adding Sys, TG, higherT, res and random effects to the level-2 model)
 modBall<-lmer(logYst ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
