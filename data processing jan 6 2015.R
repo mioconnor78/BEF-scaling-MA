@@ -123,7 +123,8 @@ SST4 <- subset(SST4, SST4$Study!=83, select=1:38, drop=TRUE)
 SST4$logYst <- log(SST4$value.st)
 ## center the regressor
 SST4$logSc <- SST4$logS - mean(SST4$logS)
-SST4$logSmaxc <- log(SST4$Smax) - mean(SST4$logS)
+SST4$logSmax <- log(SST4$Smax)
+SST4$logSmaxc <- SST4$logSmax - median(SST4$logSmax)
 
 plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 ## the units column will be wrong for rescaled values, but in the model we use 'unit.types', and that class should still be fine.
@@ -145,8 +146,11 @@ plot(SST4$logYst ~ SST4$logS, main = 'SST4.rs2')
 plot(SST4$logYst ~ SST4$logSc, main = 'logY.st ~ logSc')
 plot(SST4$logYst ~ SST4$Smax, main = 'logY.st ~ Smax')
 
-plot(SST4$logYst ~ SST4$logSmaxc, main = 'logY.st ~ Smaxc')
-summary(lm(SST4$logYst ~ SST4$logSmaxc))
+hist(SST4$Smax)
+hist(SST4$logSmax)
+
+plot(SST4$logYst ~ SST4$logSmax, main = 'logY.st ~ Smax')
+summary(lm(SST4$logYst ~ SST4$logSmax))
 
 SST4[(SST4$value.st <= .3),]
 

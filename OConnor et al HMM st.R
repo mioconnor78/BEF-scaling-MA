@@ -92,7 +92,7 @@ model.sel(modBasic, modBasic2, modBasic3)
 
 ### Set of candidate models ####
 # Full model 
-modFM<-lmer(logYst ~ logSc*log(Tscale) + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*logSmaxc + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modFM<-lmer(logYst ~ logSc*log(Tscale) + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*logSmax + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
 modBtrophic<-lmer(logYst ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
@@ -106,7 +106,7 @@ modBall<-lmer(logYst ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*Higher
 modBallT<-lmer(logYst ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Experimental design factors (units, smax, time scale) [adding Duration.max, Smax and units to the level 2 model]
-modExp<-lmer(logYst ~ logSc*log(Tscale) + logSc*unit.types2 + logSc*logSmaxc + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modExp<-lmer(logYst ~ logSc*log(Tscale) + logSc*unit.types2 + logSc*logSmax + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 modExp2<-lmer(logYst ~ logSc*log(Tscale) + logSc*log(Smax) + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
