@@ -42,6 +42,8 @@ restrt <- ddply(mo, .(Entry, Mno, restrt), summarize, mean(YEmono))
 metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
 
 SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:25, drop=TRUE)
+SST<-subset(SST, SST$value.st!='NaN', select=1:25, drop=TRUE) 
+#SSTa<-subset(SST, SST$value!='NA', select=1:25, drop=TRUE) 
 
 ## simplifying Yunits: try to categorize units (e.g., n.density, m.density )
 unit.type<-c('normalized mass', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux','mass.normalized flux', 'vol flux','mass flux', 'cover','rate','mass rate', 'normalized mass', 'mass.normalized flux','mass','mass', 'mass.normalized flux', 'vol flux', 'vol flux', 'cover', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux', 'normalized mass', 'normalized mass', 'mass.normalized flux','mass', 'mass.normalized flux','mass.normalized flux', 'normalized mass', 'mass flux', 'rate','rate','rate','mass.vol', 'mass', 'density', 'density', 'density', 'density', 'density','proportional change', 'mass.normalized flux','rate')
@@ -62,10 +64,9 @@ SST1<-SST1[-which(SST1$Entry=='617'),] # removing douglass et al measurements of
 SST1<-SST1[-which(SST1$Entry=='618'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='619'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations 
 SST1<-SST1[-which(SST1$Entry=='250'),] # removing entry for Mikola 1998 because a) I can't understand where it came from when i read the paper, and b) the data from the figures in the paper is present in other entries
-SST1<-SST1[-which(SST1$Entry=='246'),] # Mikola 1998, ditto entry 250
-SST2<-subset(SST1, SST1$value!='NA', select=1:27, drop=TRUE) 
-SST2<-subset(SST2, SST2$value!= '0', select=1:27, drop=TRUE) 
-SST2<-subset(SST2, SST2$Slevels>1, select=1:27, drop=TRUE) 
+#SST1<-SST1[-which(SST1$Entry=='246'),] # Mikola 1998, ditto entry 250; this is gone now from removing NaNs above.
+#SST2<-subset(SST2, SST2$value!= '0', select=1:27, drop=TRUE) 
+SST2<-subset(SST1, SST1$Slevels>1, select=1:27, drop=TRUE) 
 SST2<-subset(SST2, SST2$HigherT!="", select=1:27, drop=TRUE)
 SST2<-subset(SST2, SST2$HigherT!=".", select=1:27, drop=TRUE)
 # get rid of Tscale vals = 0
@@ -144,10 +145,13 @@ plot(SST4[(SST4$TG1=='3'),]$logY.rs ~ SST4[(SST4$TG1=='3'),]$logS)
 plot(SST4$value.st ~ SST4$logS, main = 'SST4.rs2')
 plot(SST4$logYst ~ SST4$logS, main = 'SST4.rs2')
 plot(SST4$logYst ~ SST4$logSc, main = 'logY.st ~ logSc')
-plot(SST4$logYst ~ SST4$Smax, main = 'logY.st ~ Smax')
+plot(SST4$logYst ~ SST4$logSmax, main = 'logY.st ~ lnSmax')
 
 hist(SST4$Smax)
 hist(SST4$logSmax)
+hist(SST4$value.st)
+hist(SST4$logYst)
+#hist(SST4[(SST4$logYst>-2),]$logYst)
 
 plot(SST4$logYst ~ SST4$logSmax, main = 'logY.st ~ Smax')
 summary(lm(SST4$logYst ~ SST4$logSmax))
