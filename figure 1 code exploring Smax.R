@@ -15,7 +15,7 @@ rand.cat <- data.frame(cbind(as.numeric(as.character(data$Entry)), as.numeric(as
 names(rand.cat) <- c('Entry', 'Study')
 rand.cat1 <- ddply(rand.cat, .(Entry), summarize, mean(Study)) 
 
-rand.cat <- ddply(data, .(Entry, Study, Sys1, TG1, HigherT, restrt, unit.types2, logMaxTime, Smax, LnTscale), summarize, mean(logY.rs))
+rand.cat <- ddply(data, .(Entry, Study, Sys1, TG1, HigherT, restrt, unit.types2, logMaxTime, logSmaxc, LnTscale), summarize, mean(logY.rs))
 #rand.cat$Syst <- rand.cat$Sys1
 names(rand.cat) <- c('Mno', 'Study', 'Syst','TG1', 'HT', 'restrt','unit.types2', 'MaxTime', 'Smax', 'Tscale','meanlogY')
 Entry.coefs <- data.frame(coef(modFM)$Entry)
@@ -41,7 +41,7 @@ St.ranefs1 <- data.frame(St.ranefs$Study, St.ranefs$logSc) # St.ranefs$X.Interce
 S2 <- merge(S, St.ranefs1, by.x = 'Study', by.y = 'St.ranefs.Study', all= FALSE)
 S <- S2
 b <- as.numeric(fixef(modFM)[2])
-S$slope <- S$logSc + S$Sys.term + S$TG.term + S$HT.term + S$units.term + S$Res.term + S$logSc.log.Tscale. + S$logSc.log.Smax. + S$logSc.log.MaxTscale...1. + (S$St.ranefs.logSc - b)
+S$slope <- S$logSc + S$Sys.term + S$TG.term + S$HT.term + S$units.term + S$Res.term + S$logSc.log.Tscale. + S$logSc.logSmaxc + S$logSc.log.MaxTscale...1. + (S$St.ranefs.logSc - b)
 par(mar = c(4.5,4.5,3,2))
 hist(S$slope, breaks = 40, col = 'gray', freq = TRUE, main = '', xlab = 'Estimated scaling coefficients (b)', xlim = c(-0.4, 1.4), ylim = c(0, 100), cex.lab = 1.2, axes = FALSE, ylab = 'Number of experiments') #
 axis(1, at =c(-0.4, -0.2, 0, 0.2, 0.4, 0.6,0.8,1.0,1.2,1.4), lwd = 2, pos = 0)
@@ -64,3 +64,10 @@ abline(v = in.95[2], lwd = 2, lty = 2)
 St.ranefs1
 
 plot(S$X.Intercept. ~ S$Smax)
+summary(lm(S$X.Intercept. ~ log(S$Smax)))
+
+plot(S$X.Intercept. ~ as.numeric(S$Tscale))
+summary(lm(S$X.Intercept. ~ as.numeric(S$Tscale)))
+
+plot(S$X.Intercept. ~ as.numeric(S$Tscale))
+summary(lm(S$X.Intercept. ~ as.numeric(S$MaxTime)))

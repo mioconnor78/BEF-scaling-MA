@@ -123,6 +123,7 @@ SST4 <- subset(SST4, SST4$Study!=83, select=1:38, drop=TRUE)
 SST4$logYst <- log(SST4$value.st)
 ## center the regressor
 SST4$logSc <- SST4$logS - mean(SST4$logS)
+SST4$logSmaxc <- log(SST4$Smax) - mean(SST4$logS)
 
 plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 ## the units column will be wrong for rescaled values, but in the model we use 'unit.types', and that class should still be fine.
@@ -144,7 +145,24 @@ plot(SST4$logYst ~ SST4$logS, main = 'SST4.rs2')
 plot(SST4$logYst ~ SST4$logSc, main = 'logY.st ~ logSc')
 plot(SST4$logYst ~ SST4$Smax, main = 'logY.st ~ Smax')
 
+plot(SST4$logYst ~ SST4$logSmaxc, main = 'logY.st ~ Smaxc')
+summary(lm(SST4$logYst ~ SST4$logSmaxc))
+
 SST4[(SST4$value.st <= .3),]
+
+
+logSc*log(Tscale) + logSc*unit.types2 + logSc*logSmaxc + logSc*log(MaxTscale+1)
+plot(log(as.numeric(SST4$Tscale)) ~ SST4$logSmaxc, main = 'logTscale ~ Smaxc')
+summary(lm(log(as.numeric(SST4$Tscale)) ~ SST4$logSmaxc))
+
+plot(log(as.numeric(log(SST4$MaxTscale+1))) ~ SST4$logSmaxc, main = 'logTscale ~ Smaxc')
+summary(lm(log(as.numeric(SST4$MaxTscale+1)) ~ SST4$logSmaxc))
+
+plot(SST4$logYst~ log(as.numeric(SST4$Tscale)), main = 'logTscale ~ Smaxc')
+summary(lm(SST4$logYst~ log(as.numeric(SST4$Tscale))))
+
+plot(SST4$logYst~ log(as.numeric(log(SST4$MaxTscale+1))), main = 'logTscale ~ Smaxc')
+summary(lm(SST4$logYst~ log(as.numeric(log(SST4$MaxTscale+1)))))
 
 ## data summary for Table S1
 length(unique(SST4$Entry))
