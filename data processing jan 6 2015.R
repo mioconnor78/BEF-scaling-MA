@@ -36,14 +36,6 @@ metamaster.means <- merge(metamaster2,mean.vals, by.x = 'Entry', by.y = 'Entry')
 metamaster.means$value.st <- metamaster.means$value/metamaster.means$Mean.value
 head(metamaster.means)
 
-# or standardize by YSmax?
-smax.vals <- ddply(metamaster2, .(Entry), summarise, mean(YSmax, na.rm = TRUE))
-names(mean.vals) <- c('Entry', 'Mean.value')
-metamaster.means <- merge(metamaster2,mean.vals, by.x = 'Entry', by.y = 'Entry')
-metamaster.means$value.st <- metamaster.means$value/metamaster.means$Mean.value
-head(metamaster.means)
-
-
 #bring in restrt col from mary's file
 mo<-read.csv("./input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
 restrt <- ddply(mo, .(Entry, Mno, restrt), summarize, mean(YEmono))

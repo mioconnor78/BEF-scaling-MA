@@ -36,7 +36,8 @@ S$Res.term <- ifelse(S$restrt == 'red', S$logSc.restrtred, S$Res.term)
 #now add Study ranefs
 St.ranefs <- data.frame(coef(modFM)$Study)
 St.ranefs$Study <- rownames(St.ranefs)
-St.ranefs1 <- data.frame(St.ranefs$Study, St.ranefs$logSc)
+St.ranefs1 <- data.frame(St.ranefs$Study, St.ranefs$logSc) # St.ranefs$X.Intercept.
+#names(St.ranefs1) <- c('Study', 'logSc', 'Intercept')
 S2 <- merge(S, St.ranefs1, by.x = 'Study', by.y = 'St.ranefs.Study', all= FALSE)
 S <- S2
 b <- as.numeric(fixef(modFM)[2])
@@ -57,3 +58,9 @@ in.95 <- est + qt(c(0.025, 0.975), n-1)*se
 abline(v = in.95[1], lwd = 2, lty = 2)
 abline(v = in.95[2], lwd = 2, lty = 2)
 
+
+
+# exploring correlation beteen Smax and ranefs
+St.ranefs1
+
+plot(S$X.Intercept. ~ S$Smax)
