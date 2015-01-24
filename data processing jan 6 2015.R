@@ -2,6 +2,7 @@
 ### Modeling uncertainty in the biodiversity ecosystem functioning relationship
 ### O'Connor, Gonzalez, et al
 ### data formatting in preparation for mixed effects analysis
+### we're going with this version
 ### Jan 2015; Author: Mary O'Connor
 #######################################################################
 
@@ -138,6 +139,23 @@ SST5 <- subset(SST4, SST4$TG1!="3", select=1:40, drop=TRUE)
 
 ### DATA PROCESSING IS COMPLETE ###
 
+## testing for correlations among model parameters:
+logSc*log(Tscale) + logSc*unit.types2 + logSc*logSmaxc + logSc*log(MaxTscale+1)
+
+#plot(log(as.numeric(SST4$Tscale)) ~ SST4$logSmaxc, main = 'logTscale ~ Smaxc')
+#summary(lm(log(as.numeric(SST4$Tscale)) ~ SST4$logSmaxc))
+
+plot(log(as.numeric(log(SST4$MaxTscale+1))) ~ SST4$logSmaxc, main = 'logTscale ~ Smaxc')
+summary(lm(log(as.numeric(SST4$MaxTscale+1)) ~ SST4$logSmaxc))
+
+plot(SST4$logYst~ log(as.numeric(SST4$Tscale)), main = 'logYst ~ Tscale')
+summary(lm(SST4$logYst~ log(as.numeric(SST4$Tscale))))
+
+plot(SST4$logYst~ log(as.numeric(log(SST4$MaxTscale+1))), main = 'logYst ~ MaxTscale')
+summary(lm(SST4$logYst~ log(as.numeric(log(SST4$MaxTscale+1)))))
+
+plot(SST4$logYst~ SST4$logSmaxc, main = 'logYst ~ Smaxc')
+summary(lm(SST4$logYst~ SST4$logSmaxc))
 
 
 ## some exploration
@@ -151,6 +169,7 @@ hist(SST4$Smax)
 hist(SST4$logSmax)
 hist(SST4$value.st)
 hist(SST4$logYst)
+hist(SST4$lnTscale)
 #hist(SST4[(SST4$logYst>-2),]$logYst)
 
 plot(SST4$logYst ~ SST4$logSmax, main = 'logY.st ~ Smax')
@@ -159,18 +178,7 @@ summary(lm(SST4$logYst ~ SST4$logSmax))
 SST4[(SST4$value.st <= .3),]
 
 
-logSc*log(Tscale) + logSc*unit.types2 + logSc*logSmaxc + logSc*log(MaxTscale+1)
-plot(log(as.numeric(SST4$Tscale)) ~ SST4$logSmaxc, main = 'logTscale ~ Smaxc')
-summary(lm(log(as.numeric(SST4$Tscale)) ~ SST4$logSmaxc))
 
-plot(log(as.numeric(log(SST4$MaxTscale+1))) ~ SST4$logSmaxc, main = 'logTscale ~ Smaxc')
-summary(lm(log(as.numeric(SST4$MaxTscale+1)) ~ SST4$logSmaxc))
-
-plot(SST4$logYst~ log(as.numeric(SST4$Tscale)), main = 'logTscale ~ Smaxc')
-summary(lm(SST4$logYst~ log(as.numeric(SST4$Tscale))))
-
-plot(SST4$logYst~ log(as.numeric(log(SST4$MaxTscale+1))), main = 'logTscale ~ Smaxc')
-summary(lm(SST4$logYst~ log(as.numeric(log(SST4$MaxTscale+1)))))
 
 ## data summary for Table S1
 length(unique(SST4$Entry))
