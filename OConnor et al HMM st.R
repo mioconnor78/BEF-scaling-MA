@@ -10,6 +10,7 @@ library(MuMIn)
 library(AICcmodavg)
 library(RLRsim)
 library(lmerTest)
+library(sjplot)
 #library(qpcR)
 
 #########################################################################################

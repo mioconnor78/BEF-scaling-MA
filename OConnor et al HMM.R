@@ -43,20 +43,20 @@ data <- SST5
 
 ## determine best random effects structure for competing level-1 models (following O'Connor et al 2007)
 
-# basic model (The level-1 model w/ time and logSc and time*logSc)  # add in fixed ints varying slopes
-modBasic <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-modBasici <- lmer(logY.rs ~ logSc*log(Tscale) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
-modBasicii <- lm(logY.rs ~ logSc*log(Tscale), data=data, na.action=na.omit)
+# basic model (The level-1 model w/ time and logS and time*logS)  # add in fixed ints varying slopes
+modBasic <- lmer(logY.rs ~ logS*log(Tscale) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasici <- lmer(logY.rs ~ logS*log(Tscale) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasicii <- lm(logY.rs ~ logS*log(Tscale), data=data, na.action=na.omit)
 
-# basic2 (The level-1 model w/ time and logSc)
-modBasic2 <- lmer(logY.rs ~ logSc+log(Tscale) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-modBasic2i <- lmer(logY.rs ~ logSc+log(Tscale) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
-modBasic2ii <- lm(logY.rs ~ logSc+log(Tscale), data=data, na.action=na.omit)
+# basic2 (The level-1 model w/ time and logS)
+modBasic2 <- lmer(logY.rs ~ logS+log(Tscale) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasic2i <- lmer(logY.rs ~ logS+log(Tscale) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasic2ii <- lm(logY.rs ~ logS+log(Tscale), data=data, na.action=na.omit)
 
-# basic3 (The level-1 model w/ logSc)
-modBasic3 <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-modBasic3i <- lmer(logY.rs ~ logSc + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
-modBasic3ii <- lm(logY.rs ~ logSc, data=data, na.action=na.omit)
+# basic3 (The level-1 model w/ logS)
+modBasic3 <- lmer(logY.rs ~ logS + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasic3i <- lmer(logY.rs ~ logS + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasic3ii <- lm(logY.rs ~ logS, data=data, na.action=na.omit)
 
 
 
@@ -94,14 +94,14 @@ Basic <- as.data.frame(rbind(Basic, cbind(logLik(modBasic), logLik(modBasici), l
 
 rand(modBasic)  # I wasn't believing the chi squared test b/c they were 0. but this shows that both ranefs are needed
 #Analysis of Random effects Table:
-##logSc:Entry     59      2   2e-13 ***
-#logSc:Study    115      2  <2e-16 ***
+##logS:Entry     59      2   2e-13 ***
+#logS:Study    115      2  <2e-16 ***
 
 rand(modBasic2) 
 #Analysis of Random effects Table:
 #  Chi.sq Chi.DF p.value    
-#logSc:Entry   64.9      2   8e-15 ***
-#  logSc:Study  137.1      2  <2e-16 ***
+#logS:Entry   64.9      2   8e-15 ***
+#  logS:Study  137.1      2  <2e-16 ***
 
 rand(modBasic3) 
 
@@ -111,23 +111,23 @@ anova(modBasic, modBasic3)
 model.sel(modBasic, modBasic2, modBasic3)
 
 # Full model 
-modFM<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-#modFMi<-lmer(logY ~ logSc*log(Tscale) + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
-#modFMii<-lm(logY ~ logSc*log(Tscale) + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), data=data, na.action=na.omit)
+modFM<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
+#modFMi<-lmer(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+#modFMii<-lm(logY ~ logS*log(Tscale) + logS*Sys1  + logS*TG1 + logS*unit.types2 + logS*HigherT + logS*log(Smax) + logS*restrt + logS*log(MaxTscale+1), data=data, na.action=na.omit)
 
 # biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
-modBtrophic<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modBtrophic<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
-modBrt<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modBrt<-lmer(logY.rs ~ logS*log(Tscale) + logS*restrt + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # all biological fixed factors: ecosystem, trophic group, consumer presence, resource addition/reduction (adding Sys, TG, higherT, res and random effects to the level-2 model)
-modBall<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modBall<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 
-modBallT<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modBallT<-lmer(logY.rs ~ logS*log(Tscale) + logS*Sys1 + logS*TG1 + logS*HigherT + logS*restrt + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Experimental design factors (units, smax, time scale) [adding Duration.max, Smax and units to the level 2 model]
-modExp<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*unit.types2 + logSc*log(Smax) + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modExp<-lmer(logY.rs ~ logS*log(Tscale) + logS*unit.types2 + logS*log(Smax) + logS*log(MaxTscale+1) + (1 + logS|Entry) + (1 + logS|Study), data=data, REML = FALSE, na.action=na.omit)
 
 
 
