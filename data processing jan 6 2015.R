@@ -124,7 +124,9 @@ SST4 <- subset(SST4, SST4$Study!=83, select=1:38, drop=TRUE)
 
 SST4$logYst <- log(SST4$value.st)
 ## center the regressor
-SST4$logSc <- SST4$logS - mean(SST4$logS)
+SST4$logSc <- SST4$logS - log(8)
+  #log(mean(SST4$richness))
+  #mean(SST4$logS)
 SST4$logSmax <- log(SST4$Smax)
 SST4$logSmaxc <- SST4$logSmax - median(SST4$logSmax)
 
