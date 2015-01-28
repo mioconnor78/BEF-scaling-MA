@@ -10,31 +10,11 @@ library(MuMIn)
 library(AICcmodavg)
 library(RLRsim)
 library(lmerTest)
-#library(qpcR)
+library(bbmle)
 
 #########################################################################################
 ### 2. Hierarchical mixed effects model
-#########################################################################################
-
-# for all models; 
-# Levels: Study (i), Experiment (j) and Plot (k)
-# Predictors (level): System (study), TG (expt), units (expt), higherT (expt), Smax (expt), logSc (plot), Time (plot)
-
-# Level 1 model (Eqn 1a from paper)
-# ln(Y) = B.0ijk + B.1ijk*log(S.ijk) + B.2*log(Duration).ij + B.3*log(S.ijk).ijk*log(Duration).ijk + e.ijk
-
-# Level 2 model (Eqn 1b from paper)
-# B.0ij = y.00 + y.01*Sys.i + y.02*TG.ij + y.03*Units.ij + y.04*HT.ij + y.05*Smax.ij + y.06*Res.ij + y.07*max(lnT).ij + u.0i + u.0j
-# B.1ij = y.10 + y.11*Sys.i + y.12*TG.ij + y.13*Units.ij + y.14*HT.ij + y.15*Smax.ij + y.16*Res.ij + y.17*max(lnT).ij + u.1i + u.1j
-
-# Level 2 substituted back into Level 1 for full model: 
-# ln(Y) = (y.00 + y.01*Sys.i + y.02*TG.ij + y.03*Units.ij + y.04*HT.ij + y.05*Smax.ij + y.06*Res.ij + y.07*max(lnT).ij + u.0i + u.0j).k 
-#  + (y.10 + y.11*Sys.i + y.12*TG.ij + y.13*Units.ij + y.14*HT.ij + y.15*Smax.ij + y.16*Res.ij + y.17*max(lnT).ij + u.1i + u.1j)k*log(S.ijk) 
-#  + B.2*log(Duration).ij + B.3*log(S.ijk).ijk*log(Duration).ijk + e.ijk
-
-# Full model, rearranged:
-
-
+########################################################################################
 
 ###### The set of models ##########
 ###################################
@@ -43,7 +23,7 @@ data <- SST5
 
 ## determine best random effects structure for competing level-1 models (following O'Connor et al 2007)
 
-# basic model (The level-1 model w/ time and logSc and time*logSc)  # add in fixed ints varying slopes
+# basic model (The level-1 model w/ time and logSc and time*logSc) 
 modBasic <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 modBasici <- lmer(logY.rs ~ logSc*log(Tscale) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
 modBasicii <- lm(logY.rs ~ logSc*log(Tscale), data=data, na.action=na.omit)
@@ -58,12 +38,33 @@ modBasic3 <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) + (1 + logSc|Study), data=
 modBasic3i <- lmer(logY.rs ~ logSc + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
 modBasic3ii <- lm(logY.rs ~ logSc, data=data, na.action=na.omit)
 
+# BASIC MODEL COMPARISON: 3 WAYS
+can't do likelihood ratio tests on the model with no variance components without switching to nlme, but lme4 is better for two random effects. using AIC and delta AIC is also accepted, and is convincing given the large differences between these models. 
+# but, if I want to hang my hat on the presence of random effects, I could rewrite in nlme and to LR tests. 
+
+## 1. Chi-square by hand: 
+x2 = -2*logLik(modBasicii, REML=T) +2*logLik(modBasici, REML=T)
+#pchisq(x2, df=1, lower.tail=F)
+# for a comparison of a model with no random effects vs one with random intercept
+
+0.5*(1-pchisq(x2, 1))
+
+x2 = -2*logLik(modBasic, REML=T) +2*logLik(modBasici, REML=T)
+
+# for a comparison of a model with no random effects vs one with random intercept
+0.5*((1-pchisq(x2, 1)) + (1-pchisq(x2, 1)))
 
 
-## compare with AIC adjusted for different degrees of freedome
+## 2. model comparison by AIC, without adusting degrees of freedom
+bbmle::AICtab(modBasic, modBasici, modBasicii)
+bbmle::AICtab(modBasic2, modBasic2i, modBasic2ii)
+bbmle::AICtab(modBasic3, modBasic3i, modBasic3ii)
+
+
+## 3. compare with AIC adjusted for different degrees of freedom
 q <- 2*2
 K <- function(x) length(fixef(x)) + (q*(q+1)/2)
-AICc.mem <- function(x) -2*as.numeric(logLik(x)) + 2*K(x)*(length(data$logY)/(length(data$logY)-K(x)-1))
+AICc.mem <- function(x) -2*as.numeric(logLik(x)) + 2*K(x)*(length(data$logY.rs)/(length(data$logY.rs)-K(x)-1))
 AICc.mem(modBasic) -> modBasic.AIC
 AICc.mem(modBasic2) -> modBasic2.AIC
 AICc.mem(modBasic3) -> modBasic3.AIC
@@ -79,32 +80,21 @@ AIC(modBasicii) -> modBasicii.AIC
 AIC(modBasic2ii) -> modBasic2ii.AIC
 AIC(modBasic3ii) -> modBasic3ii.AIC
 
-## model comparison:
 Basic <- cbind(modBasic.AIC, modBasici.AIC, modBasicii.AIC)
 Basic2 <- cbind(modBasic2.AIC, modBasic2i.AIC, modBasic2ii.AIC)
-Basic3 <- cbind(modBasic3.AIC, modBasic3ii.AIC, modBasic3ii.AIC)
-Basic <- as.data.frame(rbind(Basic, cbind(logLik(modBasic), logLik(modBasici), logLik(modBasicii))))
+Basic3 <- cbind(modBasic3.AIC, modBasic3i.AIC, modBasic3ii.AIC)
+#Basic.comb <- as.data.frame(rbind(Basic, cbind(logLik(modBasic), logLik(modBasici), logLik(modBasicii))))
 
-#likelihood ratio test  ## HAVING SOME TROUBLE HERE
-#1-pchisq(2*(logLik(mod1)-logLik(mod0)),1)
-#D <- 2*(logLik(modBasic)-logLik(modBasici))
-#D
-# 1 - pchisq(D, 1)
-# .5*(1-pchisq(LRstat,1)+1-pchisq(LRstat,2))
 
 rand(modBasic)  # I wasn't believing the chi squared test b/c they were 0. but this shows that both ranefs are needed
-#Analysis of Random effects Table:
-##logSc:Entry     59      2   2e-13 ***
-#logSc:Study    115      2  <2e-16 ***
 
+rand(modBasici) 
 rand(modBasic2) 
-#Analysis of Random effects Table:
-#  Chi.sq Chi.DF p.value    
-#logSc:Entry   64.9      2   8e-15 ***
-#  logSc:Study  137.1      2  <2e-16 ***
-
+rand(modBasic2i) 
 rand(modBasic3) 
+rand(modBasic3i) 
 
+### having determined that random effects are needed in all models, compete basic models (Table 1)
 anova(modBasic, modBasic2)
 anova(modBasic, modBasic3)
 

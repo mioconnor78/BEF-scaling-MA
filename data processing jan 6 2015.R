@@ -130,13 +130,34 @@ SST4$logSc <- SST4$logS - log(8)
 SST4$logSmax <- log(SST4$Smax)
 SST4$logSmaxc <- SST4$logSmax - median(SST4$logSmax)
 
-plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
+plot(SST4$logY.rs ~ SST4$logSc, main = 'SST4.rs2')
 ## the units column will be wrong for rescaled values, but in the model we use 'unit.types', and that class should still be fine.
 ## upon inspection, I can see that some studies (e.g., 8) will have some rescaled values and some not rescaled, which would bring the intercepts together. shouldn't be a problem.
 
-
 #remove carnivores
 SST5 <- subset(SST4, SST4$TG1!="3", select=1:40, drop=TRUE) 
+
+########## INITIAL DATA PREP COMPLETE #########
+
+## removing studies with extreme random effects to see if we can get rid of that coefficient:
+SST5 <- subset(SST5, SST5$Study!=147, select=1:40, drop=TRUE) 
+SST5 <- subset(SST5, SST5$Study!=87, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=174, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=66, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=103, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=121, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=127, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=137, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=168, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=183, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=30, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=155, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=80, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=157, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=180, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=192, select=1:40, drop=TRUE)
+SST5 <- subset(SST5, SST5$Study!=84, select=1:40, drop=TRUE)
+## by this time, the correlation between study and entry is going up, but the range of entry random effects is declined (either study 155 or 80 had really high intercept ranefs), and the model coefs are shifting for modBtrophic. 
 
 
 ### DATA PROCESSING IS COMPLETE ###
