@@ -58,11 +58,11 @@ par(
 
 #TOP PANEL: SLOPES
 
-par(mar=(c(5,9.5,4,0)))
+par(mar=(c(5,9,4,0)))
 plot(NULL,                                
      xlim = c(-0.3, 0.4),                        	
      ylim = c(.7, length(est.sl[,1]) + .3), 	
-     axes = F, xlab = NA, ylab = NA)
+     axes = F, xlab = NA, ylab = NA, cex = 0.8)
 
 # add the data
 est <- as.numeric(est.sl[,1]) 
@@ -81,7 +81,7 @@ for (i in 1:length(est)) {
   lines(c(est[i] + 1.94*se[i], est[i] - 1.94*se[i]), c(i, i), lwd = 2)         # add 90% CIs
   lines(c(ests.B[i] + 1.94*ses.B[i], ests.B[i] - 1.94*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
   lines(c(ests.Ba[i] + 1.94*ses.Ba[i], ests.Ba[i] - 1.94*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
-  text(-.5, i, adj = c(1,0), var.names[i], xpd = T, cex = 1)        # add the variable names
+  text(-.5, i, adj = c(1,0), var.names[i], xpd = T, cex = 0.8)        # add the variable names
   text(0.35, length(est.B.sl[,1]), 'A', cex = 1.5)
 }
 
@@ -89,11 +89,11 @@ for (i in 1:length(est)) {
 axis(side = 1)                                                                                         
 abline(v = 0, lty = 3, col = "grey40")                                                                   
 mtext(side = 1, "Slope coefficients", line = 3)                                              
-mtext(side = 3, "ModBtrophic and Avgd model", line = 1)   # add title
+mtext(side = 3, "", line = 1, cex = 0.8)   # add title
 box()                                          
 
 
-par(mar=(c(5,5.5,4,4)))
+par(mar=(c(5,5,4,4)))
 plot(NULL,                                
      xlim = c(-3, 6),                          
      ylim = c(.7, length(est.sl[,1]) + .3), 	
@@ -117,14 +117,15 @@ for (i in 1:length(est)) {
   lines(c(ests.B[i] + 1.94*ses.B[i], ests.B[i] - 1.94*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
   lines(c(ests.Ba[i] + 1.94*ses.Ba[i], ests.Ba[i] - 1.94*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
   #text(-.5, i, adj = c(1,0), var.names[i], xpd = T, cex = 1)        # add the variable names
-  text(6, length(est.B.int[,1]), 'B', cex = 1.5)
+  text(5.5, length(est.B.int[,1]), 'B', cex = 1.5)
 }
 
 # add axes and labels
-axis(side = 1)                                                                                         
+axis(side = 1, at = c(-2, 0, 2, 4, 6))
+#axis(side = 2, pos = -2)
 abline(v = 0, lty = 3, col = "grey40")                                                                   
 mtext(side = 1, "Intercept coefficients", line = 3)                                              
-mtext(side = 3, "ModBtrophic and Avgd model", line = 1)   # add title
+mtext(side = 3, "", line = 1, cex = 0.8)   # add title
 box()                    
 
 

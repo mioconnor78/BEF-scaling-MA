@@ -39,7 +39,7 @@ modBasic3i <- lmer(logY.rs ~ logSc + (1|Entry) + (1|Study), data=data, REML = FA
 modBasic3ii <- lm(logY.rs ~ logSc, data=data, na.action=na.omit)
 
 # BASIC MODEL COMPARISON: 3 WAYS
-can't do likelihood ratio tests on the model with no variance components without switching to nlme, but lme4 is better for two random effects. using AIC and delta AIC is also accepted, and is convincing given the large differences between these models. 
+#can't do likelihood ratio tests on the model with no variance components without switching to nlme, but lme4 is better for two random effects. using AIC and delta AIC is also accepted, and is convincing given the large differences between these models. 
 # but, if I want to hang my hat on the presence of random effects, I could rewrite in nlme and to LR tests. 
 
 ## 1. Chi-square by hand: 
