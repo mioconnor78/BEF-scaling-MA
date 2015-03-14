@@ -3,6 +3,8 @@
 ### O'Connor, Gonzalez, et al
 ### mixed effects analysis
 ### Jan 06 2015; Author: Mary O'Connor
+
+### using this file for final analysis
 #######################################################################
 
 library(lme4)
@@ -96,7 +98,7 @@ rand(modBasic3i)
 
 ### having determined that random effects are needed in all models, compete basic models (Table 1)
 anova(modBasic, modBasic2)
-anova(modBasic, modBasic3)
+anova(modBasic2, modBasic3)
 
 model.sel(modBasic, modBasic2, modBasic3)
 
@@ -122,8 +124,24 @@ modExp<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*unit.types2 + logSc*log(Smax) +
 ###### Comparing models ##############
 ######################################
 
+
+
+
 model.sel(modFM, modBtrophic, modBrt, modBall, modExp, modBasic, modBallT)
 
+## an attempt to get standardized coefficients 
+## http://stackoverflow.com/questions/25142901/standardized-coefficients-for-lmer-model
+stdCoef.merMod <- function(object) {
+  sdy <- sd(getME(object,"y"))
+  sdx <- apply(getME(object,"X"), 2, sd)
+  sc <- fixef(object)*sdx/sdy
+  se.fixef <- coef(summary(object))[,"Std. Error"]
+  se <- se.fixef*sdx/sdy
+  return(data.frame(stdcoef=sc, stdse=se))
+}
+
+fixef(modBrt)
+stdCoef.merMod(modBrt)
 
 # In this section I am calculating AICc by hand, and accounting for degrees of freedom in the random effects according to Bolker et al. http://glmm.wikidot.com/faq
 #AICc = -2*logLik(mod) + 2*K*(n/(n-K-1))

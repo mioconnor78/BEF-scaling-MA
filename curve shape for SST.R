@@ -6,7 +6,7 @@
 ##
 ## By Jon Lefcheck& Jarrett Byrnes
 ## modified Jan 06 2015 by Mary O'Connor to use data for scaling meta-analysis
-##
+## March 13, 2015: tried to get this to work once more, with centered data as used in the HMM. it still didn't work (backsolve issues)
 ########################################################
 
 library(AICcmodavg)
@@ -24,7 +24,7 @@ metamaster=read.csv("./BEF_MetaMaster_2011_08_29 unmodified.csv")
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
   y=melt(x,id.vars=c(2:4,7:8),measure.vars=c(99:126)) 
   y$value=as.numeric(as.character(y$value))
-  z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value)  #/y[y$variable=="Y1","value"]
+  z=cbind(y[,1:5],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value-6)  #/y[y$variable=="Y1","value"]
   z=z[!is.na(z[,7]),] } ) 
 
 #Remove all studies with <3 levels of richness
@@ -40,14 +40,14 @@ modFit=function(df) {
   # Null=nlme(value~a,fixed=a~1,random=~a~1,start=c(a=-1),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10),data=df)
   Linear=nlme(value~a+b*richness,fixed=a+b~1,random=~a+b~1,start=c(a=1.5,b=1),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10), data=df)
   Logarithmic=nlme(value~a+b*log(richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10), data=df)
-  Power=nlme(value~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10),data=df)
+  #Power=nlme(value~a*richness^b,fixed=a+b~1,random=~a+b~1,start=c(a=0.18,b=2),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10),data=df)
   #Exponential=nlme(value~exp(a+b*richness),fixed=a+b~1,random=~a+b~1,start=c(a=1,b=1),data=df)
-  Saturating=nlme(value~(max(value)*richness)/(k+richness),fixed=k~1,random=k~1,start=c(k=0.5),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10), data=df)
+  Saturating=nlme(value~(max(value)*richness)/(k+richness),fixed=k~1,random=k~1,start=c(k=0.5),control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-20), data=df)
   #Return models in list
   return(list(#Null=Null,
               Linear=Linear, 
               Logarithmic=Logarithmic, 
-              Power=Power, 
+              #Power=Power, 
               #Exponential=Exponential, 
               Saturating=Saturating) ) }
 
@@ -60,18 +60,18 @@ getAICtab=function(modList) {
     AICweight=round(modLik/sum(modLik),3) } ) } 
 
 #Run for reduced dataset and subset by Ycat
-mods=dlply(metamaster.reduced,"Ygen",modFit)
 modFit(metamaster.reduced[(metamaster.reduced$Ygen == 'SST'), ])
+mods=dlply(metamaster.reduced,"Ygen",modFit)
 
-
-SST2<-subset(SST2, SST2$Slevels>1, select=1:25, drop=TRUE)
-mods <- modFit(SST4)
+#SST2<-subset(SST2, SST2$Slevels>1, select=1:25, drop=TRUE)
+#mods <- modFit(SST4)
 
 #Show the AIC Table of Results
 aicVals <- lapply(mods,getAICtab)
-aicVals <- ldply(aicVals)
+#aicVals <- ldply(aicVals)
 aicVals <- ldply(aicVals,function(i) { cbind(model=rownames(i),i) } )
 names(aicVals)[1] <- "Ygen"
+aicVals
 write.csv(aicVals, "AICvalues.csv", row.names=F)
 
 #Get parameter estimates for best models

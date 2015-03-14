@@ -22,7 +22,6 @@ Entry.coefs <- data.frame(coef(mod)$Entry)
 Entry.coefs$Entry <- rownames(Entry.coefs)
 S <- cbind(rand.cat, Entry.coefs)
 
-
 ### for modBtrophic; skip to line 42 if using modBasic
 mod <- modBtrophic
 rand.cat <- ddply(data, .(Entry, Study, Sys1, TG1, HigherT, restrt), summarize, mean(logY.rs))
@@ -104,6 +103,7 @@ se <- sd((S$slope/sqrt(n)))
 in.95 <- est + qt(c(0.025, 0.975), n-1)*se
 abline(v = in.95[1], lwd = 2, lty = 2)
 abline(v = in.95[2], lwd = 2, lty = 2)
+abline(v = est, lwd = 2, lty = 1)
 
 x <- seq(0, 10, 1)
 modx <- function(x)(yield~0.28*x)
