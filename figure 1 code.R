@@ -9,7 +9,7 @@
 ##### Producing experiment-level slope estimates #########
 ##########################################################
 data <- SST5
-mod <- modBasic
+mod <- modBtrophic
 
 rand.cat <- data.frame(cbind(as.numeric(as.character(data$Entry)), as.numeric(as.character(data$Study))))
 names(rand.cat) <- c('Entry', 'Study')

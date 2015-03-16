@@ -71,6 +71,9 @@ AICc.mem(modBasic) -> modBasic.AIC
 AICc.mem(modBasic2) -> modBasic2.AIC
 AICc.mem(modBasic3) -> modBasic3.AIC
 
+AICc.mem(modBtrophicii)
+bbmle::AICtab(modBtrophic, modBtrophici, modBtrophicii)
+
 #for fewer random effects
 q <- 2 * 1 
 AICc.mem(modBasici) -> modBasici.AIC
@@ -107,6 +110,10 @@ modFM<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1  + logSc*TG1 + logSc*unit.t
 
 # biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
 modBtrophic<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+
+modBtrophici<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+
+modBtrophicii<-lm(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT, data=data, na.action=na.omit)
 
 # Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
 modBrt<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
