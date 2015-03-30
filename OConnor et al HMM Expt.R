@@ -1,13 +1,13 @@
 #######################################################################
 ### Modeling uncertainty in the biodiversity ecosystem functioning relationship
 ### O'Connor, Gonzalez, et al
-### mixed effects analysis
-### Jan 06 2015; Author: Mary O'Connor
+### mixed effects analysis, groups: ExptA and Study
+### March 2015; Author: Mary O'Connor
 
 ### using this file for final analysis
 #######################################################################
 
-library(lme4)
+library(nlme)
 library(MuMIn)
 library(AICcmodavg)
 library(RLRsim)
@@ -22,11 +22,16 @@ library(bbmle)
 ###################################
 
 data <- SST5
+data$lnTscale <- log(data$Tscale)
 
 ## determine best random effects structure for competing level-1 models (following O'Connor et al 2007)
 
 # basic model (The level-1 model w/ time and logSc and time*logSc) 
-modBasic <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasic <- lme(logY.rs ~ logSc*lnTscale, random = ~1 | ExptA, data=data, method = "REML",  correlation = corAR1(form = ~lnTscale | ExptA), na.action=na.omit)
+
+
+
+
 modBasici <- lmer(logY.rs ~ logSc*log(Tscale) + (1|Entry) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
 modBasicii <- lm(logY.rs ~ logSc*log(Tscale), data=data, na.action=na.omit)
 
