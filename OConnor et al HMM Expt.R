@@ -13,6 +13,7 @@ library(AICcmodavg)
 library(RLRsim)
 library(lmerTest)
 library(bbmle)
+library(arm)
 
 #########################################################################################
 ### 2. Hierarchical mixed effects model
@@ -27,9 +28,13 @@ data$lnTscale <- log(data$Tscale)
 ## determine best random effects structure for competing level-1 models (following O'Connor et al 2007)
 
 # basic model (The level-1 model w/ time and logSc and time*logSc) 
-modBasic <- lme(logY.rs ~ logSc*lnTscale, random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",  correlation = corCAR1(), na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))      
+modBasic <- lme(logY.rs ~ logSc*lnTscale, random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",   na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))      
 
-modBasic1 <- lme(logY.rs ~ logSc*lnTscale, random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",  na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))                                                                                                                                                        
+#correlation = corCAR1(),
+
+modBasic1 <- lme(logY.rs ~ logSc*lnTscale, random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",  na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))   
+
+modBasic2 <- lme(logY.rs ~ logSc*lnTscale, random = ~ logSc*lnTscale | Study/ExptA/Entry, data=data, method = "REML",  na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10)) 
 
 anova(modBasic, modBasic1)
 AIC(modBasic, modBasic1)
@@ -113,9 +118,9 @@ anova(modBasic2, modBasic3)
 model.sel(modBasic, modBasic2, modBasic3)
 
 # Full model 
-modFull <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",   na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))   
+modFull <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",   na.action=na.omit)   
 
-#correlation = corCAR1(),
+#correlation = corCAR1(), control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10)
 
 modFull1 <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",  na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))    
 
@@ -138,12 +143,30 @@ modBallT<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT 
 modExp<-lme(logY.rs ~ logSc*lnTscale + logSc*unit.types2 + logSc*log(Smax) + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
 
 
+##### models without Entry as ranef:
+
+modBasic1a <- lme(logY.rs ~ logSc*lnTscale, random = ~ logSc | Study/ExptA, data=data, method = "REML",  na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))  
+
+modFulla <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA, data=data, method = "REML",   na.action=na.omit)   
+
+modBtrophica<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT, random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
+
+modBrta<-lme(logY.rs ~ logSc*lnTscale + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
+
+modBalla<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt, random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
+
+modBallTa<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
+
+# , correlation = corCAR1(), control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10)
+
+modExpa<-lme(logY.rs ~ logSc*lnTscale + logSc*unit.types2 + logSc*log(Smax) + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
+
+
+model.sel(modFulla, modBtrophica, modBrta, modBalla, modExpa, modBasic1a, modBallTa)
+
 
 ###### Comparing models ##############
 ######################################
-
-
-
 
 model.sel(modFull, modBtrophic, modBrt, modBall, modExp, modBasic1, modBallT)
 
