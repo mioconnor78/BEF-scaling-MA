@@ -4,7 +4,7 @@
 ### mixed effects analysis, groups: ExptA and Study
 ### March 2015; Author: Mary O'Connor
 
-### using this file for final analysis
+### using this file for final analysis with nlme
 #######################################################################
 
 library(nlme)
@@ -14,6 +14,10 @@ library(RLRsim)
 library(lmerTest)
 library(bbmle)
 library(arm)
+
+## good ref on nested random effects
+http://www.rpubs.com/GGranath/25354
+
 
 #########################################################################################
 ### 2. Hierarchical mixed effects model
@@ -28,9 +32,9 @@ data$lnTscale <- log(data$Tscale)
 ## determine best random effects structure for competing level-1 models (following O'Connor et al 2007)
 
 # basic model (The level-1 model w/ time and logSc and time*logSc) 
-modBasic <- lme(logY.rs ~ logSc*lnTscale, random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",   na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))      
+modBasicN <- lme(logY.rs ~ logSc*lnTscale, random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML",   na.action=na.omit)      
 
-#correlation = corCAR1(),
+#correlation = corCAR1(), control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10)
 
 modBasic1 <- lme(logY.rs ~ logSc*lnTscale, random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",  na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))   
 
@@ -118,57 +122,69 @@ anova(modBasic2, modBasic3)
 model.sel(modBasic, modBasic2, modBasic3)
 
 # Full model 
-modFull <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",   na.action=na.omit)   
+modFullN <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML",   na.action=na.omit)   
 
 #correlation = corCAR1(), control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10)
 
 modFull1 <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML",  na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))    
 
 # biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
-modBtrophic<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT, random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+modBtrophicN<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT, random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
 
 modBtrophici<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT, random = ~ 1 | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
 
 modBtrophicii<-lm(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT, data=data, na.action=na.omit)
 
 # Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
-modBrt<-lme(logY.rs ~ logSc*lnTscale + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+modBrtN<-lme(logY.rs ~ logSc*lnTscale + logSc*restrt + logSc*log(MaxTscale+1), random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
 
 # all biological fixed factors: ecosystem, trophic group, consumer presence, resource addition/reduction (adding Sys, TG, higherT, res and random effects to the level-2 model)
-modBall<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt, random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+modBallN<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt, random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
 
-modBallT<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+modBallTN <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + logSc*log(MaxTscale+1), random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
 
 # Experimental design factors (units, smax, time scale) [adding Duration.max, Smax and units to the level 2 model]
-modExp<-lme(logY.rs ~ logSc*lnTscale + logSc*unit.types2 + logSc*log(Smax) + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+modExpN <- lme(logY.rs ~ logSc*lnTscale + logSc*unit.types2 + logSc*log(Smax) + logSc*log(MaxTscale+1), random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
 
 
-##### models without Entry as ranef:
+##### models with ranefs separated
 
-modBasic1a <- lme(logY.rs ~ logSc*lnTscale, random = ~ logSc | Study/ExptA, data=data, method = "REML",  na.action=na.omit, control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10))  
-
-modFulla <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA, data=data, method = "REML",   na.action=na.omit)   
-
-modBtrophica<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT, random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
-
-modBrta<-lme(logY.rs ~ logSc*lnTscale + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
-
-modBalla<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt, random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
-
-modBallTa<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
-
-# , correlation = corCAR1(), control=nlmeControl(minAbsParApVar=0.001, opt="nlminb", minScale=10e-10)
-
-modExpa<-lme(logY.rs ~ logSc*lnTscale + logSc*unit.types2 + logSc*log(Smax) + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA, data=data, method = "REML", na.action=na.omit)
+# Full model 
+rand1 <- ~ 1 + logSc | Study
+rand2 <- ~ 1 + logSc | Study/ExptA
+rand3 <- ~ 1 + logSc | Study/ExptA/Entry
 
 
-model.sel(modFulla, modBtrophica, modBrta, modBalla, modExpa, modBasic1a, modBallTa)
+modFullN3 <- lme(fixed = logY.rs ~ 1 + logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = list(rand1, rand2, rand3), data=data, method = "REML",   na.action=na.omit)   
+
+modFull1 <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1), random = ~ logSc | Study/ExptA/Entry, data=data, method = "REML")    
+
+# biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
+modBtrophicN<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT, random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+
+modBtrophici<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT, random = ~ 1 | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+
+modBtrophicii<-lm(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT, data=data, na.action=na.omit)
+
+# Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
+modBrtN<-lme(logY.rs ~ logSc*lnTscale + logSc*restrt + logSc*log(MaxTscale+1), random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+
+# all biological fixed factors: ecosystem, trophic group, consumer presence, resource addition/reduction (adding Sys, TG, higherT, res and random effects to the level-2 model)
+modBallN<-lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt, random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+
+modBallTN <- lme(logY.rs ~ logSc*lnTscale + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + logSc*log(MaxTscale+1), random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+
+# Experimental design factors (units, smax, time scale) [adding Duration.max, Smax and units to the level 2 model]
+modExpN <- lme(logY.rs ~ logSc*lnTscale + logSc*unit.types2 + logSc*log(Smax) + logSc*log(MaxTscale+1), random = ~ 1 + logSc | Study/ExptA/Entry, data=data, method = "REML", na.action=na.omit)
+
 
 
 ###### Comparing models ##############
 ######################################
 
-model.sel(modFull, modBtrophic, modBrt, modBall, modExp, modBasic1, modBallT)
+model.sel(modFull, modBtrophic, modBrt, modBall, modExp, modBasic, modBallT)
+
+model.sel(modFullN, modBtrophicN, modBrtN, modBallN, modExpN, modBasicN, modBallTN)
 
 ## an attempt to get standardized coefficients 
 ## http://stackoverflow.com/questions/25142901/standardized-coefficients-for-lmer-model
