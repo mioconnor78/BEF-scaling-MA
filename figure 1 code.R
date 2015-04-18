@@ -9,9 +9,7 @@
 ##### Producing experiment-level slope estimates #########
 ##########################################################
 data <- SST5
-mod <- (modBtrophic)
-
-#standardize(modBtrophic)
+mod <- standardize(modBtrophic)
 
 rand.cat <- data.frame(cbind(as.numeric(as.character(data$Entry)), as.numeric(as.character(data$Study))))
 names(rand.cat) <- c('Entry', 'Study')
@@ -25,7 +23,7 @@ Entry.coefs$Entry <- rownames(Entry.coefs)
 S <- cbind(rand.cat, Entry.coefs)
 
 ### for modBtrophic; skip to line 42 if using modBasic
-mod <- modBtrophic
+mod <- standardize(modBtrophic)
 rand.cat <- ddply(data, .(Entry, Study, Sys1, TG1, HigherT, restrt), summarize, mean(logY.rs))
 names(rand.cat) <- c('Mno', 'Study', 'Syst','TG1', 'HT', 'restrt', 'meanlogY')
 Entry.coefs <- data.frame(coef(modBtrophic)$Entry)

@@ -39,7 +39,7 @@ head(metamaster.means)
 
 #bring in restrt col from mary's file
 mo<-read.csv("./input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
-restrt <- ddply(mo, .(Entry, Mno, restrt), summarize, mean(YEmono))
+restrt <- ddply(mo, .(Entry, Mno, restrt, Study), summarize, mean(YEmono))
 metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
 
 SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:25, drop=TRUE)
@@ -205,18 +205,32 @@ SST4[(SST4$value.st <= .3),]
 
 
 ## data summary for Table S1
-length(unique(SST4$Entry))
+length(unique(SST5$Entry))
 
-ddply(SST4, .(Sys1), summarize, length(unique(Entry)))
-ddply(SST4, .(Sys1), summarize, length(unique(Study)))
-ddply(SST4, .(TG1), summarize, length(unique(Entry)))
-ddply(SST4, .(TG1), summarize, length(unique(Study)))
-ddply(SST4, .(HigherT), summarize, length(unique(Entry)))
-ddply(SST4, .(HigherT), summarize, length(unique(Study)))
-ddply(SST4, .(unit.types2), summarize, length(unique(Entry)))
-ddply(SST4, .(unit.types2), summarize, length(unique(Study)))
-ddply(SST4, .(restrt), summarize, length(unique(Entry)))
-ddply(SST4, .(restrt), summarize, length(unique(Study)))
+ddply(SST5, .(Sys1), summarize, length(unique(Entry)))
+ddply(SST5, .(Sys1), summarize, length(unique(ExptA)))
+ddply(SST5, .(Sys1), summarize, length(unique(Study)))
+
+ddply(SST5, .(TG1), summarize, length(unique(Entry)))
+ddply(SST5, .(TG1), summarize, length(unique(ExptA)))
+ddply(SST5, .(TG1), summarize, length(unique(Study)))
+
+ddply(SST5, .(HigherT), summarize, length(unique(Entry)))
+ddply(SST5, .(HigherT), summarize, length(unique(ExptA)))
+ddply(SST5, .(HigherT), summarize, length(unique(Study)))
+
+ddply(SST5, .(unit.types2), summarize, length(unique(Entry)))
+ddply(SST5, .(unit.types2), summarize, length(unique(ExptA)))
+ddply(SST5, .(unit.types2), summarize, length(unique(Study)))
+
+ddply(SST5, .(restrt), summarize, length(unique(Entry)))
+ddply(SST5, .(restrt), summarize, length(unique(ExptA)))
+ddply(SST5, .(restrt), summarize, length(unique(Study)))
+
+res.test <- ddply(restrt, .(Study), summarize, length(unique(restrt)))
+res.test[(res.test$..1 > 1),]
+
+res.test <- ddply(SST5, .(ExptA, Ref), summarize, (unique(restrt)))
 
 
 refs <- ddply(SST, .(Ref), summarize, length(Entry))
