@@ -117,10 +117,11 @@ plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 
 ## remove outliers based on previous analysis using visual inspection of plot(modBasic)
 dim(SST4)
-SST4 <- subset(SST4, SST4$Study!=177, select=1:38, drop=TRUE) 
-SST4 <- subset(SST4, SST4$Mno!=796, select=1:38, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
-SST4 <- subset(SST4, SST4$Mno!=826, select=1:38, drop=TRUE) # searching for the outlier in plot(modF1)
 SST4 <- subset(SST4, SST4$Study!=83, select=1:38, drop=TRUE)
+SST4 <- subset(SST4, SST4$Study!=177, select=1:38, drop=TRUE) 
+#SST4 <- subset(SST4, SST4$Mno!=796, select=1:38, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
+#SST4 <- subset(SST4, SST4$Mno!=826, select=1:38, drop=TRUE) # searching for the outlier in plot(modF1)
+
 
 SST4$logYst <- log(SST4$value.st)
 ## center the regressor
