@@ -42,9 +42,9 @@ mo<-read.csv("./input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA",
 restrt <- ddply(mo, .(Entry, Mno, restrt, Study), summarize, mean(YEmono))
 metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
 
-SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:25, drop=TRUE)
-SST<-subset(SST, SST$value.st!='NaN', select=1:25, drop=TRUE) 
-#SSTa<-subset(SST, SST$value!='NA', select=1:25, drop=TRUE) 
+SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:26, drop=TRUE)
+SST<-subset(SST, SST$value.st!='NaN', select=1:26, drop=TRUE) 
+#SSTa<-subset(SST, SST$value!='NA', select=1:26, drop=TRUE) 
 
 ## simplifying Yunits: try to categorize units (e.g., n.density, m.density )
 unit.type<-c('normalized mass', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux','mass.normalized flux', 'vol flux','mass flux', 'cover','rate','mass rate', 'normalized mass', 'mass.normalized flux','mass','mass', 'mass.normalized flux', 'vol flux', 'vol flux', 'cover', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux', 'normalized mass', 'normalized mass', 'mass.normalized flux','mass', 'mass.normalized flux','mass.normalized flux', 'normalized mass', 'mass flux', 'rate','rate','rate','mass.vol', 'mass', 'density', 'density', 'density', 'density', 'density','proportional change', 'mass.normalized flux','rate')
@@ -59,7 +59,7 @@ step2<-unit.types2$unit.type2[match(SST$Yunits, unit.types2$Y.units)]
 SST$unit.types2<-as.factor(step2)
 
 ## removing levels or values not relevant for this analysis
-SST<-subset(SST, SST$TDBU=='TD', select=1:27, drop=TRUE) # removing 'bottom up' studies
+SST<-subset(SST, SST$TDBU=='TD', select=1:28, drop=TRUE) # removing 'bottom up' studies
 SST1<-SST[-which(SST$Entry=='616'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='617'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='618'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
@@ -67,12 +67,12 @@ SST1<-SST1[-which(SST1$Entry=='619'),] # removing douglass et al measurements of
 SST1<-SST1[-which(SST1$Entry=='250'),] # removing entry for Mikola 1998 because a) I can't understand where it came from when i read the paper, and b) the data from the figures in the paper is present in other entries
 #SST1<-SST1[-which(SST1$Entry=='246'),] # Mikola 1998, ditto entry 250; this is gone now from removing NaNs above.
 #SST2<-subset(SST2, SST2$value!= '0', select=1:27, drop=TRUE) 
-SST2<-subset(SST1, SST1$Slevels>1, select=1:27, drop=TRUE) 
-SST2<-subset(SST2, SST2$HigherT!="", select=1:27, drop=TRUE)
-SST2<-subset(SST2, SST2$HigherT!=".", select=1:27, drop=TRUE)
+SST2<-subset(SST1, SST1$Slevels>1, select=1:28, drop=TRUE) 
+SST2<-subset(SST2, SST2$HigherT!="", select=1:28, drop=TRUE)
+SST2<-subset(SST2, SST2$HigherT!=".", select=1:28, drop=TRUE)
 # get rid of Tscale vals = 0
-SST2<-subset(SST2, SST2$Tscale!="", select=1:27, drop=TRUE) 
-SST2<-subset(SST2, SST2$Yunits!='proportional change', select=1:27, drop=TRUE) 
+SST2<-subset(SST2, SST2$Tscale!="", select=1:28, drop=TRUE) 
+SST2<-subset(SST2, SST2$Yunits!='proportional change', select=1:28, drop=TRUE) 
 SST2 <- SST2[which(SST2$Yunits!='rate'),]
 
 
@@ -94,7 +94,7 @@ SST2$Tscale <- as.numeric(as.character(SST2$Tscale))
 SST2$Smax <- as.numeric(as.character(SST2$Smax))
 SST2$MaxTscale <- as.numeric(as.character(SST2$MaxTscale))
 SST2$Entry <- as.factor((SST2$Entry))
-SST2$Study <- as.factor((SST2$Study))
+SST2$Study <- as.factor((SST2$Study.y))
 SST2 <- SST2[,-(4)]
 
 ## rescaling entries if their values are extremely low or high
@@ -117,8 +117,8 @@ plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 
 ## remove outliers based on previous analysis using visual inspection of plot(modBasic)
 dim(SST4)
-SST4 <- subset(SST4, SST4$Study!=83, select=1:38, drop=TRUE)
-SST4 <- subset(SST4, SST4$Study!=177, select=1:38, drop=TRUE) 
+SST4 <- subset(SST4, SST4$Study!=83, select=1:40, drop=TRUE)
+SST4 <- subset(SST4, SST4$Study!=177, select=1:40, drop=TRUE) 
 #SST4 <- subset(SST4, SST4$Mno!=796, select=1:38, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
 #SST4 <- subset(SST4, SST4$Mno!=826, select=1:38, drop=TRUE) # searching for the outlier in plot(modF1)
 
@@ -137,7 +137,7 @@ plot(SST4$logY.rs ~ SST4$logSc, main = 'SST4.rs2')
 ## upon inspection, I can see that some studies (e.g., 8) will have some rescaled values and some not rescaled, which would bring the intercepts together. shouldn't be a problem.
 
 #remove carnivores
-SST5 <- subset(SST4, SST4$TG1!="3", select=1:40, drop=TRUE) 
+SST5 <- subset(SST4, SST4$TG1!="3", select=1:45, drop=TRUE) 
 
 ########## INITIAL DATA PREP COMPLETE #########
 
