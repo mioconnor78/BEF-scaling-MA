@@ -30,7 +30,7 @@ data <- SST5
 
 # basic model (The level-1 model w/ time and logSc and time*logSc) 
 modBasic <- lmer(logY.rs ~ logSc*log(Tscale) +(1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-modBasici <- lmer(logY.rs ~ logSc*log(Tscale) +  (1|Entry)  + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+modBasici <- lmer(logY.rs ~ logSc*log(Tscale) +  (1|Entry)  +  (1|ExptA) + (1|Study), data=data, REML = TRUE, na.action=na.omit)
 modBasicii <- lm(logY.rs ~ logSc*log(Tscale), data=data, na.action=na.omit)
 
 # basic2 (The level-1 model w/ time and logSc)
@@ -109,7 +109,7 @@ anova(modBasic, modBasic3)
 model.sel(modBasic, modBasic2, modBasic3)
 
 # Full model 
-modFM<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|ExptA) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+modFM<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1  + logSc*TG1 + logSc*unit.types2 + logSc*HigherT + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
 # biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
 modBtrophic<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
