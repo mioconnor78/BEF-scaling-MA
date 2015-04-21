@@ -206,7 +206,7 @@ SST4[(SST4$value.st <= .3),]
 
 
 ## data summary for Table S1
-length(unique(SST5$Entry))
+length(unique(SST5$ExptA))
 
 ddply(SST5, .(Sys1), summarize, length(unique(Entry)))
 ddply(SST5, .(Sys1), summarize, length(unique(ExptA)))
@@ -264,3 +264,17 @@ plot(x,y)
 
 summary(lm(log(y) ~ x))
 summary(lm(log(y/mean(y)) ~ x))
+
+
+
+### exploring the consumer present variable
+### Ydesc: Descriptor of experimental design: 1 = Direct manipulation of diversity in laboratory or greenhouse, 2 = Direct manipulation of diversity in field enclosures, exclosures, or plots, 3 = Outdoor replication of system in mesocosms.
+
+test.HT <- table(metamaster[(metamaster$Ygen == 'SST'),]$HigherT, metamaster[(metamaster$Ygen == 'SST'),]$Des1)
+
+1   2   3
+.   0   0   0
+N 201  28  30
+Y  23 360  15
+
+## so for SST, there are 23 datapoints (Entries) for a lab or greenhouse manipulation with consumers present. So this Consumer present predictor covaries strongly with lab vs field context.
