@@ -18,7 +18,7 @@
 # create file for model averaged estimates
 estimates <- as.data.frame(m.avg[3])
 estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
-rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', '+Consumer', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
 est.sl <- estimates[estimates$slint == 'S',]
 est.int <- estimates[estimates$slint == 'I',]
 

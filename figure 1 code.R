@@ -24,8 +24,8 @@ S <- cbind(rand.cat, Entry.coefs)
 
 ### for modBtrophic; skip to line 42 if using modBasic
 mod <- standardize(modBtrophic)
-rand.cat <- ddply(data, .(Entry, Study, Sys1, TG1, HigherT, restrt), summarize, mean(logY.rs))
-names(rand.cat) <- c('Mno', 'Study', 'Syst','TG1', 'HT', 'restrt', 'meanlogY')
+rand.cat <- ddply(data, .(Entry, Study, ExptA, Sys1, TG1, restrt), summarize, mean(logY.rs))
+names(rand.cat) <- c('Mno', 'Study', 'ExptA','Syst','TG1',  'restrt', 'meanlogY')
 Entry.coefs <- data.frame(coef(modBtrophic)$Entry)
 Entry.coefs$Entry <- rownames(Entry.coefs)
 S <- cbind(rand.cat, Entry.coefs)
@@ -36,23 +36,29 @@ S$TG.term<-ifelse(S$TG1 == '3', S$logSc.TG13, S$TG.term)
 S$TG.term<-ifelse(S$TG1 == '4', S$logSc.TG14, S$TG.term)
 #S$units <- ifelse(S$Units == 'density', S$logS.unit.types2density, 0)
 #S$units <- ifelse(S$Units == 'perc.cover', S$logS.unit.types2perc.cover, S$units)
-S$HT.term <- ifelse(S$HigherT == 'Y', S$logSc.HT, 0)
+#S$HT.term <- ifelse(S$HigherT == 'Y', S$logSc.HT, 0)
 #S$Res.term <- ifelse(S$restrt == 'incr', S$logS.restrtincr, 0)
 #S$Res.term <- ifelse(S$restrt == 'red', S$logS.restrtred, S$Res.term)
 
-#now add Study ranefs
+#now add Study and ExpA ranefs
 St.ranefs <- data.frame(coef(mod)$Study)
 St.ranefs$Study <- rownames(St.ranefs)
-St.ranefs1 <- data.frame(St.ranefs$Study, St.ranefs$logSc)
+Ex.ranefs  <- data.frame(coef(mod)$ExptA)
+Ex.ranefs$ExptA <- rownames(Ex.ranefs)
+
+St.ranefs1 <- data.frame(St.ranefs$Study, St.ranefs$z.logSc)
+Ex.ranefs1 <- data.frame(Ex.ranefs$ExptA, Ex.ranefs$z.logSc)
+
 S2 <- merge(S, St.ranefs1, by.x = 'Study', by.y = 'St.ranefs.Study', all= FALSE)
-S <- S2
+S3 <- merge(S2, Ex.ranefs1, by.x = 'ExptA', by.y = 'Ex.ranefs.ExptA', all = FALSE)
+S <- S3
 b <- as.numeric(fixef(mod)[2])
 
 ### for modBasic only:
 S$slope <- S$logSc + S$logSc.log.Tscale. + (S$St.ranefs.logSc - b)
 
 ### for modBtrophic only: 
-S$slope <- S$logSc + S$Sys.term + S$TG.term + S$HT.term + S$logSc.log.Tscale. + (S$St.ranefs.logSc - b)
+S$slope <- S$logSc + S$Sys.term + S$TG.term + S$logSc.log.Tscale. + (S$St.ranefs.z.logSc - b) + (S$Ex.ranefs.z.logSc - b)
 
 
 ## plot histogram of estimated slopes

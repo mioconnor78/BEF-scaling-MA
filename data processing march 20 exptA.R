@@ -2,7 +2,8 @@
 ### Modeling uncertainty in the biodiversity ecosystem functioning relationship
 ### O'Connor, Gonzalez, et al
 ### data formatting in preparation for mixed effects analysis
-### we're going with this version; it processes the file with an ExptA column
+### THIS IS THE FINAL VERSION FOR THE MS; 
+### it processes the file with an ExptA column
 ### Mar 2015; Author: Mary O'Connor
 #######################################################################
 
@@ -25,9 +26,9 @@ metamaster=read.csv("./BEF_MetaMaster_2011_08_29_exptA.csv")
 
 #Subset data
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
-  y=melt(x,id.vars=c(2:3,5,7:9,11,15,26,28,34:39,41),measure.vars=c(100:127)) 
+  y=melt(x,id.vars=c(2:3,5,7:9,11,15,17,26,28,34:39,41),measure.vars=c(100:127)) 
   y$value=as.numeric(as.character(y$value))
-  z=cbind(y[,1:17],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value) 
+  z=cbind(y[,1:18],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value) 
   z=z[!is.na(z[,7]),] } ) 
 
 # add mean vals for standardizing; Entry is the right group for this
@@ -42,9 +43,10 @@ mo<-read.csv("./input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA",
 restrt <- ddply(mo, .(Entry, Mno, restrt, Study), summarize, mean(YEmono))
 metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
 
-SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:26, drop=TRUE)
-SST<-subset(SST, SST$value.st!='NaN', select=1:26, drop=TRUE) 
-#SSTa<-subset(SST, SST$value!='NA', select=1:26, drop=TRUE) 
+n <- 27
+SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:n, drop=TRUE)
+SST<-subset(SST, SST$value.st!='NaN', select=1:n, drop=TRUE) 
+#SSTa<-subset(SST, SST$value!='NA', select=1:n, drop=TRUE) 
 
 ## simplifying Yunits: try to categorize units (e.g., n.density, m.density )
 unit.type<-c('normalized mass', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux','mass.normalized flux', 'vol flux','mass flux', 'cover','rate','mass rate', 'normalized mass', 'mass.normalized flux','mass','mass', 'mass.normalized flux', 'vol flux', 'vol flux', 'cover', 'mass.normalized flux', 'mass.normalized flux', 'mass.normalized flux', 'normalized mass', 'normalized mass', 'mass.normalized flux','mass', 'mass.normalized flux','mass.normalized flux', 'normalized mass', 'mass flux', 'rate','rate','rate','mass.vol', 'mass', 'density', 'density', 'density', 'density', 'density','proportional change', 'mass.normalized flux','rate')
@@ -59,7 +61,7 @@ step2<-unit.types2$unit.type2[match(SST$Yunits, unit.types2$Y.units)]
 SST$unit.types2<-as.factor(step2)
 
 ## removing levels or values not relevant for this analysis
-SST<-subset(SST, SST$TDBU=='TD', select=1:28, drop=TRUE) # removing 'bottom up' studies
+SST<-subset(SST, SST$TDBU=='TD', select=1:(n+2), drop=TRUE) # removing 'bottom up' studies
 SST1<-SST[-which(SST$Entry=='616'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='617'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='618'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
@@ -67,12 +69,12 @@ SST1<-SST1[-which(SST1$Entry=='619'),] # removing douglass et al measurements of
 SST1<-SST1[-which(SST1$Entry=='250'),] # removing entry for Mikola 1998 because a) I can't understand where it came from when i read the paper, and b) the data from the figures in the paper is present in other entries
 #SST1<-SST1[-which(SST1$Entry=='246'),] # Mikola 1998, ditto entry 250; this is gone now from removing NaNs above.
 #SST2<-subset(SST2, SST2$value!= '0', select=1:27, drop=TRUE) 
-SST2<-subset(SST1, SST1$Slevels>1, select=1:28, drop=TRUE) 
-SST2<-subset(SST2, SST2$HigherT!="", select=1:28, drop=TRUE)
-SST2<-subset(SST2, SST2$HigherT!=".", select=1:28, drop=TRUE)
+SST2<-subset(SST1, SST1$Slevels>1, select=1:(n+2), drop=TRUE) 
+SST2<-subset(SST2, SST2$HigherT!="", select=1:(n+2), drop=TRUE)
+SST2<-subset(SST2, SST2$HigherT!=".", select=1:(n+2), drop=TRUE)
 # get rid of Tscale vals = 0
-SST2<-subset(SST2, SST2$Tscale!="", select=1:28, drop=TRUE) 
-SST2<-subset(SST2, SST2$Yunits!='proportional change', select=1:28, drop=TRUE) 
+SST2<-subset(SST2, SST2$Tscale!="", select=1:(n+2), drop=TRUE) 
+SST2<-subset(SST2, SST2$Yunits!='proportional change', select=1:(n+2), drop=TRUE) 
 SST2 <- SST2[which(SST2$Yunits!='rate'),]
 
 
@@ -117,8 +119,8 @@ plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 
 ## remove outliers based on previous analysis using visual inspection of plot(modBasic)
 dim(SST4)
-SST4 <- subset(SST4, SST4$Study!=83, select=1:40, drop=TRUE)
-SST4 <- subset(SST4, SST4$Study!=177, select=1:40, drop=TRUE) 
+SST4 <- subset(SST4, SST4$Study!=83, select=1:(n+14), drop=TRUE)
+SST4 <- subset(SST4, SST4$Study!=177, select=1:(n+14), drop=TRUE) 
 #SST4 <- subset(SST4, SST4$Mno!=796, select=1:38, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
 #SST4 <- subset(SST4, SST4$Mno!=826, select=1:38, drop=TRUE) # searching for the outlier in plot(modF1)
 
@@ -137,7 +139,7 @@ plot(SST4$logY.rs ~ SST4$logSc, main = 'SST4.rs2')
 ## upon inspection, I can see that some studies (e.g., 8) will have some rescaled values and some not rescaled, which would bring the intercepts together. shouldn't be a problem.
 
 #remove carnivores
-SST5 <- subset(SST4, SST4$TG1!="3", select=1:45, drop=TRUE) 
+SST5 <- subset(SST4, SST4$TG1!="3", select=1:(n+19), drop=TRUE) 
 
 ########## INITIAL DATA PREP COMPLETE #########
 
