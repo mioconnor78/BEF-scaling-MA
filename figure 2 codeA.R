@@ -17,8 +17,8 @@
 # Figure 2A: SST4 slopes
 # create file for model averaged estimates
 estimates <- as.data.frame(m.avg[3])
-estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
-rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
+estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'I', 'I','I', 'S', 'S', 'S')
+rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', '+Resource', '-Resource','ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)')
 est.sl <- estimates[estimates$slint == 'S',]
 est.int <- estimates[estimates$slint == 'I',]
 
@@ -30,9 +30,10 @@ est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
-#est.B <- rbind(est.B, c('',''))
-rownames(est.B) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', '+Consumer', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
-est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I',  'S', 'S', 'S', 'S', 'S',  'I', 'I','S', 'S')
+est.B <- rbind(est.B, c('',''))
+est.B <- rbind(est.B, c('',''))
+rownames(est.B) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', '+Resource', '-Resource','ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)')
+est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S','I', 'I','I','S', 'S', 'S')
 est.B.sl <- est.B[est.B$slint == 'S',]
 est.B.int <- est.B[est.B$slint == 'I',]
 
@@ -42,8 +43,8 @@ est.Ba <- as.data.frame(as.numeric(round(fixef(modBasic),3)))
 est.Ba$se <- as.numeric(round(sqrt(diag(vcov(modBasic))),3))
 names(est.Ba) <- c('est', 'se')
 est.Ba <- rbind(est.Ba[1:3,], c('',''), c('',''), c('',''), c('',''), est.Ba[4:nrow(est.Ba),], c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('','')) 
-rownames(est.Ba) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', '+Consumer', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
-est.Ba$slint <- c('I', 'S', 'I', 'I', 'I', 'I','I', 'S', 'S', 'S', 'S', 'S',  'I', 'I','S', 'S')
+rownames(est.Ba) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore',  '+Resource', '-Resource', 'ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)')
+est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S','I', 'I','I','S', 'S', 'S')
 est.Ba.sl <- est.Ba[est.Ba$slint == 'S',]
 est.Ba.int <- est.Ba[est.Ba$slint == 'I',]
 
