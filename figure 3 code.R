@@ -9,25 +9,25 @@
 ##### Producing experiment-level slope estimates #########
 ##########################################################
 data <- SST5
-mod <- standardize(modBtrophic)
+mod <- (modBtrophic)
 
-rand.cat <- data.frame(cbind(as.numeric(as.character(data$Entry)), as.numeric(as.character(data$Study))))
-names(rand.cat) <- c('Entry', 'Study')
-rand.cat1 <- ddply(rand.cat, .(Entry), summarize, mean(Study)) 
+rand.cat <- data.frame(cbind(as.numeric(as.character(data$Entry)), as.numeric(as.character(data$ExptA)), as.numeric(as.character(data$Study))))
+names(rand.cat) <- c('Entry', 'ExptA', 'Study')
+rand.cat1 <- ddply(rand.cat, .(Entry, ExptA), summarize, mean(Study)) 
 
 ### for modBasic
-rand.cat <- ddply(data, .(Entry, Study), summarize, mean(logY.rs))
-names(rand.cat) <- c('Mno', 'Study', 'meanlogY')
+rand.cat <- ddply(data, .(Entry, ExptA, Study), summarize, mean(logY.rs))
+names(rand.cat) <- c('Entry','ExptA', 'Study', 'meanlogY')
 Entry.coefs <- data.frame(coef(mod)$Entry)
 Entry.coefs$Entry <- rownames(Entry.coefs)
 S <- cbind(rand.cat, Entry.coefs)
 
 ### for modBtrophic; skip to line 42 if using modBasic
-mod <- standardize(modBtrophic)
+mod <- (modBtrophic)
 rand.cat <- ddply(data, .(Entry, Study, ExptA, Sys1, TG1, restrt), summarize, mean(logY.rs))
-names(rand.cat) <- c('Mno', 'Study', 'ExptA','Syst','TG1',  'restrt', 'meanlogY')
+names(rand.cat) <- c('Entry', 'Study', 'ExptA','Syst','TG1',  'restrt', 'meanlogY')
 Entry.coefs <- data.frame(coef(modBtrophic)$Entry)
-Entry.coefs$Entry <- rownames(Entry.coefs)
+#Entry.coefs$Entry <- rownames(Entry.coefs)
 S <- cbind(rand.cat, Entry.coefs)
 
 S$Sys.term <- ifelse(S$Syst == '1', S$logSc.Sys1, 0)
@@ -46,8 +46,8 @@ St.ranefs$Study <- rownames(St.ranefs)
 Ex.ranefs  <- data.frame(coef(mod)$ExptA)
 Ex.ranefs$ExptA <- rownames(Ex.ranefs)
 
-St.ranefs1 <- data.frame(St.ranefs$Study, St.ranefs$z.logSc)
-Ex.ranefs1 <- data.frame(Ex.ranefs$ExptA, Ex.ranefs$z.logSc)
+St.ranefs1 <- data.frame(St.ranefs$Study, St.ranefs$logSc)
+Ex.ranefs1 <- data.frame(Ex.ranefs$ExptA, Ex.ranefs$logSc)
 
 S2 <- merge(S, St.ranefs1, by.x = 'Study', by.y = 'St.ranefs.Study', all= FALSE)
 S3 <- merge(S2, Ex.ranefs1, by.x = 'ExptA', by.y = 'Ex.ranefs.ExptA', all = FALSE)
@@ -58,7 +58,7 @@ b <- as.numeric(fixef(mod)[2])
 S$slope <- S$logSc + S$logSc.log.Tscale. + (S$St.ranefs.logSc - b)
 
 ### for modBtrophic only: 
-S$slope <- S$logSc + S$Sys.term + S$TG.term + S$logSc.log.Tscale. + (S$St.ranefs.z.logSc - b) + (S$Ex.ranefs.z.logSc - b)
+S$slope <- S$logSc + S$Sys.term + S$TG.term + S$logSc.log.Tscale. + (S$St.ranefs.logSc - b) + (S$Ex.ranefs.logSc - b)
 
 
 ## plot histogram of estimated slopes

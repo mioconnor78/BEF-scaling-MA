@@ -214,6 +214,10 @@ ddply(SST5, .(Sys1), summarize, length(unique(Entry)))
 ddply(SST5, .(Sys1), summarize, length(unique(ExptA)))
 ddply(SST5, .(Sys1), summarize, length(unique(Study)))
 
+ddply(SST5, .(Des1), summarize, length(unique(Entry)))
+ddply(SST5, .(Des1), summarize, length(unique(ExptA)))
+ddply(SST5, .(Des1), summarize, length(unique(Study)))
+
 ddply(SST5, .(TG1), summarize, length(unique(Entry)))
 ddply(SST5, .(TG1), summarize, length(unique(ExptA)))
 ddply(SST5, .(TG1), summarize, length(unique(Study)))
