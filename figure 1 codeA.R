@@ -142,6 +142,17 @@ box()
 
 # Visualising the power function
 
+library(ggplot2)
 
+#get some data for plotting
+df=dlply(SST5,"Entry")[[i]]
+df=groupedData(log.rs~logSc|Entry,data=df)
+
+mod <- modBtrophic
+
+#start a plot
+p <- ggplot(data=df, aes(x=logSc, y=log.rs)) + 
+  geom_point(color="lightgrey", alpha=0.5) +
+  theme_bw()
 
 
