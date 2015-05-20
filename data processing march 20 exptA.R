@@ -12,7 +12,7 @@
 
 ## load data and libraries
 library(plyr)
-library(ggplot2)
+#library(ggplot2)
 library(reshape2)
 
 ### adapting lefcheck's code for data processing:
