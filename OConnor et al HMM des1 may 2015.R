@@ -9,11 +9,11 @@
 
 library(lme4)
 library(MuMIn)
-library(AICcmodavg)
-library(RLRsim)
-library(lmerTest)
-library(bbmle)
-library(arm)
+library(AICcmodavg) # add this when you do m.avg
+#library(RLRsim)
+#library(lmerTest)
+#library(bbmle)
+#library(arm)
 
 #########################################################################################
 ### 2. Hierarchical mixed effects model

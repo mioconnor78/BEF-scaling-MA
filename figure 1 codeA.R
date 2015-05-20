@@ -16,9 +16,10 @@
 
 # Figure 2A: SST4 slopes
 # create file for model averaged estimates
-estimates <- as.data.frame(m.avg[3])
-estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'I', 'I','I', 'S', 'S', 'S')
+estimates <- as.data.frame(m.avg[2])
 rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore', '+Resource', '-Resource','ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)')
+colnames(estimates) <- c('est', 'se', 'adjse', 'lCI', 'uCI')
+estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'I', 'I','I', 'S', 'S', 'S')
 est.sl <- estimates[estimates$slint == 'S',]
 est.int <- estimates[estimates$slint == 'I',]
 
@@ -79,9 +80,9 @@ for (i in 1:length(est)) {
   points(est[i], i, pch = 19, cex = 1.2)                              
   points(ests.B[i], i+b, pch = 19, cex = 1.2, col = 'gray50') 
   points(ests.Ba[i], i+2*b, pch = 19, cex = 1.2, col = 'gray75') 
-  lines(c(est[i] + 1.94*se[i], est[i] - 1.94*se[i]), c(i, i), lwd = 2)         # add 90% CIs
-  lines(c(ests.B[i] + 1.94*ses.B[i], ests.B[i] - 1.94*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
-  lines(c(ests.Ba[i] + 1.94*ses.Ba[i], ests.Ba[i] - 1.94*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
+  lines(c(est[i] + 1.96*se[i], est[i] - 1.96*se[i]), c(i, i), lwd = 2)         # add 95% CIs
+  lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
+  lines(c(ests.Ba[i] + 1.96*ses.Ba[i], ests.Ba[i] - 1.96*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
   text(-.5, i, adj = c(1,0), var.names[i], xpd = T, cex = 0.8)        # add the variable names
   text(0.35, length(est.B.sl[,1]), 'A', cex = 1.5)
 }
@@ -114,9 +115,9 @@ for (i in 1:length(est)) {
   points(est[i], i, pch = 19, cex = 1.2)                              
   points(ests.B[i], i+b, pch = 19, cex = 1.2, col = 'gray50') 
   points(ests.Ba[i], i+2*b, pch = 19, cex = 1.2, col = 'gray75') 
-  lines(c(est[i] + 1.94*se[i], est[i] - 1.94*se[i]), c(i, i), lwd = 2)         # add 90% CIs
-  lines(c(ests.B[i] + 1.94*ses.B[i], ests.B[i] - 1.94*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
-  lines(c(ests.Ba[i] + 1.94*ses.Ba[i], ests.Ba[i] - 1.94*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
+  lines(c(est[i] + 1.96*se[i], est[i] - 1.96*se[i]), c(i, i), lwd = 2)         # add 90% CIs
+  lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
+  lines(c(ests.Ba[i] + 1.96*ses.Ba[i], ests.Ba[i] - 1.96*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
   #text(-.5, i, adj = c(1,0), var.names[i], xpd = T, cex = 1)        # add the variable names
   text(5.5, length(est.B.int[,1]), 'B', cex = 1.5)
 }
@@ -275,42 +276,8 @@ box()
 
 ###### END OF PLOT #####
 
+# Visualising the power function
 
 
-
-
-
-## general data preparation, though it is embedded above so this code is extra
-## plotting from http://www.carlislerainey.com/Blog_Files/Blog_CoefficientPlots.R
-
-estimates <- as.data.frame(m.avg[3])
-estimates <- rbind(estimates[1:5,], c('','','','','',''), estimates[6:nrow(estimates),])  #these rows only needed for SST5 (no carnivores)
-estimates <- rbind(estimates[1:11,], c('','','','','',''), estimates[12:nrow(estimates),])
-estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
-rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
-est.sl <- estimates[estimates$slint == 'S',]
-est.int <- estimates[estimates$slint == 'I',]
-
-
-est.B <- as.data.frame(as.numeric(round(fixef(modBtrophic),3)))
-est.B$se <- as.numeric(round(sqrt(diag(vcov(modBtrophic))),3))
-names(est.B) <- c('est', 'se')
-
-#the parameters in estimates and est.B have to line up
-rownames(est.B)
-rownames(estimates)
-
-est.B <- rbind(est.B, c('',''))
-est.B <- rbind(est.B, c('',''))
-est.B <- rbind(est.B, c('',''))
-est.B <- rbind(est.B, c('',''))
-est.B <- rbind(est.B[1:5,], c('','','','','',''), est.B[6:nrow(est.B),]) #these rows only needed for SST5 (no carnivores)
-est.B <- rbind(est.B[1:11,], c('','','','','',''), est.B[12:nrow(est.B),])
-row.names(est.B) <- c('Intercept', 'ln(S)', 'ln(Duration)', 'Ecosystem', 'Herbivore', 'Predator', 'Detritivore', '+Consumer', 'ln(S)*ln(Duration)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Predator','ln(S)*Detritivore', 'ln(S)* +Consumer', '+Resource', '-Resource', 'ln(S) * +Resource', 'ln(S)* -Resource')
-est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'S', 'S', 'I', 'I','S', 'S')
-#est.B <- as.data.frame(est.B)
-
-est.B.sl <- est.B[est.B$slint == 'S',]
-est.B.int <- est.B[est.B$slint == 'I',]
 
 
