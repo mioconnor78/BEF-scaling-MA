@@ -134,15 +134,11 @@ box()
 
 
 
-
-
-
-
-###### END OF PLOT #####
-
-# Visualising the power function
+#### Visualising the power function #####
 
 library(ggplot2)
+
+### JARRETT, I AM LOST HERE! I WOULD LOVE A FIGURE THAT HAS POWER FUNCTIONS FIT TO ALL THE ENTRIES FOR modBtrophic. 
 
 #get some data for plotting
 df=dlply(SST5,"Entry")[[i]]
