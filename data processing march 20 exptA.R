@@ -24,7 +24,9 @@ library(reshape2)
 # converted FTG to numerical such that: (C = '3', P = '1', H = '2', D = '4', M = '5', O = '6'))
 
 #Read in meta master
-metamaster=read.csv("./BEF_MetaMaster_2011_08_29_exptA.csv")
+metamaster=read.csv("./BEF_MetaMaster_2011_08_29.csv")
+
+#_exptA
 
 #Subset data
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
@@ -240,6 +242,8 @@ res.test <- ddply(restrt, .(Study), summarize, length(unique(restrt)))
 res.test[(res.test$..1 > 1),]
 
 res.test <- ddply(SST5, .(ExptA, Ref), summarize, (unique(restrt)))
+
+ddply(SST5, .(TG1, Sys1), summarize, length(unique(Study)))
 
 
 refs <- ddply(SST, .(Ref), summarize, length(Entry))
