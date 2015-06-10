@@ -180,7 +180,7 @@ AICc.mem(modBasic)
 AIC.sum
 
 ## model averaging:
-model.avg( modBallT, modBtrophic, modFM) -> m.avg  #modFM, 
+model.avg(modBallT, modBtrophic, modFM, modBall) -> m.avg  #modFM, 
 m.avg
 
 confint(m.avg)
