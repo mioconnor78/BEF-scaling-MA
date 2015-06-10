@@ -24,9 +24,7 @@ library(reshape2)
 # converted FTG to numerical such that: (C = '3', P = '1', H = '2', D = '4', M = '5', O = '6'))
 
 #Read in meta master
-metamaster=read.csv("./BEF_MetaMaster_2011_08_29.csv")
-
-#_exptA
+metamaster=read.csv("./BEF_MetaMaster_2011_08_29_exptA.csv")
 
 #Subset data
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
@@ -48,7 +46,7 @@ restrt <- ddply(mo, .(Entry, Mno, restrt, Study), summarize, mean(YEmono))
 metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
 
 n <- 27
-SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:n, drop=TRUE)
+SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:n, drop=TRUE) #down to 1 T H study
 SST<-subset(SST, SST$value.st!='NaN', select=1:n, drop=TRUE) 
 #SSTa<-subset(SST, SST$value!='NA', select=1:n, drop=TRUE) 
 
@@ -65,7 +63,7 @@ step2<-unit.types2$unit.type2[match(SST$Yunits, unit.types2$Y.units)]
 SST$unit.types2<-as.factor(step2)
 
 ## removing levels or values not relevant for this analysis
-SST<-subset(SST, SST$TDBU=='TD', select=1:(n+2), drop=TRUE) # removing 'bottom up' studies
+SST<-subset(SST, SST$TDBU=='TD', select=1:(n+2), drop=TRUE) # removing 'bottom up' studies; the last T herb study goes out at this stage.
 SST1<-SST[-which(SST$Entry=='616'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='617'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='618'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
