@@ -45,7 +45,7 @@ est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
 est.B <- rbind(est.B, c('',''))
-rownames(est.B) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detritovore', 'ln(S)*Syst*Detrit', '+Resource', '-Resource','ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)', 'Density','Percent Cover','LabField','ln(Smax)','ln(S)*Density','ln(S)*Percent Cover','ln(S)*LabField', 'ln(S)*ln(Smax)')
+rownames(est.B) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detrit', 'ln(S)*Syst*Detrit', '+Resource', '-Resource','ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)', 'Density','Percent Cover','LabField','ln(Smax)','ln(S)*Density','ln(S)*Percent Cover','ln(S)*LabField', 'ln(S)*ln(Smax)')
 est.B$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'I', 'S', 'I', 'I','I', 'S', 'S', 'S','I', 'I', 'I','I', 'S', 'S', 'S','S')
 est.B.sl <- est.B[est.B$slint == 'S',]
 est.B.int <- est.B[est.B$slint == 'I',]
@@ -55,9 +55,9 @@ est.B.int <- est.B[est.B$slint == 'I',]
 est.Ba <- as.data.frame(as.numeric(round(fixef(modBasic),3)))
 est.Ba$se <- as.numeric(round(sqrt(diag(vcov(modBasic))),3))
 names(est.Ba) <- c('est', 'se')
-est.Ba <- rbind(est.Ba[1:3,], c('',''), c('',''), c('',''), est.Ba[4:nrow(est.Ba),], c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('','')) 
-rownames(est.Ba) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore',  '+Resource', '-Resource', 'ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)')
-est.Ba$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S','I', 'I','I','S', 'S', 'S')
+est.Ba <- rbind(est.Ba[1:3,], c('',''), c('',''), c('',''), est.Ba[4:nrow(est.Ba),], c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''), c('',''),c('',''), c('',''), c('',''), c('',''), c('',''), c('','')) 
+rownames(est.Ba) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detritovore', 'ln(S)*Syst*Detrit', '+Resource', '-Resource','ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)', 'Density','Percent Cover','LabField','ln(Smax)','ln(S)*Density','ln(S)*Percent Cover','ln(S)*LabField', 'ln(S)*ln(Smax)')
+est.Ba$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'I', 'S', 'I', 'I','I', 'S', 'S', 'S','I', 'I', 'I','I', 'S', 'S', 'S','S')
 est.Ba.sl <- est.Ba[est.Ba$slint == 'S',]
 est.Ba.int <- est.Ba[est.Ba$slint == 'I',]
 
@@ -65,16 +65,16 @@ est.Ba.int <- est.Ba[est.Ba$slint == 'I',]
 
 par(
   family = "serif",  
-  oma = c(0,0,0,0),  # Since it is a single plot, I set the outer margins to zero.
-  #mar = c(5,8,4,2),  # Inner margins are set through a little trial and error.
+  oma = c(0,2,0,2),  # Since it is a single plot, I set the outer margins to zero.
+  #fin = c(7,5), pty = "m",
+  mar = c(5,10,4,0),  # Inner margins are set through a little trial and error.
   mfcol = c(1,2)
 )
 
 #TOP PANEL: SLOPES
-
-par(mar=(c(5,9,4,0)))
+par(mar=(c(5,9,4,2))) #pin = c(2.3, 3.5), 
 plot(NULL,                                
-     xlim = c(-0.9, 0.6),                        	
+     xlim = c(-1.0, 0.6),                        	
      ylim = c(.7, length(est.sl[,1]) + .3), 	
      axes = F, xlab = NA, ylab = NA, cex = 0.8)
 
@@ -96,8 +96,8 @@ for (i in 1:length(est)) {
   lines(c(est[i] + 1.96*se[i], est[i] - 1.96*se[i]), c(i, i), lwd = 2)         # add 95% CIs
   lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
   lines(c(ests.Ba[i] + 1.96*ses.Ba[i], ests.Ba[i] - 1.96*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
-  text(-1, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
-  text(0.35, length(est.B.sl[,1]), 'A', cex = 1.5)
+  text(-1.2, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
+  text(0.45, length(est.B.sl[,1])+ .4, 'A', cex = 1.2)
 }
 
 # add axes and labels
@@ -107,10 +107,10 @@ mtext(side = 1, "Slope coefficients", line = 3)
 mtext(side = 3, "", line = 1, cex = 0.8)   # add title
 box()                                          
 
-
-par(mar=(c(5,5,4,4)))
+### INTERCEPTS
+par(mar=c(5,8,4,4))  #pin = c(2.3, 3.5)), but this doesn't seem to work with mar
 plot(NULL,                                
-     xlim = c(-3, 6),                          
+     xlim = c(-6, 6),                          
      ylim = c(.7, length(est.sl[,1]) + .3), 	
      axes = F, xlab = NA, ylab = NA)
 
@@ -131,17 +131,26 @@ for (i in 1:length(est)) {
   lines(c(est[i] + 1.96*se[i], est[i] - 1.96*se[i]), c(i, i), lwd = 2)         # add 95% CIs
   lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
   lines(c(ests.Ba[i] + 1.96*ses.Ba[i], ests.Ba[i] - 1.96*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
-  text(-4, i, adj = c(1,0), var.namesi[i], xpd = T, cex = .8)        # add the variable names
-  text(5.5, length(est.B.int[,1]), 'B', cex = 1.5)
+  text(-7, i, adj = c(1,0), var.namesi[i], xpd = T, cex = .8)        # add the variable names
+  text(5.5, length(est.B.int[,1])+ 0.4, 'B', cex = 1.2)
 }
 
 # add axes and labels
-axis(side = 1, at = c(-2, 0, 2, 4, 6))
+axis(side = 1, at = c(-6, 0, 6))
 #axis(side = 2, pos = -2)
 abline(v = 0, lty = 3, col = "grey40")                                                                   
 mtext(side = 1, "Intercept coefficients", line = 3)                                              
 mtext(side = 3, "", line = 1, cex = 0.8)   # add title
 box()                    
+
+
+
+
+
+
+
+
+
 
 
 

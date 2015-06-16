@@ -136,7 +136,7 @@ modExp<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*unit.types2 + logSc*Des1 + logS
 ###### Comparing models ##############
 ######################################
 
-model.sel(modFM, modFMi, modBtrophic, modBtrophici, modBall, modExp, modBasic, modBallT)
+model.sel(modFM, modFMi, modBtrophic, modBall, modExp, modBasic, modBallT)
 
 # modBrt, 
 

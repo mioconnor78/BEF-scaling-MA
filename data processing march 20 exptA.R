@@ -241,7 +241,7 @@ res.test[(res.test$..1 > 1),]
 
 res.test <- ddply(SST5, .(ExptA, Ref), summarize, (unique(restrt)))
 
-ddply(SST5, .(TG1, Sys1), summarize, length(unique(Study)))
+ddply(SST5, .(TG1, Sys1), summarize, length(unique(Entry)))
 
 
 refs <- ddply(SST, .(Ref), summarize, length(Entry))
