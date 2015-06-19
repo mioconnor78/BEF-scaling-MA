@@ -143,7 +143,7 @@ plot(SST4$logY.rs ~ SST4$logSc, main = 'SST4.rs2')
 #remove carnivores
 SST5 <- subset(SST4, SST4$TG1!="3", select=1:(n+19), drop=TRUE) 
 
-write.csv(SST5, 'SST5')
+write.csv(SST5, 'SST5.csv')
 
 ########## INITIAL DATA PREP COMPLETE #########
 

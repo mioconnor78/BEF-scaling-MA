@@ -63,9 +63,10 @@ est.Ba.int <- est.Ba[est.Ba$slint == 'I',]
 
 ### two-paneled figure
 
+pdf(file = "figure 1B.pdf", width = 7.5, height = 4)
 par(
   family = "serif",  
-  oma = c(0,2,0,2),  # Since it is a single plot, I set the outer margins to zero.
+  oma = c(0,0,0,0),  # Since it is a single plot, I set the outer margins to zero.
   #fin = c(7,5), pty = "m",
   mar = c(5,10,4,0),  # Inner margins are set through a little trial and error.
   mfcol = c(1,2)
@@ -91,13 +92,13 @@ var.namesi<-rownames(est.B.int)
 b <- 0.2
 for (i in 1:length(est)) {                                            
   points(est[i], i, pch = 19, cex = 1.2)                              
-  points(ests.B[i], i+b, pch = 19, cex = 1.2, col = 'gray50') 
-  points(ests.Ba[i], i+2*b, pch = 19, cex = 1.2, col = 'gray75') 
   lines(c(est[i] + 1.96*se[i], est[i] - 1.96*se[i]), c(i, i), lwd = 2)         # add 95% CIs
+  points(ests.B[i], i+b, pch = 19, cex = 1.2, col = 'gray50') 
   lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
+  points(ests.Ba[i], i+2*b, pch = 19, cex = 1.2, col = 'gray75') 
   lines(c(ests.Ba[i] + 1.96*ses.Ba[i], ests.Ba[i] - 1.96*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
   text(-1.2, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
-  text(0.45, length(est.B.sl[,1])+ .4, 'A', cex = 1.2)
+  text(0.45, length(est.B.sl[,1])+ .4, 'B', cex = 1.2)
 }
 
 # add axes and labels
@@ -126,13 +127,13 @@ var.names<-rownames(est.B.int)
 b <- 0.2
 for (i in 1:length(est)) {                                            
   points(est[i], i, pch = 19, cex = 1.2)                              
+  lines(c(est[i] + 1.96*se[i], est[i] - 1.96*se[i]), c(i, i), lwd = 2)  
   points(ests.B[i], i+b, pch = 19, cex = 1.2, col = 'gray50') 
-  points(ests.Ba[i], i+2*b, pch = 19, cex = 1.2, col = 'gray75') 
-  lines(c(est[i] + 1.96*se[i], est[i] - 1.96*se[i]), c(i, i), lwd = 2)         # add 95% CIs
   lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+b, i+b), col = 'gray50', lwd = 2)
   lines(c(ests.Ba[i] + 1.96*ses.Ba[i], ests.Ba[i] - 1.96*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray75', lwd = 2)
+  points(ests.Ba[i], i+2*b, pch = 19, cex = 1.2, col = 'gray75')   # add 95% CIs
   text(-7, i, adj = c(1,0), var.namesi[i], xpd = T, cex = .8)        # add the variable names
-  text(5.5, length(est.B.int[,1])+ 0.4, 'B', cex = 1.2)
+  text(5.5, length(est.B.int[,1])+ 0.4, 'C', cex = 1.2)
 }
 
 # add axes and labels
@@ -142,6 +143,8 @@ abline(v = 0, lty = 3, col = "grey40")
 mtext(side = 1, "Intercept coefficients", line = 3)                                              
 mtext(side = 3, "", line = 1, cex = 0.8)   # add title
 box()                    
+
+dev.off()
 
 
 
