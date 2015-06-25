@@ -29,6 +29,7 @@ data <- SST5
 # basic model (The level-1 model w/ time and logSc and time*logSc) 
 modBasic <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 modBasica <- lmer(logY.rs ~ logSc*log(Tscale) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+modBasica1 <- lmer(logY.rs ~ logSc*log(Tscale) +  (1 + logSc|Entry) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 modBasici <- lmer(logY.rs ~ logSc*log(Tscale) +  (1|Entry)  +  (1|ExptA) + (1|Study), data=data, REML = TRUE, na.action=na.omit)
 modBasicii <- lm(logY.rs ~ logSc*log(Tscale), data=data, na.action=na.omit)
 
@@ -60,7 +61,7 @@ x2 = -2*logLik(modBasic, REML=T) +2*logLik(modBasici, REML=T)
 
 
 ## 2. model comparison by AIC, without adusting degrees of freedom
-bbmle::AICtab(modBasic, modBasici, modBasicii)
+bbmle::AICtab(modBasic, modBasica, modBasica1, modBasici, modBasicii)
 bbmle::AICtab(modBasic2, modBasic2i, modBasic2ii)
 bbmle::AICtab(modBasic3, modBasic3i, modBasic3ii)
 

@@ -39,10 +39,12 @@ fitted_plot + facet_grid(. ~ Sys1) +
 #Try and get TG1 in there?
 ####
 
-###The master plot
+###The master plot #added -log(8) to x-axis.
 fitted_plot <- ggplot() +
-  geom_line(data=SST5, aes(x=exp(logSc), y=exp(modBtrophic3.fitted), group=Entry), color="lightgrey") +
-  theme_bw(base_size=17)
+  geom_line(data=SST5, aes(x=exp(logSc+log(8)), y=exp(modBtrophic3.fitted), group=Entry), color="black", alpha = "0.2", size = 1) +
+  theme_bw(base_size=17) +
+  xlab("Species Richness") +
+  ylab("Standing Stock")
 fitted_plot
 
 #create some predictions - the intercepts all come out too low, and I'm not sure why...
@@ -121,7 +123,7 @@ mean(rnorm(50))
 fitted_plot3 <- SST5 %>% 
   mutate(Sys1 = as.character(Sys1),
          Sys1 = ifelse(Sys1 == "T", "Terrestrial", "Aquatic")) %>%
-  ggplot(aes(x=exp(logSc),
+  ggplot(aes(x=exp(logSc+log(8)),
              y=exp(modBtrophic3.fitted),
              group=Entry)) +
   geom_line(color="black", alpha = "0.1", size = 1.5) +

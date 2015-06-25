@@ -20,8 +20,8 @@
 
 # Figure 2A: SST5 slopes
 # create file for model averaged estimates
-estimates <- as.data.frame(m.avg[2])
-rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detritovore', 'ln(S)*Syst*Detrit', '+Resource', '-Resource','ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)', 'Density','Percent Cover','LabField','ln(Smax)','ln(S)*Density','ln(S)*Percent Cover','ln(S)*LabField', 'ln(S)*ln(Smax)')
+estimates <- as.data.frame(m.avg[3])
+rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detritivore', 'ln(S)*Syst*Detrit', '+Resource', '-Resource', 'ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)', 'Density','Percent Cover','LabField','ln(Smax)','ln(S)*Density','ln(S)*Percent Cover','ln(S)*LabField', 'ln(S)*ln(Smax)' )
 colnames(estimates) <- c('est', 'se', 'adjse', 'lCI', 'uCI')
 estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'I', 'S', 'I', 'I','I', 'S', 'S', 'S','I', 'I', 'I','I', 'S', 'S', 'S','S')
 est.sl <- estimates[estimates$slint == 'S',]
