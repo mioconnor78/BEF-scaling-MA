@@ -10,6 +10,7 @@
 ##########################################################
 data <- SST5
 mod <- (modBtrophic)
+mod <- (modBasic)
 
 rand.cat <- data.frame(cbind(as.numeric(as.character(data$Entry)), as.numeric(as.character(data$ExptA)), as.numeric(as.character(data$Study))))
 names(rand.cat) <- c('Entry', 'ExptA', 'Study')
@@ -29,8 +30,8 @@ rand.cat <- ddply(data, .(Entry, Study, ExptA, Sys1, TG1, restrt), summarize, me
 names(rand.cat) <- c('Entry', 'Study', 'ExptA','Syst','TG1',  'restrt', 'meanlogY')
 Entry.coefs <- data.frame(coef(modBtrophic)$Entry)
 #Entry.coefs$Entry <- rownames(Entry.coefs)
-S <- cbind(rand.cat, Entry.coefs)
-#S2 <- merge(rand.cat1, Entry.coefs) # alternate approach using merge
+#S <- cbind(rand.cat, Entry.coefs)
+S <- merge(rand.cat, Entry.coefs, by = 'Entry', all = FALSE) # alternate approach using merge
 
 ## constructing predicted slopes
 S$Sys.term <- ifelse(S$Syst == 'T', S$logSc.Sys1T, 0)
