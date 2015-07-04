@@ -235,3 +235,51 @@ logSc:unit.types2density    -0.29717252  0.31923382
 logSc:unit.types2perc.cover -0.29009171  0.28972564
 Des1:logSc                  -0.07957953  0.06399424
 log(Smax):logSc             -0.04317364  0.09997196
+
+
+
+> summary(mod3)
+Linear mixed model fit by REML ['lmerMod']
+Formula: logY.rs ~ logSc + (1 + logSc | Entry) + (1 + logSc | ExptA) +      (1 + logSc | Study)
+   Data: data
+
+REML criterion at convergence: 2140.4
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9903 -0.3880 -0.0038  0.3705  4.0920 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ Entry    (Intercept) 0.399032 0.63169       
+          logSc       0.013154 0.11469  -0.16
+ ExptA    (Intercept) 0.638381 0.79899       
+          logSc       0.004417 0.06646  0.16 
+ Study    (Intercept) 3.455167 1.85881       
+          logSc       0.044229 0.21031  -0.12
+ Residual             0.033333 0.18257       
+Number of obs: 1782, groups:  Entry, 558; ExptA, 374; Study, 91
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  5.38700    0.20947  25.717
+logSc        0.23194    0.02593   8.944
+
+Correlation of Fixed Effects:
+      (Intr)
+logSc -0.084
+> confint(mod3)
+Computing profile confidence intervals ...
+                  2.5 %     97.5 %
+.sig01       0.55942094 0.71899351
+.sig02      -0.37576705 0.05702893
+.sig03       0.08947570 0.13512376
+.sig04       0.66075161 0.92742317
+.sig05      -1.00000000 1.00000000
+.sig06       0.02881617 0.09525268
+.sig07       1.56628388 2.19700526
+.sig08      -0.38182885 0.14087236
+.sig09       0.16482934 0.26090268
+.sigma       0.17293488 0.19306200
+(Intercept)  4.97407139 5.79947429
+logSc        0.18061499 0.28302926

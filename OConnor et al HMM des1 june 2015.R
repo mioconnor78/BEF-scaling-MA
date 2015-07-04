@@ -122,38 +122,53 @@ anova(modBasic, modBasic2)
 anova(modBasic, modBasic3)
 
 
-## comparison of best level 1 model: 
-modBasic <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-modBasic2 <- lmer(logY.rs ~ logSc+log(Tscale) + (1 + logSc|ExptA) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-modBasic3 <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-model.sel(modBasic, modBasic2, modBasic3)
+## comparison of best level 1 model  (numbers reflect numbers from main text): 
+#old name: modBasic
+mod1 <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+#old name: modBasic2
+mod2 <- lmer(logY.rs ~ logSc+log(Tscale) + (1 + logSc|ExptA) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+#old name: modBasic3
+mod3 <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-# Full model 
-modFM<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+model.sel(mod1, mod2, mod3)
 
-modFMi<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-modFMii<-lmer(logY.rs ~ log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+# biological fixed factors that have been shown to not matter (system, trophic level) 
+# old name: modBtrophic
+mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-# biological fixed factors that have been shown to not matter (system, trophic level, higher trophic level present) 
-modBtrophic<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod4.1 <- lmer(logY.rs ~ log(Tscale) + logSc*Sys1*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-modB3trophic<-lmer(logY.rs ~ log(Tscale) + logSc*Sys1*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-
-modB3trophic.s<-lmer(logY.rs ~ log(Tscale) + logSc*Sys1 + logSc*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod4.2 <- lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
 #modB3trophic.so<-lmer(logY.rs ~ logSc*Sys1 + logSc*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
+# all biological fixed factors: ecosystem, trophic group, resource addition/reduction (adding Sys, TG, higherT, res and random effects to the level-2 model) (old names: modBall, modBallT)
+mod5 <- lmer(logY.rs ~ logSc*Sys1*TG1  + logSc*restrt + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+
+mod6 <- lmer(logY.rs ~ logSc*Sys1*TG1 + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+
+mod6.1 <- lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1*TG1 + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+
+
 # Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
-modBrt<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+# old name: modBrt
+mod7.1 <- lmer(logY.rs ~ logSc*log(Tscale) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-# all biological fixed factors: ecosystem, trophic group, resource addition/reduction (adding Sys, TG, higherT, res and random effects to the level-2 model)
-modBall<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1*TG1  + logSc*restrt + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod7 <- lmer(logY.rs ~ logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-modBallT<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1*TG1 + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+# Experimental design factors (units, smax, time scale) [adding Duration.max, Smax and units to the level 2 model]  #old name: modExp
+mod8 <- lmer(logY.rs ~ logSc*log(Tscale) + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-# Experimental design factors (units, smax, time scale) [adding Duration.max, Smax and units to the level 2 model]
-modExp<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+# Full model
+# old name: modFM
+mod9 <- lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+
+mod9.1 <- lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+
+mod9.2<-lmer(logY.rs ~ log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+
+
 
 ## does best model no longer need random effects? (needs them!)
 modB3trophic2<-lmer(logY.rs ~ logSc+log(Tscale) + logSc*Sys1*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
@@ -171,7 +186,7 @@ model.sel(modB3trophic2, modBtrophicii, modBtrophiciii, modB3trophic2a, modB3tro
 ###### Comparing models ##############
 ######################################
 
-model.sel(modFM, modFMi, modFMii, modBtrophic, modB3trophic, modB3trophic.s, modBrt, modBall, modExp, modBasic, modBallT)
+model.sel(mod4, mod4.1, mod4.2, mod5, mod6, mod6.1, mod7, mod7.1, mod8, mod9, mod9.1, mod9.2)
 
 # modBrt, 
 
