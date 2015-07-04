@@ -211,7 +211,7 @@ SST4[(SST4$value.st <= .3),]
 
 
 
-## data summary for Table S1
+## data summary for Table 1
 length(unique(SST5$ExptA))
 
 ddply(SST5, .(Sys1), summarize, length(unique(Entry)))
@@ -244,9 +244,12 @@ res.test[(res.test$..1 > 1),]
 res.test <- ddply(SST5, .(ExptA, Ref), summarize, (unique(restrt)))
 
 ddply(SST5, .(TG1, Sys1), summarize, length(unique(Entry)))
-
+ddply(SST5, .(restrt, TG1), summarize, length(unique(Entry)))
 
 refs <- ddply(SST, .(Ref), summarize, length(Entry))
+
+
+
 write.csv(refs, 'refs.csv')
 
 
@@ -290,3 +293,4 @@ N 201  28  30
 Y  23 360  15
 
 ## so for SST, there are 23 datapoints (Entries) for a lab or greenhouse manipulation with consumers present. So this Consumer present predictor covaries strongly with lab vs field context.
+
