@@ -3,8 +3,8 @@ library(sjPlot)
 library(arm)
 
 #0# choose the model to use
-mod <- modBtrophic
-mod <- modBasic
+mod <- mod4.1
+mod <- mod3
 
 
 pdf(file = "catplotBtrophicEntry.pdf", width = 7.5, height = 3)
