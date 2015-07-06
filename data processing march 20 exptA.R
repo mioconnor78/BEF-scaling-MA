@@ -28,9 +28,9 @@ metamaster=read.csv("./BEF_MetaMaster_2011_08_29_exptA.csv")
 
 #Subset data
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
-  y=melt(x,id.vars=c(2:3,5,7:9,11,15,17,26,28,34:39,41),measure.vars=c(100:127)) 
+  y=melt(x,id.vars=c(2:5,7:9,11,15,17,26,28,34:39,41),measure.vars=c(100:127)) 
   y$value=as.numeric(as.character(y$value))
-  z=cbind(y[,1:18],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value) 
+  z=cbind(y[,1:19],richness=as.numeric(gsub("\\D","",y$variable)),value=y$value) 
   z=z[!is.na(z[,7]),] } ) 
 
 # add mean vals for standardizing; Entry is the right group for this
@@ -44,6 +44,7 @@ head(metamaster.means)
 mo<-read.csv("./input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
 restrt <- ddply(mo, .(Entry, Mno, restrt, Study), summarize, mean(YEmono))
 metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
+metamaster3 <- metamaster3[,-(5)]
 
 n <- 27
 SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:n, drop=TRUE) #down to 1 T H study
@@ -81,14 +82,16 @@ SST2 <- SST2[which(SST2$Yunits!='rate'),]
 
 
 ### need to estimate the duration of each experiment:
-maxTime <- ddply(SST2, .(Entry, Tscale), summarise, TFinal = 'Y')
-names(maxTime) <- c('Entry', 'MaxTscale', 'Finaltime')
-merge(SST2, maxTime, by.x = "Entry", by.y = "Entry", all.x = TRUE, all.y = FALSE) -> merged
-dim(merged)
-names(merged)
-head(merged)
+maxTime <- ddply(SST2, .(ExptA, FinalT), summarise, max(as.numeric(as.character(Tscale))))
+names(maxTime) <- c('ExptA', 'FinalT','maxTscale')
+maxTime2 <- subset(maxTime, maxTime$FinalT=="Y", select=1:3, drop=TRUE)
+merge(SST2, maxTime, by.x = "ExptA", by.y = "ExptA", all.x = TRUE, all.y = TRUE) -> merged
+#merged <- merged[,-(31)]
+#dim(merged)
+#names(merged)
+#head(merged)
 SST2<-merged
-SST2$logMaxTime <- log(as.numeric(as.character(SST2$MaxTscale)))
+SST2$logMaxTime <- log(as.numeric(as.character(SST2$maxTscale)))
 
 ## transform columns
 SST2$logY <- log(SST2$value)
@@ -96,7 +99,7 @@ SST2$logS <- log(SST2$richness)
 SST2$TG1 <- as.factor(SST2$FTG)
 SST2$Tscale <- as.numeric(as.character(SST2$Tscale))
 SST2$Smax <- as.numeric(as.character(SST2$Smax))
-SST2$MaxTscale <- as.numeric(as.character(SST2$MaxTscale))
+SST2$MaxTscale <- as.numeric(as.character(SST2$maxTscale))
 SST2$Entry <- as.factor((SST2$Entry))
 SST2$Study <- as.factor((SST2$Study.y))
 SST2 <- SST2[,-(4)]
@@ -121,8 +124,8 @@ plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 
 ## remove outliers based on previous analysis using visual inspection of plot(modBasic)
 dim(SST4)
-SST4 <- subset(SST4, SST4$Study!=83, select=1:(n+14), drop=TRUE)
-SST4 <- subset(SST4, SST4$Study!=177, select=1:(n+14), drop=TRUE) 
+SST4 <- subset(SST4, SST4$Study!=83, select=1:(n+15), drop=TRUE)
+SST4 <- subset(SST4, SST4$Study!=177, select=1:(n+15), drop=TRUE) 
 #SST4 <- subset(SST4, SST4$Mno!=796, select=1:38, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
 #SST4 <- subset(SST4, SST4$Mno!=826, select=1:38, drop=TRUE) # searching for the outlier in plot(modF1)
 
@@ -141,7 +144,7 @@ plot(SST4$logY.rs ~ SST4$logSc, main = 'SST4.rs2')
 ## upon inspection, I can see that some studies (e.g., 8) will have some rescaled values and some not rescaled, which would bring the intercepts together. shouldn't be a problem.
 
 #remove carnivores
-SST5 <- subset(SST4, SST4$TG1!="3", select=1:(n+19), drop=TRUE) 
+SST5 <- subset(SST4, SST4$TG1!="3", select=1:(n+20), drop=TRUE) 
 
 write.csv(SST5, 'SST5.csv')
 
