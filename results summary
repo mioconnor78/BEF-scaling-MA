@@ -1,285 +1,59 @@
+TABLE 2 MAIN TEXT
 
-> summary(modBtrophic)
-Linear mixed model fit by maximum likelihood  ['lmerMod']
-Formula: logY.rs ~ logSc * log(Tscale) + logSc * Sys1 * TG1 + (1 + logSc |  
-    Entry) + (1 + logSc | ExptA) + (1 + logSc | Study)
-   Data: data
-
-     AIC      BIC   logLik deviance df.resid 
-  2139.6   2260.2  -1047.8   2095.6     1760 
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--3.9766 -0.3893 -0.0065  0.3655  3.8645 
-
-Random effects:
- Groups   Name        Variance Std.Dev. Corr 
- Entry    (Intercept) 0.366257 0.60519       
-          logSc       0.012592 0.11221  -0.20
- ExptA    (Intercept) 0.681579 0.82558       
-          logSc       0.004589 0.06774  0.19 
- Study    (Intercept) 3.214833 1.79300       
-          logSc       0.029990 0.17318  0.02 
- Residual             0.033541 0.18314       
-Number of obs: 1782, groups:  Entry, 558; ExptA, 374; Study, 91
-
-Fixed effects:
-                  Estimate Std. Error t value
-(Intercept)        4.31850    0.44613   9.680
-logSc              0.23936    0.05244   4.564
-log(Tscale)        0.18300    0.06122   2.989
-Sys1T              1.53536    0.51632   2.974
-TG12              -0.34814    0.51569  -0.675
-TG14               1.22436    1.09186   1.121
-logSc:log(Tscale)  0.02368    0.01169   2.025
-logSc:Sys1T       -0.02430    0.06144  -0.396
-logSc:TG12         0.19865    0.08779   2.263
-logSc:TG14         0.29861    0.13311   2.243
-Sys1T:TG14        -2.13917    1.62049  -1.320
-logSc:Sys1T:TG14  -0.63169    0.19720  -3.203
-
-Correlation of Fixed Effects:
-            (Intr) logSc  lg(Ts) Sys1T  TG12   TG14   lS:(T) lgS:S1T lS:TG12 lS:TG14 S1T:TG
-logSc        0.050                                                                         
-log(Tscale) -0.134 -0.014                                                                  
-Sys1T       -0.876 -0.044  0.202                                                           
-TG12        -0.334 -0.061 -0.076  0.282                                                    
-TG14        -0.408 -0.020  0.052  0.357  0.137                                             
-lgSc:lg(Ts) -0.012 -0.255  0.045  0.013  0.008  0.001                                      
-logSc:Sys1T -0.044 -0.889  0.017  0.045  0.054  0.017  0.357                               
-logSc:TG12  -0.040 -0.413  0.002  0.035  0.154  0.017 -0.034  0.348                        
-logSc:TG14  -0.019 -0.387  0.003  0.017  0.024  0.056  0.074  0.341   0.164                
-Sys1T:TG14   0.294  0.015 -0.180 -0.342 -0.081 -0.681 -0.007 -0.016  -0.011  -0.038        
-lS:S1T:TG14  0.015  0.313 -0.011 -0.016 -0.018 -0.038 -0.253 -0.362  -0.104  -0.690   0.027
-
-> confint(modBtrophic)
-Computing profile confidence intervals ...
-                          2.5 %      97.5 %
-.sig01             0.5354307152  0.68945337
-.sig02            -0.4256116415  0.02497868
-.sig03             0.0861052432  0.13802439
-.sig04             0.6951066244  0.95036351
-.sig05            -1.0000000000  1.00000000
-.sig06             0.0313353443  0.09621769
-.sig07             1.5111235776  2.14259980
-.sig08            -0.2739802793  0.30252960
-.sig09             0.1318747602  0.22230194
-.sigma             0.1734206865  0.19366426
-(Intercept)        3.4339989213  5.19950283
-logSc              0.1356796085  0.34434877
-log(Tscale)        0.0587530938  0.30543742
-Sys1T              0.5160485263  2.56040642
-TG12              -1.3623492330  0.66661749
-TG14              -0.9313175638  3.39231283
-logSc:log(Tscale) -0.0002730704  0.04694836
-logSc:Sys1T       -0.1476834657  0.09693263
-logSc:TG12         0.0237539809  0.37134689
-logSc:TG14         0.0353816625  0.56358910
-Sys1T:TG14        -5.3841065388  1.04721354
-logSc:Sys1T:TG14  -1.0338501183 -0.23966854
-
-> model.sel(modFM, modFMi, modBtrophic, modBall, modExp, modBasic, modBallT)
+> model.sel(mod1F, mod2F, mod3F)
 Model selection table 
-            (Int) Ds1    log(MxT+1) log(Smx) log(Tsc) lgS    rst Sy1 TG1 unt.ty2 Ds1:lgS   log(MxT+1):lgS
-modBtrophic 4.318                             0.1830  0.2394     +   +                                   
-modBallT    3.601        0.7199              -0.1829  0.2158 +   +   +                      0.0219200    
-modFM       2.924 0.8264 0.7363     -0.3283  -0.1832  0.1758 +   +   +   +       -0.007793  0.0276000    
-modBall     4.333                             0.1837  0.2405 +   +   +                                   
-modFMi      3.408 0.8452 0.6272     -0.4275  -0.1449  0.2990 +   +   +   +       -0.005530 -0.0193700    
-modBasic    5.401                             0.1376  0.2350                                             
-modExp      3.463 0.8856 0.5498     -0.0666  -0.1422  0.2835             +        0.000621  0.0007724    
-            log(Smx):lgS log(Tsc):lgS lgS:rst lgS:Sy1 lgS:TG1 lgS:unt.ty2 Sy1:TG1 lgS:Sy1:TG1 df logLik   
-modBtrophic              0.023680             +       +                   +       +           22 -1047.780
-modBallT                 0.013120     +       +       +                   +       +           28 -1042.891
-modFM        0.02840     0.009237     +       +       +       +           +       +           36 -1034.729
-modBall                  0.024030     +       +       +                   +       +           26 -1045.805
-modFMi       0.01224     0.025630     +       +       +       +                               34 -1041.115
-modBasic                 0.021480                                                             14 -1062.677
-modExp      -0.02171     0.024660                             +                               24 -1053.346
-            AICc   delta weight
-modBtrophic 2140.1  0.00 0.610 
-modBallT    2142.7  2.57 0.168 
-modFM       2143.0  2.85 0.147 
-modBall     2144.4  4.27 0.072 
-modFMi      2151.6 11.46 0.002 
-modBasic    2153.6 13.46 0.001 
-modExp      2155.4 15.24 0.000 
+      (Int)    lgS log(Tsc) log(Tsc):lgS df   logLik   AICc delta weight
+mod1F 5.383 0.2314                       12 -717.898 1459.9  0.00  0.742
+mod2F 5.397 0.2314   0.1186              13 -717.960 1462.1  2.14  0.254
+mod3F 5.396 0.2328   0.1196      0.01251 14 -720.972 1470.1 10.19  0.005
 Models ranked by AICc(x) 
 Random terms (all models): 
 ‘1 + logSc | Entry’, ‘1 + logSc | ExptA’, ‘1 + logSc | Study’
 
 
-> model.avg(modBallT, modBtrophic, modFM, modBall) -> m.avg  #modFM,
-> summary(m.avg)
+TABLE A1: APPENDIX
+> mod1.comp
+     mod1.AIC mod1i.AIC mod1ii.AIC mod1iii.AIC mod1iv.AIC
+[1,] 1475.434  2530.493   10312.79    5231.646   6859.156
 
-Call:
-model.avg.default(object = modBallT, modBtrophic, modFM, modBall)
-
-Component models: 
-                                                df   logLik    AICc Delta Weight
-4/5/7/8/13/15/16/18/19                          22 -1047.78 2140.14  0.00   0.61
-2/4/5/6/7/8/11/13/14/15/16/18/19                28 -1042.89 2142.71  2.57   0.17
-1/2/3/4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19 36 -1034.73 2142.99  2.85   0.15
-4/5/6/7/8/13/14/15/16/18/19                     26 -1045.81 2144.41  4.27   0.07
-
-Term codes: 
-                    Des1       log(MaxTscale + 1)                log(Smax)              log(Tscale) 
-                       1                        2                        3                        4 
-                   logSc                   restrt                     Sys1                      TG1 
-                       5                        6                        7                        8 
-             unit.types2               Des1:logSc log(MaxTscale + 1):logSc          log(Smax):logSc 
-                       9                       10                       11                       12 
-       log(Tscale):logSc             logSc:restrt               logSc:Sys1                logSc:TG1 
-                      13                       14                       15                       16 
-       logSc:unit.types2                 Sys1:TG1           logSc:Sys1:TG1 
-                      17                       18                       19 
-
-Model-averaged coefficients: 
-                             Estimate Std. Error Adjusted SE z value Pr(>|z|)    
-(Intercept)                  3.993190   0.751470    0.751744   5.312    1e-07 ***
-logSc                        0.226112   0.076052    0.076100   2.971  0.00297 ** 
-log(Tscale)                  0.067344   0.199207    0.199244   0.338  0.73537    
-Sys1T                        1.556035   0.515811    0.516164   3.015  0.00257 ** 
-TG12                        -0.452526   0.553799    0.554133   0.817  0.41414    
-TG14                         1.177427   1.089533    1.090276   1.080  0.28017    
-log(Tscale):logSc            0.019797   0.020203    0.020215   0.979  0.32744    
-logSc:Sys1T                 -0.022081   0.062215    0.062258   0.355  0.72284    
-logSc:TG12                   0.200825   0.088289    0.088350   2.273  0.02302 *  
-logSc:TG14                   0.296479   0.133290    0.133382   2.223  0.02623 *  
-Sys1T:TG14                  -2.389841   1.667186    1.668275   1.433  0.15199    
-logSc:Sys1T:TG14            -0.637977   0.201002    0.201140   3.172  0.00152 ** 
-restrtincr                  -0.169300   0.152778    0.152884   1.107  0.26813    
-restrtred                   -0.804017   0.590860    0.591267   1.360  0.17389    
-log(MaxTscale + 1)           0.727518   0.288253    0.288452   2.522  0.01166 *  
-logSc:restrtincr            -0.018159   0.028538    0.028558   0.636  0.52485    
-logSc:restrtred             -0.092282   0.093412    0.093477   0.987  0.32354    
-log(MaxTscale + 1):logSc     0.024564   0.055467    0.055506   0.443  0.65809    
-unit.types2density           2.118600   1.380527    1.381485   1.534  0.12514    
-unit.types2perc.cover       -1.970732   1.087083    1.087838   1.812  0.07005 .  
-Des1                         0.826360   0.282088    0.282283   2.927  0.00342 ** 
-log(Smax)                   -0.328302   0.289301    0.289502   1.134  0.25678    
-logSc:unit.types2density     0.011031   0.157140    0.157249   0.070  0.94408    
-logSc:unit.types2perc.cover -0.000183   0.147813    0.147915   0.001  0.99901    
-Des1:logSc                  -0.007793   0.036601    0.036627   0.213  0.83151    
-log(Smax):logSc              0.028399   0.036492    0.036517   0.778  0.43675    
-
-Full model-averaged coefficients (with shrinkage): 
-                              Estimate Std. Error Adjusted SE z value Pr(>|z|)    
-(Intercept)                  3.993e+00  7.515e-01   7.517e-01   5.312    1e-07 ***
-logSc                        2.261e-01  7.605e-02   7.610e-02   2.971  0.00297 ** 
-log(Tscale)                  6.734e-02  1.992e-01   1.992e-01   0.338  0.73537    
-Sys1T                        1.556e+00  5.158e-01   5.162e-01   3.015  0.00257 ** 
-TG12                        -4.525e-01  5.538e-01   5.541e-01   0.817  0.41414    
-TG14                         1.177e+00  1.090e+00   1.090e+00   1.080  0.28017    
-log(Tscale):logSc            1.980e-02  2.020e-02   2.022e-02   0.979  0.32744    
-logSc:Sys1T                 -2.208e-02  6.221e-02   6.226e-02   0.355  0.72284    
-logSc:TG12                   2.008e-01  8.829e-02   8.835e-02   2.273  0.02302 *  
-logSc:TG14                   2.965e-01  1.333e-01   1.334e-01   2.223  0.02623 *  
-Sys1T:TG14                  -2.390e+00  1.667e+00   1.668e+00   1.433  0.15199    
-logSc:Sys1T:TG14            -6.380e-01  2.010e-01   2.011e-01   3.172  0.00152 ** 
-restrtincr                  -6.573e-02  1.260e-01   1.260e-01   0.522  0.60197    
-restrtred                   -3.122e-01  5.377e-01   5.378e-01   0.580  0.56164    
-log(MaxTscale + 1)           2.300e-01  3.751e-01   3.751e-01   0.613  0.53986    
-logSc:restrtincr            -7.051e-03  1.986e-02   1.987e-02   0.355  0.72276    
-logSc:restrtred             -3.583e-02  7.356e-02   7.359e-02   0.487  0.62634    
-log(MaxTscale + 1):logSc     7.764e-03  3.321e-02   3.323e-02   0.234  0.81525    
-unit.types2density           3.118e-01  9.186e-01   9.188e-01   0.339  0.73437    
-unit.types2perc.cover       -2.900e-01  8.132e-01   8.134e-01   0.357  0.72143    
-Des1                         1.216e-01  3.121e-01   3.121e-01   0.390  0.69685    
-log(Smax)                   -4.831e-02  1.608e-01   1.608e-01   0.300  0.76386    
-logSc:unit.types2density     1.623e-03  6.041e-02   6.045e-02   0.027  0.97858    
-logSc:unit.types2perc.cover -2.693e-05  5.670e-02   5.674e-02   0.000  0.99962    
-Des1:logSc                  -1.147e-03  1.431e-02   1.432e-02   0.080  0.93617    
-log(Smax):logSc              4.179e-03  1.724e-02   1.725e-02   0.242  0.80854    
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-Relative variable importance: 
-                     log(Tscale) logSc Sys1 TG1  log(Tscale):logSc logSc:Sys1 logSc:TG1 Sys1:TG1
-Importance:          1.00        1.00  1.00 1.00 1.00              1.00       1.00      1.00    
-N containing models:    4           4     4    4    4                 4          4         4    
-                     logSc:Sys1:TG1 restrt logSc:restrt log(MaxTscale + 1) log(MaxTscale + 1):logSc Des1
-Importance:          1.00           0.39   0.39         0.32               0.32                     0.15
-N containing models:    4              3      3            2                  2                        1
-                     log(Smax) unit.types2 Des1:logSc log(Smax):logSc logSc:unit.types2
-Importance:          0.15      0.15        0.15       0.15            0.15             
-N containing models:    1         1           1          1               1    
+> model.sel(mod1, mod1i, mod1ii, mod1iii, mod1iv)
+Model selection table 
+        (Intrc)  logSc          class REML              random df    logLik    AICc   delta weight
+mod1      5.383 0.2314 merModLmerTest    F 1+l|En+1+l|EA+1+l|S 12  -714.504  1453.1    0.00      1
+mod1i     5.370 0.2331 merModLmerTest    F             En+EA+S  6 -1257.219  2526.5 1073.34      0
+mod1iii   5.361 0.2282 merModLmerTest    F        1+l|EA+1+l|S  9 -2606.823  5231.7 3778.59      0
+mod1iv    5.381 0.2359 merModLmerTest    F               1+l|S  6 -3423.578  6859.2 5406.06      0
+mod1ii    5.545 0.2509             lm                           3 -5153.396 10312.8 8859.67      0
+Abbreviations:
+REML: F = ‘FALSE’
+Models ranked by AICc(x) 
+Random terms: 
+1+l|En = ‘1 + logSc | Entry’
+1+l|EA = ‘1 + logSc | ExptA’
+1+l|S = ‘1 + logSc | Study’
+En = ‘1 | Entry’
+EA = ‘1 | ExptA’
+S = ‘1 | Study’
 
 
+     mod2.AIC mod2i.AIC mod2ii.AIC mod2iii.AIC mod2iv.AIC
+[1,] 1473.799  2529.543    10312.4    5104.204     6833.5
 
-> confint(m.avg)
-                                  2.5 %      97.5 %
-(Intercept)                  2.51979968  5.46658015
-logSc                        0.07695841  0.37526537
-log(Tscale)                 -0.32316770  0.45785498
-Sys1T                        0.54437257  2.56769753
-TG12                        -1.53860675  0.63355462
-TG14                        -0.95947479  3.31432928
-log(Tscale):logSc           -0.01982505  0.05941796
-logSc:Sys1T                 -0.14410391  0.09994185
-logSc:TG12                   0.02766343  0.37398750
-logSc:TG14                   0.03505510  0.55790327
-Sys1T:TG14                  -5.65959997  0.87991757
-logSc:Sys1T:TG14            -1.03220416 -0.24374914
-restrtincr                  -0.46894607  0.13034610
-restrtred                   -1.96287795  0.35484492
-log(MaxTscale + 1)           0.16216230  1.29287464
-logSc:restrtincr            -0.07413143  0.03781242
-logSc:restrtred             -0.27549335  0.09092985
-log(MaxTscale + 1):logSc    -0.08422499  0.13335303
-unit.types2density          -0.58905963  4.82626047
-unit.types2perc.cover       -4.10285403  0.16139055
-Des1                         0.27309485  1.37962542
-log(Smax)                   -0.89571519  0.23911111
-logSc:unit.types2density    -0.29717252  0.31923382
-logSc:unit.types2perc.cover -0.29009171  0.28972564
-Des1:logSc                  -0.07957953  0.06399424
-log(Smax):logSc             -0.04317364  0.09997196
-
-
-
-> summary(mod3)
-Linear mixed model fit by REML ['lmerMod']
-Formula: logY.rs ~ logSc + (1 + logSc | Entry) + (1 + logSc | ExptA) +      (1 + logSc | Study)
-   Data: data
-
-REML criterion at convergence: 2140.4
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--3.9903 -0.3880 -0.0038  0.3705  4.0920 
-
-Random effects:
- Groups   Name        Variance Std.Dev. Corr 
- Entry    (Intercept) 0.399032 0.63169       
-          logSc       0.013154 0.11469  -0.16
- ExptA    (Intercept) 0.638381 0.79899       
-          logSc       0.004417 0.06646  0.16 
- Study    (Intercept) 3.455167 1.85881       
-          logSc       0.044229 0.21031  -0.12
- Residual             0.033333 0.18257       
-Number of obs: 1782, groups:  Entry, 558; ExptA, 374; Study, 91
-
-Fixed effects:
-            Estimate Std. Error t value
-(Intercept)  5.38700    0.20947  25.717
-logSc        0.23194    0.02593   8.944
-
-Correlation of Fixed Effects:
-      (Intr)
-logSc -0.084
-> confint(mod3)
-Computing profile confidence intervals ...
-                  2.5 %     97.5 %
-.sig01       0.55942094 0.71899351
-.sig02      -0.37576705 0.05702893
-.sig03       0.08947570 0.13512376
-.sig04       0.66075161 0.92742317
-.sig05      -1.00000000 1.00000000
-.sig06       0.02881617 0.09525268
-.sig07       1.56628388 2.19700526
-.sig08      -0.38182885 0.14087236
-.sig09       0.16482934 0.26090268
-.sigma       0.17293488 0.19306200
-(Intercept)  4.97407139 5.79947429
-logSc        0.18061499 0.28302926
+> model.sel(mod2, mod2i, mod2ii, mod2iii, mod2iv)
+Model selection table 
+        (Int) log(Tsc)    lgS          class REML              random df    logLik    AICc   delta weight
+mod2    5.396  0.11810 0.2314 merModLmerTest    F 1+l|En+1+l|EA+1+l|S 13  -712.669  1451.5    0.00      1
+mod2i   5.383  0.11340 0.2331 merModLmerTest    F             En+EA+S  7 -1255.737  2525.5 1074.04      0
+mod2iii 5.391  0.25700 0.2279 merModLmerTest    F        1+l|EA+1+l|S 10 -2542.102  5104.3 3652.81      0
+mod2iv  5.403  0.17440 0.2359 merModLmerTest    F               1+l|S  7 -3409.750  6833.5 5382.07      0
+mod2ii  5.549 -0.03387 0.2481             lm                           4 -5152.198 10312.4 8860.93      0
+Abbreviations:
+REML: F = ‘FALSE’
+Models ranked by AICc(x) 
+Random terms: 
+1+l|En = ‘1 + logSc | Entry’
+1+l|EA = ‘1 + logSc | ExptA’
+1+l|S = ‘1 + logSc | Study’
+En = ‘1 | Entry’
+EA = ‘1 | ExptA’
+S = ‘1 | Study’

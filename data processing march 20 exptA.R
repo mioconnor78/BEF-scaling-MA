@@ -70,8 +70,6 @@ SST1<-SST1[-which(SST1$Entry=='617'),] # removing douglass et al measurements of
 SST1<-SST1[-which(SST1$Entry=='618'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations
 SST1<-SST1[-which(SST1$Entry=='619'),] # removing douglass et al measurements of predator biomass for grazer diversity manipulations 
 SST1<-SST1[-which(SST1$Entry=='250'),] # removing entry for Mikola 1998 because a) I can't understand where it came from when i read the paper, and b) the data from the figures in the paper is present in other entries
-#SST1<-SST1[-which(SST1$Entry=='246'),] # Mikola 1998, ditto entry 250; this is gone now from removing NaNs above.
-#SST2<-subset(SST2, SST2$value!= '0', select=1:27, drop=TRUE) 
 SST2<-subset(SST1, SST1$Slevels>1, select=1:(n+2), drop=TRUE) 
 SST2<-subset(SST2, SST2$HigherT!="", select=1:(n+2), drop=TRUE)
 SST2<-subset(SST2, SST2$HigherT!=".", select=1:(n+2), drop=TRUE)
@@ -86,10 +84,6 @@ maxTime <- ddply(SST2, .(ExptA, FinalT), summarise, max(as.numeric(as.character(
 names(maxTime) <- c('ExptA', 'FinalT','maxTscale')
 maxTime2 <- subset(maxTime, maxTime$FinalT=="Y", select=1:3, drop=TRUE)
 merge(SST2, maxTime, by.x = "ExptA", by.y = "ExptA", all.x = TRUE, all.y = TRUE) -> merged
-#merged <- merged[,-(31)]
-#dim(merged)
-#names(merged)
-#head(merged)
 SST2<-merged
 SST2$logMaxTime <- log(as.numeric(as.character(SST2$maxTscale)))
 
@@ -102,7 +96,7 @@ SST2$Smax <- as.numeric(as.character(SST2$Smax))
 SST2$MaxTscale <- as.numeric(as.character(SST2$maxTscale))
 SST2$Entry <- as.factor((SST2$Entry))
 SST2$Study <- as.factor((SST2$Study.y))
-SST2 <- SST2[,-(4)]
+SST2 <- SST2[,-(5)]
 
 ## rescaling entries if their values are extremely low or high
 try1 <- ddply(SST2, .(Entry, Study, Yunits), summarise, min(value))
