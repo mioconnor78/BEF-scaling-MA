@@ -11,6 +11,7 @@ library(lme4)
 library(MuMIn)
 library(AICcmodavg) # add this when you do m.avg
 library(lmerTest)
+library(RLRsim)
 
 data <- SST5
 
@@ -29,6 +30,7 @@ AICc.mem <- function(x) -2*as.numeric(logLik(x)) + 2*K(x)*(length(data$logY.rs)/
 
 ## Determine best random effects structure for competing level-1 models (following O'Connor et al 2007)
 ## [use reml = FALSE for comparison with models with no random effects. Then, switch to reml = TRUE for random effects comparisons.]
+## I'm not comparing lm with lmer fits due to differences in their estimation http://glmm.wikidot.com/faq)
 
 # Model 1 [Eqn 1, main text], with different random effects structures
 mod1 <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
@@ -39,7 +41,7 @@ mod1iii <- lmer(logY.rs ~ logSc +  (1 + logSc|ExptA) + (1 + logSc|Study), data=d
 
 mod1iv <- lmer(logY.rs ~ logSc  +  (1 + logSc|Study) , data=data, REML = FALSE, na.action=na.omit)
 
-mod1ii <- lm(logY.rs ~ logSc, data=data, na.action=na.omit)
+# mod1ii <- lm(logY.rs ~ logSc, data=data, na.action=na.omit) 
 
 # Model 2 [Eqn 2, main text]
 mod2 <- lmer(logY.rs ~ logSc + log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
@@ -50,83 +52,27 @@ mod2iii <- lmer(logY.rs ~ logSc + log(Tscale) +  (1 + logSc|ExptA) + (1 + logSc|
 
 mod2iv <- lmer(logY.rs ~ logSc + log(Tscale) +  (1 + logSc|Study) , data=data, REML = FALSE, na.action=na.omit)
 
-mod2ii <- lm(logY.rs ~ logSc + log(Tscale), data=data, na.action=na.omit)
+# mod2ii <- lm(logY.rs ~ logSc + log(Tscale), data=data, na.action=na.omit)
 
 # Model 3 [Eqn 3, main text]
 mod3 <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 mod3i <- lmer(logY.rs ~ logSc*log(Tscale) +  (1|Entry) + (1|ExptA) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
 
-mod3ii <- lm(logY.rs ~ logSc*log(Tscale), data=data, na.action=na.omit)
+# mod3ii <- lm(logY.rs ~ logSc*log(Tscale), data=data, na.action=na.omit)
 
 mod3iii <- lmer(logY.rs ~ logSc*log(Tscale) +  (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 mod3iv <- lmer(logY.rs ~ logSc*log(Tscale) +  (1 + logSc|Study) , data=data, REML = FALSE, na.action=na.omit)
 
-
-# BASIC MODEL COMPARISON: 3 WAYS
-# can't do likelihood ratio tests on the model with no variance components without switching to nlme, but lme4 is better for two random effects. using AIC and delta AIC is also accepted, and is convincing given the large differences between these models. 
-# but, if I want to hang my hat on the presence of random effects, I could rewrite in nlme and to LR tests. 
-
-## 1. Chi-square by hand: 
-x2 = -2*logLik(mod3ii, REML=T) +2*logLik(mod3i, REML=T)
-#pchisq(x2, df=1, lower.tail=F)
-# for a comparison of a model with no random effects vs one with random intercept
-
-0.5*(1-pchisq(x2, 1))
-
-x2 = -2*logLik(mod3, REML=T) +2*logLik(mod3i, REML=T)
-
-# for a comparison of a model with no random effects vs one with random intercept
-0.5*((1-pchisq(x2, 1)) + (1-pchisq(x2, 1)))
+### Model comparison [Table A1]
+## or using model.sel, without adjusting for degrees of freedom. appears that lmer now counts degrees of freedom as recommended by http://glmm.wikidot.com/faq. In previous explorations of these models, comparisons using adjusted likelihood ratio tests gave qualitatively the same outcomes. 
+model.sel(mod1, mod1i, mod1iii, mod1iv)
+model.sel(mod3, mod3i, mod3iii, mod3iv)
+model.sel(mod2, mod2i, mod2iii, mod2iv)
 
 
-## 2. model comparison by AIC, without adusting degrees of freedom; bbmle is not available for R 3.2.1
-#bbmle::AICtab(modBasic, modBasici, modBasicii, modBasiciii, modBasiciv)
-#bbmle::AICtab(modBasic2, modBasic2i, modBasic2ii)
-#bbmle::AICtab(modBasic3, modBasic3i, modBasic3ii)
-
-
-## 3. compare with AIC adjusted for different degrees of freedom
-q <- 3*2
-K <- function(x) length(fixef(x)) + (q*(q+1)/2)
-AICc.mem <- function(x) -2*as.numeric(logLik(x)) + 2*K(x)*(length(data$logY.rs)/(length(data$logY.rs)-K(x)-1))
-AICc.mem(mod3) -> mod3.AIC
-AICc.mem(mod2) -> mod2.AIC
-AICc.mem(mod1) -> mod1.AIC
-
-#for fewer random effects
-q <- 3 * 1 
-AICc.mem(mod3i) -> mod3i.AIC
-AICc.mem(mod2i) -> mod2i.AIC
-AICc.mem(mod1i) -> mod1i.AIC
-
-q <- 1 
-AIC(mod3ii) -> mod3ii.AIC
-AIC(mod2ii) -> mod2ii.AIC
-AIC(mod1ii) -> mod1ii.AIC
-
-q <- 3*1 
-AIC(mod1iii) -> mod1iii.AIC
-AIC(mod3iii) -> mod3iii.AIC
-AIC(mod2iii) -> mod2iii.AIC
-
-q <- 2*1
-AIC(mod1iv) -> mod1iv.AIC
-AIC(mod3iv) -> mod3iv.AIC
-AIC(mod2iv) -> mod2iv.AIC
-
-mod3.comp <- cbind(mod3.AIC, mod3i.AIC, mod3ii.AIC, mod3iii.AIC, mod3iv.AIC)
-mod2.comp <- cbind(mod2.AIC, mod2i.AIC, mod2ii.AIC, mod2iii.AIC, mod2iv.AIC)
-mod1.comp <- cbind(mod1.AIC, mod1i.AIC, mod1ii.AIC, mod1iii.AIC, mod1iv.AIC)
-
-## or using model.sel, without adjusting for degrees of freedom [Table A1]
-model.sel(mod1, mod1i, mod1ii, mod1iii, mod1iv)
-model.sel(mod3, mod3i, mod3ii, mod3iii, mod3iv)
-model.sel(mod2, mod2i, mod2ii, mod2iii, mod2iv)
-
-
-### having determined that random effects are needed in all models, compete basic models (Table 1)
+### [Table 1, main text] having determined that random effects are needed in all models, compete basic models 
 anova(modBasic, modBasic2)
 anova(modBasic2, modBasic3)
 
@@ -140,42 +86,49 @@ model.sel(mod1F, mod2F, mod3F)
 anova(mod1F, mod2F)
 anova(mod1F, mod3F)
 
-### Section 2: Testing different level 2 models. 
-# biological fixed factors that have been shown to not matter (system, trophic level) 
-# old name: modBtrophic
-mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+######################################################################
+### Section 2: Testing different level-2 models. 
+######################################################################
 
-# mod4.1 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+# Proceed here with random effects structure and level-1 model identifed above (Model 1 with full random effects).
+
+# Model 4: Biological fixed factors that have been shown to not matter (system, trophic level) 
+mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
 mod4.2 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*Sys1 + logSc*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-#modB3trophic.so<-lmer(logY.rs ~ logSc*Sys1 + logSc*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-
-# all biological fixed factors: ecosystem, trophic group, resource addition/reduction (adding Sys, TG, higherT, res and random effects to the level-2 model) (old names: modBall, modBallT)
+# Model 5: All biological fixed factors: ecosystem, trophic group, resource addition/reduction (adding Sys, TG, and res to the level-2 model)
 mod5 <- lmer(logY.rs ~ logSc*Sys1*TG1  + logSc*restrt + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
+# Model 6: All biological factors plus in interaction between richness and duration
 mod6 <- lmer(logY.rs ~ logSc*Sys1*TG1 + logSc*restrt + logSc*log(MaxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-# mod6.1 <- lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1*TG1 + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-
-
-# Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
-# old name: modBrt
-# mod7.1 <- lmer(logY.rs ~ logSc*log(Tscale) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-
+# Model 7: Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
 mod7 <- lmer(logY.rs ~ logSc*restrt + logSc*log(MaxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-# Experimental design factors (units, smax, time scale) [adding Duration.max, Smax and units to the level 2 model]  #old name: modExp
+# Model 8: Experimental design factors (units, smax, time scale, Smax and units) 
 mod8 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-# Full model
-# old name: modFM
-# mod9 <- lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-
+# Model 9: Full model
 mod9.1 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
 mod9.2<-lmer(logY.rs ~ log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
+
+###### Comparing models ##############
+######################################
+
+# [Table 3 Main Text] Model selection
+model.sel(mod4, mod4.2, mod5, mod6, mod7, mod8, mod9.1, mod9.2)
+
+# [Table 3 Main Text] Likelihood ratio tests
+anova(mod4, mod4.2) # model 4 wins, so do next comparison
+anova(mod4.2, mod5) # models not different, so proceed with model 4.2
+anova(mod4.2, mod6) # models not different, so proceed with model 4.2
+anova(mod4.2, mod8) # can't do this one; models aren't nested. Will stop here; we're far enough down the list that I'm not interested in these comparisons anymore.
+
+# [Table A3: model summary]
+summary(mod4)
 
 
 ## does best model no longer need random effects? (needs them!)
@@ -191,10 +144,7 @@ modBtrophiciii<-lm(logY.rs ~ logSc + logSc*Sys1*TG1, data=data, na.action=na.omi
 
 model.sel(modB3trophic2, modBtrophicii, modBtrophiciii, modB3trophic2a, modB3trophic2b)
 
-###### Comparing models ##############
-######################################
 
-model.sel(mod4, mod4.2, mod5, mod6, mod7, mod8, mod9.1, mod9.2)
 
 
 # In this section I am calculating AICc by hand, and accounting for degrees of freedom in the random effects according to Bolker et al. http://glmm.wikidot.com/faq

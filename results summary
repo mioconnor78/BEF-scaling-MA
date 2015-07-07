@@ -57,3 +57,169 @@ Random terms:
 En = ‘1 | Entry’
 EA = ‘1 | ExptA’
 S = ‘1 | Study’
+
+
+TABLE 3 MAIN TEXT
+> model.sel(mod4, mod4.2, mod5, mod6, mod7, mod8, mod9.1, mod9.2)
+Model selection table 
+       (Int) log(Tsc)    lgS Sy1 TG1 lgS:Sy1 lgS:TG1 Sy1:TG1 lgS:Sy1:TG1 rst lgS:rst log(MxT+1)
+mod4   4.331   0.1578 0.2631   +   +       +       +       +           +                       
+mod4.2 4.492   0.1450 0.3037   +   +       +       +                                           
+mod5   4.347   0.1589 0.2643   +   +       +       +       +           +   +       +           
+mod6   4.286   0.1558 0.1876   +   +       +       +       +           +   +       +   0.032900
+mod8   4.283   0.1183 0.2287                                                           0.016560
+mod7   5.424   0.1146 0.2131                                               +       +   0.008203
+mod9.2 3.882   0.1661 0.1437   +   +       +       +       +           +   +       +   0.028190
+mod9.1 4.194   0.1565 0.2458   +   +       +       +                       +       +   0.001719
+       log(MxT+1):lgS    Ds1 log(Smx) unt.ty2    Ds1:lgS log(Smx):lgS lgS:unt.ty2 df   logLik   AICc delta
+mod4                                                                              21 -706.256 1454.9  0.00
+mod4.2                                                                            19 -711.604 1461.5  6.63
+mod5                                                                              25 -709.146 1468.8 13.93
+mod6          0.04142                                                             27 -712.988 1480.6 25.69
+mod8          0.03007 0.7839  -0.1296       +  0.0003831     -0.01128           + 23 -720.617 1487.7 32.79
+mod7          0.02305                                                             19 -725.673 1489.6 34.77
+mod9.2        0.03529 0.7492  -0.4031       + -0.0109800      0.04339           + 35 -710.054 1491.1 36.22
+mod9.1        0.01120 0.7628  -0.4702       + -0.0076370      0.03196           + 33 -716.953 1500.8 45.91
+       weight
+mod4    0.964
+mod4.2  0.035
+mod5    0.001
+mod6    0.000
+mod8    0.000
+mod7    0.000
+mod9.2  0.000
+mod9.1  0.000
+Models ranked by AICc(x) 
+Random terms (all models): 
+‘1 + logSc | Entry’, ‘1 + logSc | ExptA’, ‘1 + logSc | Study’
+
+
+> anova(mod4, mod4.2)
+refitting model(s) with ML (instead of REML)
+Data: data
+Models:
+..1: logY.rs ~ logSc + log(Tscale) + logSc * Sys1 + logSc * TG1 + 
+..1:     (1 + logSc | Entry) + (1 + logSc | ExptA) + (1 + logSc | 
+..1:     Study)
+object: logY.rs ~ logSc * Sys1 * TG1 + log(Tscale) + (1 + logSc | Entry) + 
+object:     (1 + logSc | ExptA) + (1 + logSc | Study)
+       Df    AIC    BIC logLik deviance  Chisq Chi Df Pr(>Chisq)   
+..1    19 1442.8 1554.4 -702.4   1404.8                            
+object 21 1437.4 1560.7 -697.7   1395.4 9.3988      2   0.009101 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+> anova(mod4.2, mod5)
+refitting model(s) with ML (instead of REML)
+Data: data
+Models:
+object: logY.rs ~ logSc + log(Tscale) + logSc * Sys1 + logSc * TG1 + 
+object:     (1 + logSc | Entry) + (1 + logSc | ExptA) + (1 + logSc | 
+object:     Study)
+..1: logY.rs ~ logSc * Sys1 * TG1 + logSc * restrt + log(Tscale) + 
+..1:     (1 + logSc | Entry) + (1 + logSc | ExptA) + (1 + logSc | 
+..1:     Study)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)  
+object 19 1442.8 1554.4 -702.40   1404.8                           
+..1    25 1442.4 1589.2 -696.19   1392.4 12.412      6    0.05338 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+> anova(mod4.2, mod6)
+refitting model(s) with ML (instead of REML)
+Data: data
+Models:
+object: logY.rs ~ logSc + log(Tscale) + logSc * Sys1 + logSc * TG1 + 
+object:     (1 + logSc | Entry) + (1 + logSc | ExptA) + (1 + logSc | 
+object:     Study)
+..1: logY.rs ~ logSc * Sys1 * TG1 + logSc * restrt + logSc * log(MaxTscale + 
+..1:     1) + log(Tscale) + (1 + logSc | Entry) + (1 + logSc | ExptA) + 
+..1:     (1 + logSc | Study)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)  
+object 19 1442.8 1554.4 -702.40   1404.8                           
+..1    27 1442.5 1601.0 -694.25   1388.5 16.293      8    0.03837 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+> anova(mod4.2, mod8)
+refitting model(s) with ML (instead of REML)
+Data: data
+Models:
+object: logY.rs ~ logSc + log(Tscale) + logSc * Sys1 + logSc * TG1 + 
+object:     (1 + logSc | Entry) + (1 + logSc | ExptA) + (1 + logSc | 
+object:     Study)
+..1: logY.rs ~ logSc + log(Tscale) + logSc * unit.types2 + logSc * 
+..1:     Des1 + logSc * log(Smax) + logSc * log(MaxTscale + 1) + (1 + 
+..1:     logSc | Entry) + (1 + logSc | ExptA) + (1 + logSc | Study)
+       Df    AIC    BIC  logLik deviance Chisq Chi Df Pr(>Chisq)
+object 19 1442.8 1554.4 -702.40   1404.8                        
+..1    23 1455.0 1590.1 -704.51   1409.0     0      4          1
+
+
+
+
+
+
+
+Table A3
+
+> summary(mod4)
+fixed-effect model matrix is rank deficient so dropping 2 columns / coefficients
+fixed-effect model matrix is rank deficient so dropping 2 columns / coefficients
+fixed-effect model matrix is rank deficient so dropping 2 columns / coefficients
+Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of freedom [
+merModLmerTest]
+Formula: logY.rs ~ logSc * Sys1 * TG1 + log(Tscale) + (1 + logSc | Entry) +  
+    (1 + logSc | ExptA) + (1 + logSc | Study)
+   Data: data
+
+REML criterion at convergence: 1412.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.9294 -0.4185 -0.0210  0.3772  4.0130 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ Entry    (Intercept) 0.38005  0.61649       
+          logSc       0.03330  0.18248  0.08 
+ ExptA    (Intercept) 0.72090  0.84906       
+          logSc       0.00451  0.06716  0.22 
+ Study    (Intercept) 3.31276  1.82010       
+          logSc       0.03213  0.17926  -0.02
+ Residual             0.02140  0.14628       
+Number of obs: 2623, groups:  Entry, 558; ExptA, 371; Study, 91
+
+Fixed effects:
+                  Estimate Std. Error        df t value Pr(>|t|)    
+(Intercept)        4.33098    0.45349 102.10000   9.550 8.88e-16 ***
+logSc              0.26307    0.05372  57.30000   4.897 8.31e-06 ***
+Sys1T              1.49543    0.52447 101.30000   2.851  0.00528 ** 
+TG12              -0.33020    0.52014 347.30000  -0.635  0.52596    
+TG14               1.22471    1.10830  92.90000   1.105  0.27200    
+log(Tscale)        0.15782    0.06077 281.60000   2.597  0.00990 ** 
+logSc:Sys1T       -0.06541    0.06094  56.00000  -1.073  0.28774    
+logSc:TG12         0.20668    0.09072 176.20000   2.278  0.02391 *  
+logSc:TG14         0.28539    0.14151  87.10000   2.017  0.04681 *  
+Sys1T:TG14        -1.93124    1.64501  93.90000  -1.174  0.24337    
+logSc:Sys1T:TG14  -0.57593    0.20360  66.40000  -2.829  0.00617 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) logSc  Sys1T  TG12   TG14   lg(Ts) lgS:S1T lS:TG12 lS:TG14 S1T:TG
+logSc        0.033                                                                  
+Sys1T       -0.876 -0.029                                                           
+TG12        -0.334 -0.058  0.283                                                    
+TG14        -0.409 -0.013  0.358  0.137                                             
+log(Tscale) -0.129 -0.003  0.196 -0.076  0.051                                      
+logSc:Sys1T -0.029 -0.882  0.028  0.051  0.012  0.002                               
+logSc:TG12  -0.039 -0.440  0.034  0.141  0.016  0.004  0.388                        
+logSc:TG14  -0.012 -0.380  0.011  0.022  0.041 -0.001  0.335   0.167                
+Sys1T:TG14   0.294  0.010 -0.341 -0.082 -0.681 -0.175 -0.009  -0.011  -0.028        
+lS:S1T:TG14  0.009  0.264 -0.009 -0.015 -0.029 -0.002 -0.299  -0.116  -0.695   0.017
+fit warnings:
+fixed-effect model matrix is rank deficient so dropping 2 columns / coefficients
+Warning message:
+In summary.merMod(model, ddf = "lme4") : additional arguments ignored
