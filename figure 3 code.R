@@ -47,7 +47,7 @@ b <- as.numeric(fixef(mod)[2])
 
 
 ### for modBtrophic only: 
-S$slope <- S$logSc + S$Sys.term + S$TG.term + (S$St.ranefs.logSc - b) + (S$Ex.ranefs.logSc - b) 
+S$slope <- (S$logSc - b) + S$Sys.term + S$TG.term + (S$St.ranefs.logSc - b) + (S$Ex.ranefs.logSc - b) + fixef(mod4)[2]
 # + (S$Ent.ranefs.logSc - b)
 
 summary(S$slope)
@@ -59,7 +59,7 @@ plot(SST5[(SST5$Entry == '274'),]$logY.rs ~ SST5[SST5$Entry == '274',]$logSc, yl
 abline(4.2, S[(S$Entry == '274'),]$slope)
 
 ## plot histogram of estimated slopes
-#pdf(file='Figure3.pdf', width = 5, height = 3)
+pdf(file='Figure3.pdf', width = 5, height = 3)
 par(mar = c(4.5,4.5,3,2))
 hist(S$slope, breaks = 40, col = 'gray', freq = TRUE, main = '', xlab = 'Estimated scaling coefficients (b)', xlim = c(-0.4, 1.4), ylim = c(0, 100), cex.lab = 1.2, axes = FALSE, ylab = 'Number of entries') #
 axis(1, at =c(-0.4, -0.2, 0, 0.2, 0.4, 0.6,0.8,1.0,1.2,1.4), lwd = 2, pos = 0)
