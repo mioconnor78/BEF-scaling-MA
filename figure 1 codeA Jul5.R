@@ -11,40 +11,29 @@
 
 ## MO: I know how painful and inefficient this code is! I would love it (and learn from it) if someone felt like presenting an alternative approach to generating this figure. I know there are better ways.
 
-## code for averaged model with 3-way interaction here. Below (waaaay down) is code for previous best model that didn't have this interaction.
+data <- SST5
 
+mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-### CODE FOR THE AVERAGE MODEL (4 MODELS)
-
-#layout(matrix(c(1,2,3,4)), 1, 1, byrow = FALSE)
-
-# Figure 2A: SST5 slopes
-# create file for model averaged estimates
-## July 5: I'm going to skip the model averaging for now, b/c no delta AIC < 2.
-#estimates <- as.data.frame(m.avg[3])
-#rownames(estimates) <- c('Intercept', 'ln(S)', 'ln(Tg)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detritivore', 'ln(S)*Syst*Detrit', '+Resource', '-Resource', 'ln(maxTg)', 'ln(S) * +Resource', 'ln(S)* -Resource', 'ln(S)* ln(maxTg)', 'Density','Percent Cover','LabField','ln(Smax)','ln(S)*Density','ln(S)*Percent Cover','ln(S)*LabField', 'ln(S)*ln(Smax)' )
-#colnames(estimates) <- c('est', 'se', 'adjse', 'lCI', 'uCI')
-#estimates$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'S', 'I', 'S', 'I', 'I','I', 'S', 'S', 'S','I', 'I', 'I','I', 'S', 'S', 'S','S')
-#est.sl <- estimates[estimates$slint == 'S',]
-#est.int <- estimates[estimates$slint == 'I',]
+mod2F <- lmer(logY.rs ~ logSc + log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
 # create data for best model estimates
-est.B <- as.data.frame(as.numeric(round(fixef(mod4.1),3)))
-est.B$se <- as.numeric(round(sqrt(diag(vcov(mod4.1))),3))
+est.B <- as.data.frame(as.numeric(round(fixef(mod4),2)))
+est.B$se <- as.numeric(round(sqrt(diag(vcov(mod4))),2))
 names(est.B) <- c('est', 'se')
-rownames(est.B) <- c('Intercept', 'ln(Tg)', 'ln(S)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detrit', 'ln(S)*Syst*Detrit')
-est.B$slint <- c('I', 'I', 'S',  'I', 'I', 'I', 'S', 'S', 'S', 'I', 'S')
+rownames(est.B) <- c('Intercept', 'ln(S)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detrit', 'ln(S)*Syst*Detrit')
+est.B$slint <- c('I',  'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'I', 'S')
 est.B.sl <- est.B[est.B$slint == 'S',]
 est.B.int <- est.B[est.B$slint == 'I',]
 
 
 # create data for basic model estimates  #needs review
-est.Ba <- as.data.frame(as.numeric(round(fixef(mod3),3)))
-est.Ba$se <- as.numeric(round(sqrt(diag(vcov(mod3))),3))
+est.Ba <- as.data.frame(as.numeric(round(fixef(mod2F),2)))
+est.Ba$se <- as.numeric(round(sqrt(diag(vcov(mod2F))),2))
 names(est.Ba) <- c('est', 'se')
-est.Ba <- rbind(est.Ba[1,], c('',''), est.Ba[2,], c('',''), c('',''), c('',''), c('',''),  c('',''), c('',''), c('',''), c('','')) 
-rownames(est.Ba) <- c('Intercept', 'ln(Tg)', 'ln(S)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detrit', 'ln(S)*Syst*Detrit')
-est.Ba$slint <- c('I', 'I', 'S',  'I', 'I', 'I', 'S', 'S', 'S', 'I', 'S')
+est.Ba <- rbind(est.Ba[1,], est.Ba[2,], c('',''), c('',''), c('',''), c('',''), c('',''),  c('',''), c('',''), c('',''), c('','')) 
+rownames(est.Ba) <- c('Intercept', 'ln(S)', 'Ecosystem', 'Herbivore', 'Detritivore', 'ln(Tg)', 'ln(S)*Ecosystem', 'ln(S)*Herbivore', 'ln(S)*Detritivore','Ecosyst*Detrit', 'ln(S)*Syst*Detrit')
+est.Ba$slint <- c('I', 'S', 'I', 'I', 'I', 'I', 'S', 'S', 'S', 'I', 'S')
 est.Ba.sl <- est.Ba[est.Ba$slint == 'S',]
 est.Ba.int <- est.Ba[est.Ba$slint == 'I',]
 
@@ -67,8 +56,6 @@ plot(NULL,
      axes = F, xlab = NA, ylab = NA, cex = 0.8)
 
 # add the data
-#est <- as.numeric(est.sl[,1]) 
-#se <- as.numeric(est.sl[,2] )                                         
 ests.B <- as.numeric(est.B.sl[,1])
 ses.B <- as.numeric(est.B.sl[,2])
 ests.Ba <- as.numeric(est.Ba.sl[,1])
@@ -78,8 +65,6 @@ var.namesi<-rownames(est.B.int)
 
 b <- 0
 for (i in 1:length(ests.B)) {                                            
-  #points(est[i], i, pch = 19, cex = 1.2)                              
-  #lines(c(est[i] + 1.96*se[i], est[i] - 1.96*se[i]), c(i, i), lwd = 2)         # add 95% CIs
   points(ests.B[i], i+b, pch = 19, cex = 1.2, col = 1) 
   lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+b, i+b), col = 1, lwd = 2)
   points(ests.Ba[i], i+2*b, pch = 19, cex = 1.2, col = 'gray50') 
