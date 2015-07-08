@@ -3,7 +3,13 @@ library(sjPlot)
 library(arm)
 
 #0# choose the model to use
-mod <- mod4.1
+data <- SST5
+
+mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+
+mod <- mod4
+
+
 mod <- mod3
 
 

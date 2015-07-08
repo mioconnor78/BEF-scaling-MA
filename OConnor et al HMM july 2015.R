@@ -39,9 +39,11 @@ mod1i <- lmer(logY.rs ~ logSc + (1|Entry) + (1|ExptA) + (1|Study), data=data, RE
 
 mod1iii <- lmer(logY.rs ~ logSc + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
+mod1v <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+
 mod1iv <- lmer(logY.rs ~ logSc + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-# mod1ii <- lm(logY.rs ~ logSc, data=data, na.action=na.omit) 
+
 
 # Model 2 [Eqn 2, main text]
 mod2 <- lmer(logY.rs ~ logSc + log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
@@ -52,24 +54,26 @@ mod2iii <- lmer(logY.rs ~ logSc + log(Tscale) +  (1 + logSc|ExptA) + (1 + logSc|
 
 mod2iv <- lmer(logY.rs ~ logSc + log(Tscale) +  (1 + logSc|Study) , data=data, REML = FALSE, na.action=na.omit)
 
-# mod2ii <- lm(logY.rs ~ logSc + log(Tscale), data=data, na.action=na.omit)
+mod2v <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+
+
 
 # Model 3 [Eqn 3, main text]
 mod3 <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 mod3i <- lmer(logY.rs ~ logSc*log(Tscale) +  (1|Entry) + (1|ExptA) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
 
-# mod3ii <- lm(logY.rs ~ logSc*log(Tscale), data=data, na.action=na.omit)
-
 mod3iii <- lmer(logY.rs ~ logSc*log(Tscale) +  (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 mod3iv <- lmer(logY.rs ~ logSc*log(Tscale) +  (1 + logSc|Study) , data=data, REML = FALSE, na.action=na.omit)
 
+mod3v <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+
 ### Model comparison [Table A1]
 ## or using model.sel, without adjusting for degrees of freedom. appears that lmer now counts degrees of freedom as recommended by http://glmm.wikidot.com/faq. In previous explorations of these models, comparisons using adjusted likelihood ratio tests gave qualitatively the same outcomes. 
-model.sel(mod1, mod1i, mod1iii, mod1iv)
-model.sel(mod3, mod3i, mod3iii, mod3iv)
-model.sel(mod2, mod2i, mod2iii, mod2iv)
+model.sel(mod1, mod1i, mod1iii, mod1iv, mod1v)
+model.sel(mod3, mod3i, mod3iii, mod3iv, mod3v)
+model.sel(mod2, mod2i, mod2iii, mod2iv, mod2v)
 
 
 ### [Table 1, main text] having determined that random effects are needed in all models, compete basic models 

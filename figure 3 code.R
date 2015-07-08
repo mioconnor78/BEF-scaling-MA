@@ -12,11 +12,11 @@ data <- SST5
 
 mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-mod <- (mod4)
+mod <- mod4
 
 rand.cat <- ddply(data, .(Entry, Study, ExptA, Sys1, TG1), summarize, mean(logY.rs))
 names(rand.cat) <- c('Entry', 'Study', 'ExptA','Syst','TG1', 'meanlogY')
-Entry.coefs <- data.frame(coef(mod)$Entry)
+Entry.coefs <- data.frame(coef(mod)$Entry) #this gives us the logS for entry. so we'd need to add only the expt and study level later. let's try that.
 Entry.coefs$Entry <- rownames(Entry.coefs)
 S <- merge(rand.cat, Entry.coefs, by = 'Entry', all = FALSE)
 
@@ -31,28 +31,32 @@ St.ranefs       <- data.frame(coef(mod)$Study)
 St.ranefs$Study <- rownames(St.ranefs)
 Ex.ranefs       <- data.frame(coef(mod)$ExptA)
 Ex.ranefs$ExptA <- rownames(Ex.ranefs)
-Ent.ranefs      <- data.frame(coef(mod)$Entry)
-Ent.ranefs$Entry <- rownames(Ent.ranefs)
+#Ent.ranefs      <- data.frame(coef(mod)$Entry)
+#Ent.ranefs$Entry <- rownames(Ent.ranefs)
 
 St.ranefs1 <- data.frame(St.ranefs$Study, St.ranefs$logSc)
 Ex.ranefs1 <- data.frame(Ex.ranefs$ExptA, Ex.ranefs$logSc)
-Ent.ranefs1 <- data.frame(Ent.ranefs$Entry, Ent.ranefs$logSc)
+#Ent.ranefs1 <- data.frame(Ent.ranefs$Entry, Ent.ranefs$logSc)
 
 S2 <- merge(S, St.ranefs1, by.x = 'Study', by.y = 'St.ranefs.Study', all= FALSE)
-S3.1 <- merge(S2, Ex.ranefs1, by.x = 'ExptA', by.y = 'Ex.ranefs.ExptA', all = FALSE)
-S3 <- merge(S3.1, Ent.ranefs1, by.x = 'Entry', by.y = 'Ent.ranefs.Entry', all = FALSE)
+S3 <- merge(S2, Ex.ranefs1, by.x = 'ExptA', by.y = 'Ex.ranefs.ExptA', all = FALSE)
+#S3 <- merge(S3.1, Ent.ranefs1, by.x = 'Entry', by.y = 'Ent.ranefs.Entry', all = FALSE)
 S <- S3
 b <- as.numeric(fixef(mod)[2])
 
 
 
 ### for modBtrophic only: 
-S$slope <- S$logSc + S$Sys.term + S$TG.term 
-+ (S$St.ranefs.logSc - b) + (S$Ex.ranefs.logSc - b) + (S$Ent.ranefs.logSc - b)
+S$slope <- S$logSc + S$Sys.term + S$TG.term + (S$St.ranefs.logSc - b) + (S$Ex.ranefs.logSc - b) 
+# + (S$Ent.ranefs.logSc - b)
+
+summary(S$slope)
 
 # checking some things:
 length(S[S$Sys.term=='0',]$Sys.term)
 length(S[S$TG.term!='0',]$TG.term)
+plot(SST5[(SST5$Entry == '274'),]$logY.rs ~ SST5[SST5$Entry == '274',]$logSc, ylim = c(0, 10))
+abline(4.2, S[(S$Entry == '274'),]$slope)
 
 ## plot histogram of estimated slopes
 #pdf(file='Figure3.pdf', width = 5, height = 3)
