@@ -131,7 +131,9 @@ anova(mod4, mod9) # can't do this one; models aren't nested. Will stop here; we'
 anova(mod4, mod3F)
 
 
-# [Table A3: model summary]
+# [Table A3: model summary] #use REML now for model coefficients
+mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+
 summary(mod4)
 
 

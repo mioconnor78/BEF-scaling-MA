@@ -167,8 +167,8 @@ Table A3
 fixed-effect model matrix is rank deficient so dropping 2 columns / coefficients
 fixed-effect model matrix is rank deficient so dropping 2 columns / coefficients
 fixed-effect model matrix is rank deficient so dropping 2 columns / coefficients
-Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of freedom [
-merModLmerTest]
+Linear mixed model fit by REML 
+t-tests use  Satterthwaite approximations to degrees of freedom ['merModLmerTest']
 Formula: logY.rs ~ logSc * Sys1 * TG1 + log(Tscale) + (1 + logSc | Entry) +  
     (1 + logSc | ExptA) + (1 + logSc | Study)
    Data: data
@@ -222,3 +222,30 @@ fit warnings:
 fixed-effect model matrix is rank deficient so dropping 2 columns / coefficients
 Warning message:
 In summary.merMod(model, ddf = "lme4") : additional arguments ignored
+
+
+
+> confint(mod4)
+Computing profile confidence intervals ...
+                       2.5 %      97.5 %
+.sig01            0.55136660  0.69264300
+.sig02           -0.06413114  0.21373650
+.sig03            0.16489979  0.20237952
+.sig04            0.72203355  0.97221478
+.sig05                    NA          NA
+.sig06            0.02400076  0.09781455
+.sig07            1.48477544  2.11497697
+.sig08           -0.33086075  1.00000000
+.sig09                    NA          NA
+.sigma                    NA          NA
+(Intercept)       3.45411674  5.20763926
+logSc             0.16007556  0.36609503
+Sys1T             0.48094806  2.50997516
+TG12             -1.34754915  0.68183413
+TG14             -0.91886499  3.36427374
+log(Tscale)       0.03263636  0.27651345
+logSc:Sys1T      -0.18230977  0.05141009
+logSc:TG12        0.03211709  0.38417570
+logSc:TG14        0.01277330  0.55682736
+Sys1T:TG14       -5.11334544  1.25961799
+logSc:Sys1T:TG14 -0.97078337 -0.17376701
