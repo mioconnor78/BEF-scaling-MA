@@ -1,17 +1,18 @@
 TABLE 2 MAIN TEXT
 
-> model.sel(mod1F, mod2F, mod3F)
+> model.sel(mod1F, mod2F, mod3F)  # fit with ML (not REML)
 Model selection table 
       (Int)    lgS log(Tsc) log(Tsc):lgS df   logLik   AICc delta weight
-mod1F 5.383 0.2314                       12 -717.898 1459.9  0.00  0.742
-mod2F 5.397 0.2314   0.1186              13 -717.960 1462.1  2.14  0.254
-mod3F 5.396 0.2328   0.1196      0.01251 14 -720.972 1470.1 10.19  0.005
+mod2F 5.396 0.2314   0.1181              13 -712.669 1451.5  0.00  0.486
+mod3F 5.396 0.2328   0.1191       0.0129 14 -712.133 1452.4  0.95  0.302
+mod1F 5.383 0.2314                       12 -714.504 1453.1  1.65  0.213
 Models ranked by AICc(x) 
 Random terms (all models): 
 ‘1 + logSc | Entry’, ‘1 + logSc | ExptA’, ‘1 + logSc | Study’
 
 
 TABLE A1: APPENDIX
+
 > mod1.comp
      mod1.AIC mod1i.AIC mod1ii.AIC mod1iii.AIC mod1iv.AIC
 [1,] 1475.434  2530.493   10312.79    5231.646   6859.156
@@ -60,35 +61,33 @@ S = ‘1 | Study’
 
 
 TABLE 3 MAIN TEXT
-> model.sel(mod4, mod4.2, mod5, mod6, mod7, mod8, mod9.1, mod9.2)
+
+# using ML (not REML)
+
+> model.sel(mod4, mod4.2, mod5, mod6, mod7, mod8, mod9.1, mod9.2, mod3F, mod2F)
 Model selection table 
-       (Int) log(Tsc)    lgS Sy1 TG1 lgS:Sy1 lgS:TG1 Sy1:TG1 lgS:Sy1:TG1 rst lgS:rst log(MxT+1)
-mod4   4.331   0.1578 0.2631   +   +       +       +       +           +                       
-mod4.2 4.492   0.1450 0.3037   +   +       +       +                                           
-mod5   4.347   0.1589 0.2643   +   +       +       +       +           +   +       +           
-mod6   4.286   0.1558 0.1876   +   +       +       +       +           +   +       +   0.032900
-mod8   4.283   0.1183 0.2287                                                           0.016560
-mod7   5.424   0.1146 0.2131                                               +       +   0.008203
-mod9.2 3.882   0.1661 0.1437   +   +       +       +       +           +   +       +   0.028190
-mod9.1 4.194   0.1565 0.2458   +   +       +       +                       +       +   0.001719
-       log(MxT+1):lgS    Ds1 log(Smx) unt.ty2    Ds1:lgS log(Smx):lgS lgS:unt.ty2 df   logLik   AICc delta
-mod4                                                                              21 -706.256 1454.9  0.00
-mod4.2                                                                            19 -711.604 1461.5  6.63
-mod5                                                                              25 -709.146 1468.8 13.93
-mod6          0.04142                                                             27 -712.988 1480.6 25.69
-mod8          0.03007 0.7839  -0.1296       +  0.0003831     -0.01128           + 23 -720.617 1487.7 32.79
-mod7          0.02305                                                             19 -725.673 1489.6 34.77
-mod9.2        0.03529 0.7492  -0.4031       + -0.0109800      0.04339           + 35 -710.054 1491.1 36.22
-mod9.1        0.01120 0.7628  -0.4702       + -0.0076370      0.03196           + 33 -716.953 1500.8 45.91
-       weight
-mod4    0.964
-mod4.2  0.035
-mod5    0.001
-mod6    0.000
-mod8    0.000
-mod7    0.000
-mod9.2  0.000
-mod9.1  0.000
+       (Int) log(Tsc)    lgS Sy1 TG1 lgS:Sy1 lgS:TG1 Sy1:TG1 lgS:Sy1:TG1 rst lgS:rst log(MxT+1) log(MxT+1):lgS
+mod4   4.332   0.1555 0.2631   +   +       +       +       +           +                                      
+mod5   4.348   0.1564 0.2644   +   +       +       +       +           +   +       +                          
+mod6   4.281   0.1528 0.1801   +   +       +       +       +           +   +       +   0.036360        0.04505
+mod4.2 4.490   0.1430 0.3028   +   +       +       +                                                          
+mod9.2 3.909   0.1605 0.1394   +   +       +       +       +           +   +       +   0.035340        0.04268
+mod2F  5.396   0.1181 0.2314                                                                                  
+mod9.1 4.219   0.1513 0.2401   +   +       +       +                       +       +   0.006372        0.01618
+mod3F  5.396   0.1191 0.2328                                                                                  
+mod8   4.293   0.1135 0.2285                                                           0.019260        0.03317
+mod7   5.423   0.1136 0.2125                                               +       +   0.008768        0.02375
+          Ds1 log(Smx) unt.ty2   Ds1:lgS log(Smx):lgS lgS:unt.ty2 log(Tsc):lgS df   logLik   AICc delta weight
+mod4                                                                           21 -697.701 1437.8  0.00  0.784
+mod5                                                                           25 -696.194 1442.9  5.13  0.060
+mod6                                                                           27 -694.254 1443.1  5.33  0.054
+mod4.2                                                                         19 -702.400 1443.1  5.34  0.054
+mod9.2 0.7335  -0.4073       + -0.007031      0.03382           +              35 -686.243 1443.5  5.70  0.045
+mod2F                                                                          13 -712.669 1451.5 13.72  0.001
+mod9.1 0.7492  -0.4743       + -0.004676      0.02582           +              33 -692.707 1452.3 14.52  0.001
+mod3F                                                                   0.0129 14 -712.133 1452.4 14.67  0.001
+mod8   0.7727  -0.1272       +  0.002337     -0.01433           +              23 -704.507 1455.4 17.68  0.000
+mod7                                                                           19 -710.384 1459.1 21.30  0.000
 Models ranked by AICc(x) 
 Random terms (all models): 
 ‘1 + logSc | Entry’, ‘1 + logSc | ExptA’, ‘1 + logSc | Study’

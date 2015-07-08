@@ -33,13 +33,13 @@ AICc.mem <- function(x) -2*as.numeric(logLik(x)) + 2*K(x)*(length(data$logY.rs)/
 ## I'm not comparing lm with lmer fits due to differences in their estimation http://glmm.wikidot.com/faq)
 
 # Model 1 [Eqn 1, main text], with different random effects structures
-mod1 <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod1 <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) +  (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-mod1i <- lmer(logY.rs ~ logSc +  (1|Entry) + (1|ExptA) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+mod1i <- lmer(logY.rs ~ logSc + (1|Entry) + (1|ExptA) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
 
-mod1iii <- lmer(logY.rs ~ logSc +  (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod1iii <- lmer(logY.rs ~ logSc + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-mod1iv <- lmer(logY.rs ~ logSc  +  (1 + logSc|Study) , data=data, REML = FALSE, na.action=na.omit)
+mod1iv <- lmer(logY.rs ~ logSc + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # mod1ii <- lm(logY.rs ~ logSc, data=data, na.action=na.omit) 
 
@@ -77,14 +77,14 @@ anova(modBasic, modBasic2)
 anova(modBasic2, modBasic3)
 
 ### [Table 2, MAIN TEXT] comparison of best level 1 model, using REML = TRUE 
-mod1F <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-mod2F <- lmer(logY.rs ~ logSc + log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
-mod3F <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod1F <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod2F <- lmer(logY.rs ~ logSc + log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod3F <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 model.sel(mod1F, mod2F, mod3F)
 
-anova(mod1F, mod2F)
-anova(mod1F, mod3F)
+anova(mod3F, mod2F)
+anova(mod2F, mod1F)
 
 ######################################################################
 ### Section 2: Testing different level-2 models. 
@@ -93,39 +93,43 @@ anova(mod1F, mod3F)
 # Proceed here with random effects structure and level-1 model identifed above (Model 1 with full random effects).
 
 # Model 4: Biological fixed factors that have been shown to not matter (system, trophic level) 
-mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-mod4.2 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*Sys1 + logSc*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod4.2 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*Sys1 + logSc*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Model 5: All biological fixed factors: ecosystem, trophic group, resource addition/reduction (adding Sys, TG, and res to the level-2 model)
-mod5 <- lmer(logY.rs ~ logSc*Sys1*TG1  + logSc*restrt + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod5 <- lmer(logY.rs ~ logSc*Sys1*TG1  + logSc*restrt + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Model 6: All biological factors plus in interaction between richness and duration
-mod6 <- lmer(logY.rs ~ logSc*Sys1*TG1 + logSc*restrt + logSc*log(MaxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod6 <- lmer(logY.rs ~ logSc*Sys1*TG1 + logSc*restrt + logSc*log(MaxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Model 7: Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
-mod7 <- lmer(logY.rs ~ logSc*restrt + logSc*log(MaxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod7 <- lmer(logY.rs ~ logSc*restrt + logSc*log(MaxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Model 8: Experimental design factors (units, smax, time scale, Smax and units) 
-mod8 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod8 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Model 9: Full model
-mod9.1 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod9.1 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-mod9.2<-lmer(logY.rs ~ log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod9.2<-lmer(logY.rs ~ log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 
 ###### Comparing models ##############
 ######################################
 
 # [Table 3 Main Text] Model selection
-model.sel(mod4, mod4.2, mod5, mod6, mod7, mod8, mod9.1, mod9.2)
+model.sel(mod4, mod4.2, mod5, mod6, mod7, mod8, mod9.1, mod9.2, mod3F, mod2F)
 
 # [Table 3 Main Text] Likelihood ratio tests
-anova(mod4, mod4.2) # model 4 wins, so do next comparison
-anova(mod4.2, mod5) # models not different, so proceed with model 4.2
-anova(mod4.2, mod6) # models not different, so proceed with model 4.2
-anova(mod4.2, mod8) # can't do this one; models aren't nested. Will stop here; we're far enough down the list that I'm not interested in these comparisons anymore.
+anova(mod4, mod5) # model 4 wins, so do next comparison
+anova(mod4, mod6) # models not different, so proceed with model 4.2
+anova(mod4, mod4.2) # models not different, so proceed with model 4.2
+anova(mod4, mod9.2) 
+anova(mod4, mod2F) 
+anova(mod4, mod9) # can't do this one; models aren't nested. Will stop here; we're far enough down the list that I'm not interested in these comparisons anymore.
+anova(mod4, mod3F)
+
 
 # [Table A3: model summary]
 summary(mod4)
