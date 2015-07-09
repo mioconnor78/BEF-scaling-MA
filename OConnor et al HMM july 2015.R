@@ -142,69 +142,20 @@ summary(mod4)
 
 
 ## does best model no longer need random effects? (needs them!)
-modB3trophic2<-lmer(logY.rs ~ logSc+log(Tscale) + logSc*Sys1*TG1 + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-modB3trophic2a<-lmer(logY.rs ~ logSc+log(Tscale) + logSc*Sys1*TG1 + (1 + logSc|Entry), data=data, REML = FALSE, na.action=na.omit)
+mod4i <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1|Entry) + (1|ExptA) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
 
-modB3trophic2b<-lmer(logY.rs ~ logSc+log(Tscale) + logSc*Sys1*TG1 + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod4iii <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-modBtrophicii<-lmer(logY.rs ~ logSc+log(Tscale) + logSc*Sys1*TG1 + (1|Entry) + (1|ExptA) + (1|Study), data=data, REML = FALSE, na.action=na.omit)
+mod4v <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-modBtrophiciii<-lm(logY.rs ~ logSc + logSc*Sys1*TG1, data=data, na.action=na.omit)
-
-model.sel(modB3trophic2, modBtrophicii, modBtrophiciii, modB3trophic2a, modB3trophic2b)
+mod4iv <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 
+model.sel(mod4, mod4i, mod4iii, mod4iv, mod4v)
 
 
-# In this section I am calculating AICc by hand, and accounting for degrees of freedom in the random effects according to Bolker et al. http://glmm.wikidot.com/faq
-#AICc = -2*logLik(mod) + 2*K*(n/(n-K-1))
-# the current code for model comparison below requires qpcR, which isn't working. I know from past analyses that the models with fewer random effects are terrible. So I'm going ahead with the model.avg command; it's imperfect but in this case the difference in df is not affecting the overall results.
-
-q <- 2*2
-K <- function(x) length(fixef(x)) + (q*(q+1)/2)
-AICc.mem <- function(x) -2*as.numeric(logLik(x)) + 2*K(x)*(length(data$logY)/(length(data$logY)-K(x)-1))
-AICc.mem(modFM)
-AIC.sum <- as.data.frame(cbind(AICc.mem(modFM), AICc.mem(modBtrophic), AICc.mem(modBrt), AICc.mem(modBall), AICc.mem(modExp), AICc.mem(modBasic)))
-names(AIC.sum) <- c('modFM', 'modBtrophic', 'modBrt', 'modBall', 'modExp', 'modBasic')
-
-#for fewer random effects
-q <- 2 * 1
-#AIC.sum$modBasici <- 
-  AICc.mem(modBasici)
-
-q <- 1
-#AIC.sum$modBasicii <- 
-  AIC(modBasicii)
-#AIC.sum$modBasic3 <- AICc.mem(modBasic3)
-
-AICc.mem(modBasic)
-
-AIC.sum
-
-## model averaging:
-model.avg(modBallT, modBtrophic, modFM, modBall) -> m.avg  #modFM, 
-m.avg
-
-confint(m.avg)
-
-summary(modBtrophic)
-
-confint(modBtrophic) 
-
-### playing with caterpillar plots
-resids <- residuals(modBtrophic)
-
-## save model objects for different datasets for Figure 2 plotting
-data <- SST4
-modBtrophic4<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-modBall<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-modBallT<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-m.avg.4 <- model.avg(modBtrophic4, modBall, modBallT)
 
 
-data <- SST5
-modBtrophic5<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-modBall<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-modBallT<-lmer(logY.rs ~ logSc*log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*HigherT + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
-m.avg.5 <- model.avg(modBtrophic5, modBall, modBallT)
+
