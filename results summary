@@ -11,6 +11,59 @@ Random terms (all models):
 ‘1 + logSc | Entry’, ‘1 + logSc | ExptA’, ‘1 + logSc | Study’
 
 
+> summary(mod2F)
+Linear mixed model fit by REML ['lmerMod']
+Formula: logY.rs ~ logSc + log(Tscale) + (1 + logSc | Entry) + (1 + logSc |      ExptA) + (1 + logSc | Study)
+   Data: data
+
+REML criterion at convergence: 1435.9
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.9249 -0.4160 -0.0171  0.3768  4.1729 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ Entry    (Intercept) 0.384057 0.61972       
+          logSc       0.033341 0.18260  0.08 
+ ExptA    (Intercept) 0.713037 0.84442       
+          logSc       0.004682 0.06842  0.24 
+ Study    (Intercept) 3.580999 1.89235       
+          logSc       0.040141 0.20035  -0.18
+ Residual             0.021424 0.14637       
+Number of obs: 2623, groups:  Entry, 558; ExptA, 371; Study, 91
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  5.39651    0.21375  25.247
+logSc        0.23138    0.02588   8.942
+log(Tscale)  0.11859    0.05874   2.019
+
+Correlation of Fixed Effects:
+            (Intr) logSc 
+logSc       -0.113       
+log(Tscale)  0.032 -0.002
+
+
+> confint(mod2F)
+Computing profile confidence intervals ...
+                   2.5 %    97.5 %
+.sig01       0.000000000 0.6967725
+.sig02                NA        NA
+.sig03                NA        NA
+.sig04                NA        NA
+.sig05                NA        NA
+.sig06                NA        NA
+.sig07                NA        NA
+.sig08                NA        NA
+.sig09                NA        NA
+.sigma                NA        NA
+(Intercept)  4.976123882 5.8174486
+logSc        0.180179046 0.2824252
+log(Tscale) -0.002740403 0.2370427
+
+
+
 TABLE A1: APPENDIX
 
 > mod1.comp

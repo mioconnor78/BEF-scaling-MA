@@ -9,27 +9,23 @@ mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + l
 
 mod <- mod4
 
+mod2F <- lmer(logY.rs ~ logSc + log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
-mod <- mod3
+mod <- mod2F
 
 
-pdf(file = "catplotBtrophicEntry.pdf", width = 7.5, height = 3)
+pdf(file = "catplotEntry.pdf", width = 7.5, height = 3)
 # make the caterpillar plot for Entry level coefs
 cat.plot <- sjp.lmer(mod, sort = "logSc", ri.nr = 1, fade.ns = TRUE, free.scale = TRUE, geom.colors = c(1, 1), showValueLabels = FALSE)
 dev.off()
 
-pdf(file = "catplotBtrophicExptA.pdf", width = 7.5, height = 3)
+pdf(file = "catplotExptA.pdf", width = 7.5, height = 3)
 # make the caterpillar plot for ExptA level coefs
 cat.plot2 <- sjp.lmer(mod, sort = "logSc", ri.nr = 2, fade.ns = TRUE, free.scale = TRUE, geom.colors = c(1, 1), showValueLabels = FALSE)
 dev.off()
 
-pdf(file = "catplotBtrophicStudy.pdf", width = 7.5, height = 3)
+pdf(file = "catplotStudy.pdf", width = 7.5, height = 3)
 # make the caterpillar plot for Study level coefs
 cat.plot3 <- sjp.lmer(mod, sort = "logSc", ri.nr = 3, fade.ns = TRUE, free.scale = TRUE, geom.colors = c(1, 1), showValueLabels = FALSE)
 dev.off()
 
-#this appears to maybe be just plotting ranefs based on expt-level random effects. 
-
-## other plots
-sjp.lmer(mod, type = "fe.cor")
-sjp.lmer(mod, type = "re.qq")
