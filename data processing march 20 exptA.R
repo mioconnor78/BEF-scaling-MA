@@ -82,11 +82,12 @@ SST2 <- SST2[which(SST2$Yunits!='rate'),]
 ### need to estimate the duration of each experiment:
 maxTime <- ddply(SST2, .(ExptA, FinalT), summarise, max(as.numeric(as.character(Tscale))))
 names(maxTime) <- c('ExptA', 'FinalT','maxTscale')
-maxTime2 <- subset(maxTime, maxTime$FinalT=="Y", select=1:3, drop=TRUE)
-merge(SST2, maxTime2, by.x = "ExptA", by.y = "ExptA", all.x = TRUE, all.y = TRUE) -> merged
+maxTime2 <- subset(maxTime2, maxTime$FinalT=="Y", select=1:3, drop=TRUE) #get the final time for just the longest time sampled
+merge(SST2, maxTime, by.x = "ExptA", by.y = "ExptA", all.x = TRUE, all.y = TRUE) -> merged
 SST2<-merged
 SST2 <- SST2[,-(30)] # get rid of erroneous finalT
 SST2$logMaxTime <- log(as.numeric(as.character(SST2$maxTscale)))
+
 
 ## transform columns
 SST2$logY <- log(SST2$value)
