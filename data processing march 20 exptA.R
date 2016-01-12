@@ -83,8 +83,9 @@ SST2 <- SST2[which(SST2$Yunits!='rate'),]
 maxTime <- ddply(SST2, .(ExptA, FinalT), summarise, max(as.numeric(as.character(Tscale))))
 names(maxTime) <- c('ExptA', 'FinalT','maxTscale')
 maxTime2 <- subset(maxTime, maxTime$FinalT=="Y", select=1:3, drop=TRUE)
-merge(SST2, maxTime, by.x = "ExptA", by.y = "ExptA", all.x = TRUE, all.y = TRUE) -> merged
+merge(SST2, maxTime2, by.x = "ExptA", by.y = "ExptA", all.x = TRUE, all.y = TRUE) -> merged
 SST2<-merged
+SST2 <- SST2[,-(30)] # get rid of erroneous finalT
 SST2$logMaxTime <- log(as.numeric(as.character(SST2$maxTscale)))
 
 ## transform columns
@@ -118,8 +119,8 @@ plot(SST4$logY.rs ~ SST4$logS, main = 'SST4.rs2')
 
 ## remove outliers based on previous analysis using visual inspection of plot(modBasic)
 dim(SST4)
-SST4 <- subset(SST4, SST4$Study!=83, select=1:(n+15), drop=TRUE)
-SST4 <- subset(SST4, SST4$Study!=177, select=1:(n+15), drop=TRUE) 
+SST4 <- subset(SST4, SST4$Study!=83, select=1:(n+14), drop=TRUE)
+SST4 <- subset(SST4, SST4$Study!=177, select=1:(n+14), drop=TRUE) 
 #SST4 <- subset(SST4, SST4$Mno!=796, select=1:38, drop=TRUE) # based on looking at residuals of individual regressions, this one is an extreme outlier (below)
 #SST4 <- subset(SST4, SST4$Mno!=826, select=1:38, drop=TRUE) # searching for the outlier in plot(modF1)
 
@@ -138,7 +139,7 @@ plot(SST4$logY.rs ~ SST4$logSc, main = 'SST4.rs2')
 ## upon inspection, I can see that some studies (e.g., 8) will have some rescaled values and some not rescaled, which would bring the intercepts together. shouldn't be a problem.
 
 #remove carnivores
-SST5 <- subset(SST4, SST4$TG1!="3", select=1:(n+20), drop=TRUE) 
+SST5 <- subset(SST4, SST4$TG1!="3", select=1:(n+19), drop=TRUE) 
 
 write.csv(SST5, 'SST5.csv')
 
