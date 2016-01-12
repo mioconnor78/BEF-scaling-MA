@@ -30,7 +30,7 @@ AICc.mem <- function(x) -2*as.numeric(logLik(x)) + 2*K(x)*(length(data$logY.rs)/
 
 ## Determine best random effects structure for competing level-1 models (following O'Connor et al 2007)
 ## [use reml = FALSE for comparison with models with no random effects. Then, switch to reml = TRUE for random effects comparisons.]
-## I'm not comparing lm with lmer fits due to differences in their estimation http://glmm.wikidot.com/faq)
+## I'm not comparing lm with lmer fits due to differences in their estimation http://glmm.wikidot.com/faq
 
 # Model 1 [Eqn 1, main text], with different random effects structures
 mod1 <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) +  (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
@@ -76,19 +76,19 @@ model.sel(mod3, mod3i, mod3iii, mod3iv, mod3v)
 model.sel(mod2, mod2i, mod2iii, mod2iv, mod2v)
 
 
-### [Table 1, main text] having determined that random effects are needed in all models, compete basic models 
+### [Table 2, main text] having determined that random effects are needed in all models, compete basic models 
 anova(modBasic, modBasic2)
 anova(modBasic2, modBasic3)
 
-### [Table 2, MAIN TEXT] comparison of best level 1 model, using REML = TRUE 
+### [Table 2, MAIN TEXT] comparison of best level 1 model, using REML = FALSE 
 mod1F <- lmer(logY.rs ~ logSc + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 mod2F <- lmer(logY.rs ~ logSc + log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 mod3F <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 model.sel(mod1F, mod2F, mod3F)
 
-anova(mod3F, mod2F)
-anova(mod2F, mod1F)
+anova(mod1F, mod2F)
+anova(mod2F, mod3F)
 
 ######################################################################
 ### Section 2: Testing different level-2 models. 
