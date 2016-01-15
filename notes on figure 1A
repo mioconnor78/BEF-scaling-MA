@@ -1,0 +1,105 @@
+> rand.cat <- ddply(data, .(week, Tank, invT, trophic.level), summarize, mean(NPP2))
+> names(rand.cat) <- c('Week', 'Tank', 'invT','TL', 'NPP2')
+> Entry.coefs <- data.frame(coef(modNPP)$week) #
+> Entry.coefs$week <- rownames(Entry.coefs)
+> S <- merge(rand.cat, Entry.coefs, by.x = 'Week', by.y = 'week', all = FALSE)
+> head(S)
+  Week Tank     invT  TL     NPP2 X.Intercept. I.invT...mean.invT.. trophic.levelPZ trophic.levelPZN
+1    4    1 38.35956   P 53.91023     3.630546           -0.6231066       0.1241901        -0.013274
+2    4    2 39.52435 PZN 48.15502     3.630546           -0.6231066       0.1241901        -0.013274
+3    4    3 38.91098   P 32.61389     3.630546           -0.6231066       0.1241901        -0.013274
+4    4    4 38.58398 PZN 42.16120     3.630546           -0.6231066       0.1241901        -0.013274
+5    4    5 39.02983 PZN 47.32224     3.630546           -0.6231066       0.1241901        -0.013274
+6    4    6 39.45625   P 26.79153     3.630546           -0.6231066       0.1241901        -0.013274
+  I.invT...mean.invT...trophic.levelPZ I.invT...mean.invT...trophic.levelPZN
+1                           -0.2936087                             0.1363928
+2                           -0.2936087                             0.1363928
+3                           -0.2936087                             0.1363928
+4                           -0.2936087                             0.1363928
+5                           -0.2936087                             0.1363928
+
+
+> ## construct predicted slopes for trophic groups
+> S$TL.term <- ifelse(S$TL == 'P', S$I.invT...mean.invT.., 0)
+> S$TL.term <- ifelse(S$TL == 'PZ', (S$I.invT...mean.invT.. + S$I.invT...mean.invT...trophic.levelPZ), S$TL.term)
+> S$TL.term <- ifelse(S$TL == 'PZN', (S$I.invT...mean.invT.. + S$I.invT...mean.invT...trophic.levelPZN), S$TL.term)
+> #add week ranefs
+> ranefs <- data.frame(ranef(modNPP)$week[,2])
+> ranefs$week <- as.numeric(rownames(ranefs))+3
+> S2 <- merge(S, ranefs, by.x = 'Week', by.y = 'week', all= FALSE)
+> head(S2)
+  Week Tank     invT  TL     NPP2 X.Intercept. I.invT...mean.invT.. trophic.levelPZ trophic.levelPZN
+1    4    1 38.35956   P 53.91023     3.630546           -0.6231066       0.1241901        -0.013274
+2    4    2 39.52435 PZN 48.15502     3.630546           -0.6231066       0.1241901        -0.013274
+3    4    3 38.91098   P 32.61389     3.630546           -0.6231066       0.1241901        -0.013274
+4    4    4 38.58398 PZN 42.16120     3.630546           -0.6231066       0.1241901        -0.013274
+5    4    5 39.02983 PZN 47.32224     3.630546           -0.6231066       0.1241901        -0.013274
+6    4    6 39.45625   P 26.79153     3.630546           -0.6231066       0.1241901        -0.013274
+  I.invT...mean.invT...trophic.levelPZ I.invT...mean.invT...trophic.levelPZN    TL.term
+1                           -0.2936087                             0.1363928 -0.6231066
+2                           -0.2936087                             0.1363928 -0.4867138
+3                           -0.2936087                             0.1363928 -0.6231066
+4                           -0.2936087                             0.1363928 -0.4867138
+5                           -0.2936087                             0.1363928 -0.4867138
+6                           -0.2936087                             0.1363928 -0.6231066
+  ranef.modNPP..week...2.
+1               0.1230789
+2               0.1230789
+3               0.1230789
+4               0.1230789
+5               0.1230789
+6               0.1230789
+
+
+## summary with appropriate number of observations: 
+NPP.TL <- ddply(S2, .(Week, TL), summarize, mean(TL.term))
+
+## ok, so this is a table with every week x TG combination and its estimated temp slope
+> NPP.TL
+   Week  TL        ..1
+1     4   P -0.6231066
+2     4  PZ -0.9167153
+3     4 PZN -0.4867138
+4     5   P -0.7128850
+5     5  PZ -1.0064937
+6     5 PZN -0.5764922
+7     6   P -1.0249084
+8     6  PZ -1.3185171
+9     6 PZN -0.8885156
+10    7   P -0.5871637
+11    7  PZ -0.8807724
+12    7 PZN -0.4507709
+13    8   P -0.7566474
+14    8  PZ -1.0502561
+15    8 PZN -0.6202546
+16    9   P -0.7724018
+17    9  PZ -1.0660105
+18    9 PZN -0.6360089
+
+
+
+NPP.ranefs <- ddply(S2, .(Week, TL), summarize, mean(ranef.modNPP..week...2.)) #this is the same, for ranefs
+> head(NPP.ranefs)
+  Week  TL        ..1
+1    4   P 0.12307887
+2    4  PZ 0.12307887
+3    4 PZN 0.12307887
+4    5   P 0.03330047
+5    5  PZ 0.03330047
+6    5 PZN 0.03330047
+
+
+NPP.S <- merge(NPP.TL, NPP.ranefs, by = c('Week', 'TL'), all= FALSE)
+
+NPP.S$Ea <- NPP.S$..1.x + NPP.S$..1.y   #Ea is the combined slope, so b for the BEF project. So it's the main effect + ranefs for each group. in the BEF case, that would be each entry (=ExptA).
+
+Ea.sumNPP <- ddply(NPP.S, .(TL), summarize, mean(Ea))
+Ea.sumNPP2 <- ddply(NPP.S, .(TL), summarize, se(Ea))
+Ea.sumNPPs <- merge(Ea.sumNPP, Ea.sumNPP2, by = 'TL')
+
+   TL      means        se
+1   P -0.7461855 0.1265061
+2  PZ -1.0397942 0.1265061
+3 PZN -0.6097927 0.1265061
+
+## so the equivalent to this table would be these values for TL, and ecosystem, and the syst*detrit interaction (??)
