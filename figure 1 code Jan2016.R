@@ -54,17 +54,22 @@ b.TGS2 <- as.data.frame(cbind(b.TGS$group, b.TGS$est, b.TGS$se))
 names(b.TGS2) <- c('group', 'est', 'se')
 TGint <- b.TGS2[(b.TGS2$group == 'T4'),]
 
-DO <- c('T4', '-0.31286869838985', '0.0202570171561124')
 
 class(b.sums$group)
 
-row <- (c(as.factor('NA'), 'NA','NA'))
+#row <- (c(as.factor('NA'), 'NA','NA'))
 b.sums <- (rbind(b.sumt, b.sumSm, c(as.factor('T4'), '-0.31286869838985', '0.0202570171561124'))) # just have to add that interaction coefficient, and then the slopes are done. decide on intercepts.
 b.sums$se <- as.numeric(b.sums$se)
 b.sums$est <- as.numeric(b.sums$est)
 b.sums$group <- c("Primary Prod.", "Herbivores", "Detritovores", "Aquatic", "Terrestrial", "Terr.*Detrit.")
 
-
+## really, the levels need to be: Aquatic PP, Aquatic H, Aquatic D, Terr PP and Terr D.
+newbs <- (rbind(b.sumt, b.sumSm[2,], b.TGS2[5,]))
+rownames(newbs) <- c(1, 2, 3, 4, 5)
+newbs$se <- as.numeric(newbs$se)
+newbs$est <- as.numeric(newbs$est)
+b.sums <-  newbs                
+b.sums$group <- c("Aq. Primary Prod.", "Aq. Herbivores", "Aq. Detritovores", "Terr. Prim. Prod", "Terr.*Detrit.")
 
 ### two-paneled figure
 
@@ -92,7 +97,7 @@ var.names <- (b.sums[,1])
 a <- 0
 for (i in 1:length(b.sums[,1])) {                                            
   points(ests.B[i], i+a, pch = 19, cex = 1.2, col = 1) 
-  lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+a, i+a), col = 1, lwd = 2)
+  lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+a, i+a), col = 'gray60', lwd = 2)
   text(-0.45, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
   text(0.6, length(b.sums[,1])+ .2, 'B', cex = 1.2)
 }
@@ -106,6 +111,8 @@ abline(h = 5.5, lty = 3, col = 'grey40')
 mtext(side = 1, "Slope coefficients", line = 3)                                              
 mtext(side = 3, "", line = 1, cex = 0.8)   # add title
 box()                                          
+
+dev.off()
 
 ### INTERCEPTS
 par(mar=c(5,8,4,4))  #pin = c(2.3, 3.5)), but this doesn't seem to work with mar
