@@ -61,7 +61,7 @@ dev.off()
 
 
 pdf(file = "figure deltaY Vellend.pdf", width = 6, height = 6)
-hist(Y.func(data$SR_Year2_CT, data$SR_Year1_CT), breaks = 40, main = 'Change in function predicted for Vellend plots')
+hist(Y.func(data$SR_Year2_CT, data$SR_Year1_CT), col = 'gray40', breaks = 40, main = 'Change in function predicted for Vellend plots', xlab = 'Expected Biomass Change (Y.2/Y.1)')
 abline(v = 0.9, lwd = 2)
 abline(v = 1.1, lwd = 2)
 dev.off()
@@ -126,13 +126,13 @@ legend(-5, 105, c('YR = 1', 'YR = 0.9', 'YR = 0.8', 'YR = 0.5', 'YR = 1.1', 'YR 
 dev.off()
 
 pdf(file = "figure deltaY Elahi alg.pdf", width = 6, height = 6)
-hist(Y.func(data4[data4$Trophic == '1',]$endRich.y, data4[data4$Trophic == '1',]$initialRich), breaks = 40, main = 'Change in function predicted for Elahi alg', xlab = 'predicted proportional change in function')
+hist(Y.func(data4[data4$Trophic == '1',]$endRich.y, data4[data4$Trophic == '1',]$initialRich), col = 'gray40',  breaks = 40, main = 'Change in function predicted for Elahi alg', xlab = 'Expected Biomass Change (Y.2/Y.1)')
 abline(v = 0.9, lwd = 2)
 abline(v = 1.1, lwd = 2)
 dev.off()
 
 ## for grazers
-b <- 0.26 # scaling exponent
+b <- 0.47 # scaling exponent
 S.1 <- seq(1, 100, 1) #species richness before loss
 #S.2 number of species lost
 #Y.R proportion biomass remaining after species loss
@@ -152,7 +152,7 @@ legend(-5, 105, c('YR = 1', 'YR = 0.9', 'YR = 0.8', 'YR = 0.5', 'YR = 1.1', 'YR 
 dev.off()
 
 pdf(file = "figure deltaY Elahi herbs.pdf", width = 6, height = 6)
-hist(Y.func(data4[data4$Trophic == '2',]$endRich.y, data4[data4$Trophic == '2',]$initialRich), breaks = 40, main = 'Change in function predicted for Elahi alg', xlab = 'predicted proportional change in function')
+hist(Y.func(data4[data4$Trophic == '2',]$endRich.y, data4[data4$Trophic == '2',]$initialRich), col = 'gray40', breaks = 40, main = 'Change in function predicted for Elahi alg', xlab = 'predicted proportional change in function')
 abline(v = 0.9, lwd = 2)
 abline(v = 1.1, lwd = 2)
 dev.off()
