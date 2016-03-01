@@ -13,7 +13,7 @@ library(MuMIn)
 library(lmerTest)
 #library(RLRsim)
 
-data <- SST5
+data <- ("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/SST5.csv")
 
 
 ## equations for estimating degrees of freedom for models with different random effects, following Bolker et al wiki (ADD URL):

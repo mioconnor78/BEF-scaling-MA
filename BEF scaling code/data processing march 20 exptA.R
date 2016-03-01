@@ -23,10 +23,8 @@ library(reshape2)
 # added HigherT values for Bret-Harte and Erskine, Gtim of 10 days to fungi studies
 # converted FTG to numerical such that: (C = '3', P = '1', H = '2', D = '4', M = '5', O = '6'))
 
-load(".data/SST5.csv")
-
 #Read in meta master
-metamaster=read.csv(".data/BEF_MetaMaster_2011_08_29_exptA.csv")
+metamaster=read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/BEF_MetaMaster_2011_08_29_exptA.csv")
 
 #Subset data
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
