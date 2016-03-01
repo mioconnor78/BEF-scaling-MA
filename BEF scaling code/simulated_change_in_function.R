@@ -15,8 +15,9 @@ library(ggplot2)
 #Vector of scaling coefficients
 b <- c(0.25, 0.47, 0.53)
 
-
 ## below: consider changing sd_change, maybe the mean values of change. what are the units on those? log of % rate of change. log(S1/S2) = rate*dur.   SI = S.o* exp(RD); make sure the model structure is ok (lines 37 below)
+# note on 3/1: the loss is the rate of loss. so 1 species / decade * decade gives us log(S2/S1) per decade. So I think this is analagous to the values in marks histogram... but not the spreadsheet. Need good estimates of deltaSR/decade for this. 
+# right now, the values of 0.1 are equivalent to 1 species per decade.
 
 #list of richness changes
 change <- list(loss = -0.01, hold = 0, gain = 0.01)
@@ -63,7 +64,8 @@ ggplot(data=simDF, aes(x=f0, y=f1))+
 ggplot(data=simDF, aes(x=lr_s))+ 
   geom_histogram() +
   facet_grid(trophic_group~scenario, scale="free") + 
-  geom_vline(xintercept=0, col="red")
+  geom_vline(xintercept=0, col="red") 
+  # geom_vline(xintercept=mean(simDF$lr_s), col = 3) ## help? how do we add a line for the mean of each distribution in each panel?
 
 
 #log ratio of function change

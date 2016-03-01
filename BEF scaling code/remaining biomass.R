@@ -39,7 +39,8 @@ dev.off()
 
 ### bring in vellend data
 
-data=read.csv("./vellend.csv")
+data=read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/vellend.csv")
+data <- data[(which(data$SR_Year1_CT!='')),]
 data$dSR <- data$SR_Year1_CT - data$SR_Year2_CT
 hist(data$dSR, breaks = 40)
 hist(data$SR_Year1_CT, breaks = 40)
