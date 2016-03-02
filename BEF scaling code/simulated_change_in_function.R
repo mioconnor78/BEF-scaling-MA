@@ -31,7 +31,8 @@ nsims = 500
 simDF <- data.frame(expand.grid(trophic_group = rep(1:3, nsims),
                                  scenario=c("loss", "hold", "gain")),
                      
-                     s0 = round(runif(9*nsims, 5, 40))) %>%
+                     #s0 = round(runif(9*nsims, 5, 40))) %>%
+                    s0 = round(rpois(9*nsims, 22))) %>%
   #calculate change in diversity
   group_by(scenario) %>%
   mutate(s1 = s0*exp(nYears*rnorm(3*nsims, change[[scenario[1]]], sd_change))) %>%
@@ -68,8 +69,11 @@ ggplot(data=simDF, aes(x=lr_s))+
   # geom_vline(xintercept=mean(simDF$lr_s), col = 3) ## help? how do we add a line for the mean of each distribution in each panel?
 
 
+mean_lrf <- data.frame(scenario = c('loss', 'hold', 'gain'), trophic.group = c(1,2,3))
+
 #log ratio of function change
 ggplot(data=simDF, aes(x=lr_f))+ 
   geom_histogram() +
   facet_grid(trophic_group~scenario, scale="free") + 
-  geom_vline(xintercept=0, col="red")
+  geom_vline(xintercept=0, col="red") +
+  geom_vline(aes(xintercept = lr_f), mean_lrf, col = 3)
