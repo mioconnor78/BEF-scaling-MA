@@ -24,7 +24,7 @@ library(reshape2)
 # converted FTG to numerical such that: (C = '3', P = '1', H = '2', D = '4', M = '5', O = '6'))
 
 #Read in meta master
-metamaster=read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/BEF_MetaMaster_2011_08_29_exptA.csv")
+metamaster=read.csv("../data/BEF_MetaMaster_2011_08_29_exptA.csv")
 
 #Subset data
 metamaster2=ddply(metamaster,1,.progress="text",function(x) { 
@@ -41,7 +41,7 @@ metamaster.means$value.st <- metamaster.means$value/metamaster.means$Mean.value
 head(metamaster.means)
 
 #bring in restrt col from mary's file
-mo<-read.csv("./input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
+mo<-read.csv("../data/input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
 restrt <- ddply(mo, .(Entry, Mno, restrt, Study), summarize, mean(YEmono))
 metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
 metamaster3 <- metamaster3[,-(5)]
@@ -142,7 +142,7 @@ plot(SST4$logY.rs ~ SST4$logSc, main = 'SST4.rs2')
 #remove carnivores
 SST5 <- subset(SST4, SST4$TG1!="3", select=1:(n+19), drop=TRUE) 
 
-write.csv(SST5, 'SST5.csv')
+write.csv(SST5, '../data/SST5.csv')
 
 ########## INITIAL DATA PREP COMPLETE #########
 
@@ -249,7 +249,7 @@ refs <- ddply(SST, .(Ref), summarize, length(Entry))
 
 
 
-write.csv(refs, 'refs.csv')
+write.csv(refs, '../data/refs.csv')
 
 
 ## exploring error sturcture
