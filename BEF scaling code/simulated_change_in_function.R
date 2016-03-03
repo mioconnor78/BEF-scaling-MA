@@ -2,7 +2,7 @@
 #' @title Simulations of change in diversity leading to changes in function
 #' 
 #' @author Jarrett Byrnes
-#' @author jarrett.byrnes@umb.edi
+#' @author jarrett.byrnes@umb.edu
 #' 
 #' @log
 #'  2/25/2016 - First draft
@@ -21,7 +21,7 @@ b <- c(0.25, 0.47, 0.53)
 
 #list of richness changes
 change <- list(loss = -0.01, hold = 0, gain = 0.01)
-sd_change = 0.02 
+sd_change = 0.2
 
 #some other params - might want to kick nsims up? Or not - it's a lot
 nYears<- 20
@@ -31,10 +31,12 @@ nsims = 500
 simDF <- data.frame(expand.grid(trophic_group = rep(1:3, nsims),
                                  scenario=c("loss", "hold", "gain")),
                      
-                     s0 = round(runif(9*nsims, 5, 40))) %>%
+                   # s0 = round(runif(9*nsims, 5, 40))) %>%
+  s0 = round(rlnorm(9*nsims, 3, 0.83) )) %>% #from distributions of S0 in dornelas & vellend
   #calculate change in diversity
   group_by(scenario) %>%
-  mutate(s1 = s0*exp(nYears*rnorm(3*nsims, change[[scenario[1]]], sd_change))) %>%
+  #  mutate(s1 = s0*exp(nYears*rnorm(3*nsims, change[[scenario[1]]], sd_change))) %>%
+    mutate(s1 = s0*rnorm(3*nsims, exp(nYears*change[[scenario[1]]]), 0.2)) %>%
   ungroup() %>%
   
   #caculate function for each trophic group before and after
