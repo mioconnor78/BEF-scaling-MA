@@ -41,6 +41,7 @@ simDF <- data.frame(expand.grid(trophic_group = rep(1:3, nsims),
   group_by(scenario) %>%
     mutate(s1 = s0*rnorm(3*nsims, exp(nYears*change[[scenario[1]]]), 0.2)) %>%
   ungroup() %>%
+
   
   #caculate function for each trophic group before and after
   group_by(trophic_group) %>%
@@ -53,30 +54,38 @@ simDF <- data.frame(expand.grid(trophic_group = rep(1:3, nsims),
 
 #Plotting
 #richness before and after
-ggplot(data=simDF, aes(x=s0, y=s1))+ 
+ggplot(data=simDF, aes(x=s0, y=s1, cex.axis = 2, las = 2)) + 
   geom_point() + 
-  facet_wrap(~scenario, scale="free_y") + 
-  geom_abline(slope=1, intercept=0, col="red")
+  #facet_wrap(~scenario, scale="free_y") + 
+  geom_abline(slope=1, intercept=0, col="red") +
+geom_abline(slope = S.2.func(0.9, simDF$s0), intercept = 0)
+
+S.2.func = function(Y, S.1) exp((1/b) * ( log(Y) + b*log(S.1) ))
+
 
 #function before and after
 ggplot(data=simDF, aes(x=f0, y=f1))+ 
   geom_point() +
-  facet_grid(trophic_group~scenario, scale="free") + 
+  facet_grid(~trophic_group, scale="free") +   #~scenario
   geom_abline(slope=1, intercept=0, col="red")
 
 
 #log ratio of richness change
 ggplot(data=simDF, aes(x=lr_s))+ 
   geom_histogram() +
-  facet_grid(trophic_group~scenario, scale="free") + 
+  facet_grid(~trophic_group, scale="free") +  #~scenario
   geom_vline(xintercept=0, col="red") 
   # geom_vline(xintercept=mean(simDF$lr_s), col = 3) ## help? how do we add a line for the mean of each distribution in each panel?
 
+
+mean_lrf <- data.frame(scenario = c('loss', 'hold', 'gain'), trophic.group = c(1,2,3))
 
 #log ratio of function change
 sdf <- simDF %>% group_by(trophic_group, scenario) %>% summarise(m = mean(lr_f))
 
 ggplot(data=simDF, aes(x=lr_f))+ 
-  geom_histogram(bins=20) +
-  facet_grid(trophic_group~scenario, scale="free") + 
-  geom_vline(xintercept=0, col="red") 
+
+  geom_histogram() +
+  facet_grid(~trophic_group, scale="free") +  #~scenario
+  geom_vline(xintercept=0, col="red") +
+  geom_vline(mapping = aes(xintercept = mean(simDF$lr_f), col = 3))
