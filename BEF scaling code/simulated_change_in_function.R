@@ -5,12 +5,15 @@
 #' @author jarrett.byrnes@umb.edu
 #' 
 #' @log
+#'  3/3/2016 - fixed implementation of diversity 
+#'              loss to no longer be compounded.
 #'  2/25/2016 - First draft
 ######################################################################
 
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+set.seed(2016)
 
 #Vector of scaling coefficients
 b <- c(0.25, 0.47, 0.53)
@@ -21,7 +24,7 @@ b <- c(0.25, 0.47, 0.53)
 
 #list of richness changes
 change <- list(loss = -0.01, hold = 0, gain = 0.01)
-sd_change = 0.2
+sd_change = 0.2 #should check this value
 
 #some other params - might want to kick nsims up? Or not - it's a lot
 nYears<- 20
@@ -33,9 +36,9 @@ simDF <- data.frame(expand.grid(trophic_group = rep(1:3, nsims),
                      
                    # s0 = round(runif(9*nsims, 5, 40))) %>%
   s0 = round(rlnorm(9*nsims, 3, 0.83) )) %>% #from distributions of S0 in dornelas & vellend
-  #calculate change in diversity
+  #calculate change in diversity where we draw a percentage of change after 20
+  #years from a distribution of exp(nYears*change rate)
   group_by(scenario) %>%
-  #  mutate(s1 = s0*exp(nYears*rnorm(3*nsims, change[[scenario[1]]], sd_change))) %>%
     mutate(s1 = s0*rnorm(3*nsims, exp(nYears*change[[scenario[1]]]), 0.2)) %>%
   ungroup() %>%
   
@@ -71,7 +74,9 @@ ggplot(data=simDF, aes(x=lr_s))+
 
 
 #log ratio of function change
+sdf <- simDF %>% group_by(trophic_group, scenario) %>% summarise(m = mean(lr_f))
+
 ggplot(data=simDF, aes(x=lr_f))+ 
-  geom_histogram() +
+  geom_histogram(bins=20) +
   facet_grid(trophic_group~scenario, scale="free") + 
-  geom_vline(xintercept=0, col="red")
+  geom_vline(xintercept=0, col="red") 
