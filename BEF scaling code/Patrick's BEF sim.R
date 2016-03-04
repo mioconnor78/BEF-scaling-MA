@@ -11,10 +11,45 @@ require(dplyr)
 require(data.table)
 require(ggplot2)
 require(tidyr)
+require(ggExtra)
 
-com<-1000
-bV <- c(0.25, 0.47, 0.53) # vector of scaling coefficients - not sure where the upper two come from but I assume that they correspond with herbivores and carnivores
+com<-5000 #number of communities to simulate
+b <- c(0.25, 0.47, 0.53) # vector of scaling coefficients - not sure where the upper two come from but I assume that they correspond with herbivores and detritivores
 
+RR1<-rnorm(com,mean=1,sd=0.4)
+hist(RR1)
+range(RR1)
+
+RR1[RR1<0|RR1>2]<-NA
+hist(RR1)
+
+par(mfrow=c(1,4))
+hist(RR1)# richness change histogram
+hist(RR1^b[1], xlim=c(0,1.5)) #producer function
+hist(RR1^b[2], xlim=c(0,1.5)) #herbivore function
+hist(RR1^b[3], xlim=c(0,1.5)) #detritivore function
+
+gg1<-ggplot(data.frame(RR=RR1,YR=RR1^b[1]),aes(x=RR,y=YR))+
+  geom_point()+
+  theme_bw(base_size = 16)+
+  xlab("Proportion of initial richness")+
+  ylab("Proportion of initial function")+
+  geom_vline(aes(xintercept = mean(RR,na.rm=T)),color="blue")+
+  geom_hline(aes(yintercept = mean(RR,na.rm=T)),color="blue")+
+  geom_hline(aes(yintercept = mean(YR,na.rm=T)),color="red")
+
+pdf("Simulated BEF change.pdf")
+ggMarginal(gg1,type = "histogram")
+dev.off()
+
+
+
+
+
+
+
+
+#older sims####
 RR1<-rnorm(com,mean=1,sd=0.1)
 RR0.75<-rnorm(com,mean=0.75,sd=0.1)
 RR0.5<-rnorm(com,mean=0.5,sd=0.1)
@@ -33,7 +68,7 @@ BEF_change<-BEF_change%>%
   group_by(RR_mean,Type)%>%
   mutate(Mean_change=mean(Change))
 
-pdf("Simulated BEF change by trophic level.pdf")
+pdf("Simulated BEF change by trophic level.pdf", width = 12,height=12)
 ggplot(BEF_change,aes(x=Change))+
   geom_histogram(binwidth = 0.01)+
   facet_grid(Type~RR_mean,scale="free_y")+
@@ -44,8 +79,7 @@ ggplot(BEF_change,aes(x=Change))+
 dev.off()
 
 
-
-#older sims####
+#even older sims###
 b<-0.26
 
 RR1<-rnorm(1000,mean=1,sd=0.1)
