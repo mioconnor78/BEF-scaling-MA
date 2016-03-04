@@ -14,7 +14,7 @@ require(tidyr)
 require(ggExtra)
 
 com<-5000 #number of communities to simulate
-bV <- c(0.25, 0.47, 0.53) # vector of scaling coefficients - not sure where the upper two come from but I assume that they correspond with herbivores and detritivores
+b <- c(0.25, 0.47, 0.53) # vector of scaling coefficients - not sure where the upper two come from but I assume that they correspond with herbivores and detritivores
 
 RR1<-rnorm(com,mean=1,sd=0.4)
 hist(RR1)
@@ -25,9 +25,9 @@ hist(RR1)
 
 par(mfrow=c(1,4))
 hist(RR1)# richness change histogram
-hist(RR1^b[1], xlim=c(0,1.5))#producer function
-hist(RR1^b[2], xlim=c(0,1.5))#herbivore function
-hist(RR1^b[3], xlim=c(0,1.5))#detritivore function
+hist(RR1^b[1], xlim=c(0,1.5)) #producer function
+hist(RR1^b[2], xlim=c(0,1.5)) #herbivore function
+hist(RR1^b[3], xlim=c(0,1.5)) #detritivore function
 
 gg1<-ggplot(data.frame(RR=RR1,YR=RR1^b[1]),aes(x=RR,y=YR))+
   geom_point()+
