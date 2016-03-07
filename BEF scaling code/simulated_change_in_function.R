@@ -84,8 +84,8 @@ mean_lrf <- data.frame(scenario = c('loss', 'hold', 'gain'), trophic.group = c(1
 sdf <- simDF %>% group_by(trophic_group, scenario) %>% summarise(m = mean(lr_f))
 
 ggplot(data=simDF, aes(x=lr_f))+ 
-
-  geom_histogram() +
+  geom_histogram(bins=40) +
   facet_grid(~trophic_group, scale="free") +  #~scenario
   geom_vline(xintercept=0, col="red") +
-  geom_vline(mapping = aes(xintercept = mean(simDF$lr_f), col = 3))
+  xlim(c(-0.7,0.7))
+  
