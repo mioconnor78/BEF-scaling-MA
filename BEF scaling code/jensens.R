@@ -61,15 +61,28 @@ ggplot(data=jensens_frame, aes(x=initial_s, y=function_lost)) +
 ##### Look at this another way
 
 jensens_loss_frame <- data.frame(expand.grid(change = seq(1,10,.01), 
-                                        initial_s = 30, 
+                                        initial_s = c(10,20,30), 
                                         b=c(0.25, 0.47, 0.53))) %>%
   mutate(function_lost = fun_lost(initial_s, change, b)) %>%
   mutate(b=paste0("b = ", b)) 
 
-ggplot(data=jensens_loss_frame, aes(x=change, y=function_lost)) +
+ggplot(data=jensens_loss_frame %>% filter(initial_s==30), aes(x=change, y=function_lost)) +
   geom_line() +
   facet_wrap(~b, scale="free_y")+
   theme_bw(base_size=14) +
   ylab("Propotion of Productivity Lost\n") +
   xlab("Gain/Loss of Species") +
   scale_x_continuous(breaks=seq(0,10,2))
+
+
+
+ggplot(data=jensens_loss_frame, aes(x=change, y=function_lost, color=factor(initial_s))) +
+  geom_line(lwd=1.3) +
+  facet_wrap(~b)+
+  theme_bw(base_size=14) +
+  ylab("Propotion of Productivity Lost\n") +
+  xlab("Gain/Loss of Species") +
+  scale_x_continuous(breaks=seq(0,10,2)) +
+  scale_color_manual(values=c("red", "blue", "orange"), 
+                     guide=guide_legend(title = "Average Species\nRichness"))
+
