@@ -1,3 +1,5 @@
+library(dplyr)
+
 s <- 1:40
 f <- function(x, b=0.53) x^b
 
@@ -56,3 +58,18 @@ ggplot(data=jensens_frame, aes(x=initial_s, y=function_lost)) +
   ylab("Propotion of Productivity Lost") +
   xlab("Mean Diversity")
 
+##### Look at this another way
+
+jensens_loss_frame <- data.frame(expand.grid(change = seq(1,10,.01), 
+                                        initial_s = 30, 
+                                        b=c(0.25, 0.47, 0.53))) %>%
+  mutate(function_lost = fun_lost(initial_s, change, b)) %>%
+  mutate(b=paste0("b = ", b)) 
+
+ggplot(data=jensens_loss_frame, aes(x=change, y=function_lost)) +
+  geom_line() +
+  facet_wrap(~b, scale="free_y")+
+  theme_bw(base_size=14) +
+  ylab("Propotion of Productivity Lost\n") +
+  xlab("Gain/Loss of Species") +
+  scale_x_continuous(breaks=seq(0,10,2))
