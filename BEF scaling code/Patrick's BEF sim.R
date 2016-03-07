@@ -32,17 +32,39 @@ hist(RR1^b[3], xlim=c(0,1.5)) #detritivore function
 gg1<-ggplot(data.frame(RR=RR1,YR=RR1^b[1]),aes(x=RR,y=YR))+
   geom_point()+
   theme_bw(base_size = 16)+
+  xlim(0,2)+
+  ylim(0,1.5)+
   xlab("Proportion of initial richness")+
   ylab("Proportion of initial function")+
   geom_vline(aes(xintercept = mean(RR,na.rm=T)),color="blue")+
   geom_hline(aes(yintercept = mean(RR,na.rm=T)),color="blue")+
-  geom_hline(aes(yintercept = mean(YR,na.rm=T)),color="red")
+  geom_hline(aes(yintercept = mean(YR,na.rm=T)),color="red")+
+  geom_hline(aes(yintercept = 0.9), linetype = 2)+
+  geom_vline(aes(xintercept = 0.65), linetype = 2)
+  
+  
+ggMarginal(gg1,type = "histogram")        
+             
+  geom_hline(aes(xintercept = 0.9,color=1, lin)+
 
 pdf("Simulated BEF change.pdf")
 ggMarginal(gg1,type = "histogram")
 dev.off()
 
+gg2<-ggplot(data.frame(RR=RR1, YR=RR1^b[2]),aes(x=RR,y=YR))+
+  geom_point()+
+  theme_bw(base_size = 16)+
+  xlim(0,2)+
+  ylim(0,1.5)+
+  xlab("Proportion of initial richness")+
+  ylab("Proportion of initial function")+
+  geom_vline(aes(xintercept = mean(RR,na.rm=T)),color="blue")+
+  geom_hline(aes(yintercept = mean(RR,na.rm=T)),color="blue")+
+  geom_hline(aes(yintercept = mean(YR,na.rm=T)),color="red")+
+  geom_hline(aes(yintercept = 0.9), linetype = 2)+
+  geom_vline(aes(xintercept = 0.80), linetype = 2)
 
+ggMarginal(gg2, type = "histogram")
 
 
 
