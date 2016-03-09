@@ -13,11 +13,13 @@
 
 data <- SST5
 
+library(plyr)
+
 mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
 ## create the Entry, Study and Expt columns for later matching with random effect values
 rand.cat <- ddply(data, .(Entry, Study, ExptA, Sys1, TG1), summarize, mean(logY.rs))
-names(rand.cat) <- c('Entry', 'Study', 'ExptA','Syst','TG1', 'meanlogY')
+names(rand.cat) <- c('Entry', 'Study', 'ExptA','System','TG1', 'meanlogY')
 Entry.coefs <- data.frame(coef(mod4)$Entry) #this gives us the logS for entry. so we'd need to add only the expt and study level later. let's try that. AND, I can see that logSc here already includes the random effect
 Entry.coefs$Entry <- rownames(Entry.coefs)
 S <- merge(rand.cat, Entry.coefs, by = 'Entry', all = FALSE)
@@ -39,14 +41,15 @@ b.sum2 <- ddply(S, .(TG1), summarize, se(TG.term))
 b.sumt <- merge(b.sum, b.sum2, by = 'TG1')
 names(b.sumt) <- c('group', 'est', 'se')
 
-b.sumS <- ddply(S, .(Syst), summarize, mean(Sys.term))
-b.sumS2 <- ddply(S, .(Syst), summarize, se(Sys.term))
-b.sumSm <- merge(b.sumS, b.sumS2, by = 'Syst')
+b.sumS <- ddply(S, .(System), summarize, mean(Sys.term))
+b.sumS2 <- ddply(S, .(System), summarize, se(Sys.term))
+b.sumSm <- merge(b.sumS, b.sumS2, by = 'System')
 names(b.sumSm) <- c('group', 'est', 'se')
 
-# this isn't working, there is some problem with the class that the final row comes out as. just look at this and simplify it. 
-b.TG.S <- ddply(S, .(Syst, TG1), summarize, mean(TG.S.int))
-b.TG.S2 <- ddply(S, .(Syst, TG1), summarize, se(TG.S.int))
+# this isn't working, there is some problem with the class that the final row comes out as. just look at this and simplify it.
+## these are the standard errors of the observations, not the model output.
+b.TG.S <- ddply(S, .(System, TG1), summarize, mean(TG.S.int))
+b.TG.S2 <- ddply(S, .(System, TG1), summarize, se(TG.S.int))
 b.TGS <- cbind(b.TG.S, b.TG.S2)
 b.TGS$group <- paste(b.TGS$Syst, b.TGS$TG1, sep = "")
 names(b.TGS) <- c('Syst', 'TG1', 'est', 'Syst', 'TG1', 'se', 'group')

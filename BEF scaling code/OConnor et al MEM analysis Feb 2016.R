@@ -13,8 +13,8 @@ library(MuMIn)
 library(lmerTest)
 #library(RLRsim)
 
-data <- ("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/SST5.csv")
-
+# data <- read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/SST5.csv") 
+data <- SST5
 
 ## equations for estimating degrees of freedom for models with different random effects, following Bolker et al wiki (ADD URL):
 #q <- 2*2
@@ -208,13 +208,13 @@ anova(mod4, mod3F)
 ##### An alternate test for the effect of time within some groups (e.g., trophic groups)
 ### Table A4 ####
 
-data <- SST5
+data <- read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/SST5.csv")
 
 mod3F <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 mod3Fa <- lmer(logY.rs ~ logSc*log(Tscale)*Sys1 + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-mod3Fb <- lmer(logY.rs ~ logSc*log(Tscale)*TG1 + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod3Fb <- lmer(logY.rs ~ logSc*log(Tscale)*TG1 + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
 
 model.sel(mod3F, mod3Fa, mod3Fb)
 
@@ -236,7 +236,7 @@ data$no.levs <- ifelse(data$Slevels > 2, '2+', '2')
 data$Entry <- as.numeric(as.character(data$Entry))
 
 head(data)
-data1 <- data[,-(2:46)]
+data1 <- data[,-(3:46)]
 
 # Create S from Figure 3 code
 S$Entry <- as.numeric(as.character(S$Entry))

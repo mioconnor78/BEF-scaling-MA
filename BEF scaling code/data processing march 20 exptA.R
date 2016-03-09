@@ -45,12 +45,12 @@ metamaster.means$value.st <- metamaster.means$value/metamaster.means$Mean.value
 head(metamaster.means)
 
 #bring in restrt col from mary's file
-mo<-read.csv("../data/input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
+mo<-read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
 restrt <- ddply(mo, .(Entry, Mno, restrt, Study), summarize, mean(YEmono))
 metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
 metamaster3 <- metamaster3[,-(5)]
 
-n <- 27
+n <- length(colnames(metamaster3))
 SST<-subset(metamaster3, metamaster.means$Ygen=='SST', select=1:n, drop=TRUE) #down to 1 T H study
 SST<-subset(SST, SST$value.st!='NaN', select=1:n, drop=TRUE) 
 #SSTa<-subset(SST, SST$value!='NA', select=1:n, drop=TRUE) 
@@ -86,7 +86,7 @@ SST2 <- SST2[which(SST2$Yunits!='rate'),]
 ### need to estimate the duration of each experiment:
 maxTime <- ddply(SST2, .(ExptA, FinalT), summarise, max(as.numeric(as.character(Tscale))))
 names(maxTime) <- c('ExptA', 'FinalT','maxTscale')
-maxTime2 <- subset(maxTime2, maxTime$FinalT=="Y", select=1:3, drop=TRUE) #get the final time for just the longest time sampled
+maxTime2 <- subset(maxTime, maxTime$FinalT=="Y", select=1:3, drop=TRUE) #get the final time for just the longest time sampled
 merge(SST2, maxTime, by.x = "ExptA", by.y = "ExptA", all.x = TRUE, all.y = TRUE) -> merged
 SST2<-merged
 SST2 <- SST2[,-(30)] # get rid of erroneous finalT
@@ -146,7 +146,7 @@ plot(SST4$logY.rs ~ SST4$logSc, main = 'SST4.rs2')
 #remove carnivores
 SST5 <- subset(SST4, SST4$TG1!="3", select=1:(n+19), drop=TRUE) 
 
-write.csv(SST5, '../data/SST5.csv')
+write.csv(SST5, '/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/SST5.csv')
 
 ########## INITIAL DATA PREP COMPLETE #########
 

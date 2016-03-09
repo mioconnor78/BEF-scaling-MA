@@ -164,9 +164,15 @@ dev.off()
 
 pdf(file = "figure 1C.pdf", width = 6, height = 4)
 plot(5*S.1^b ~ S.1, pch = '', xlim = c(1, 150), ylim = c(0, 80), xlab = 'Species richness (S)', ylab = 'estimated biomass (Y)')
-b <- 0.26
+b.min <- 0.263 - 0.006
+b.max <- 0.263 + 0.006
+polygon(c((S.1), rev(S.1)), c((5*S.1^b.min), rev(5*S.1^b.max)), col = 'grey80', border = NA)
+b <- 0.263
 lines(5*S.1^b ~ S.1, lwd = 2, col = 1)
 
+b.min <- 0.16
+b.max <- 0.37
+polygon(c((S.1), rev(S.1)), c((5*S.1^b.min), rev(5*S.1^b.max)), col = 'grey80', border = NA)
 b <- 0.47
 lines(5*S.1^b ~ S.1, lwd = 2, col = 'gray40')
 
@@ -175,3 +181,22 @@ lines(5*S.1^b ~ S.1, lwd = 2, col = 'gray60')
 
 legend(0, 80, c('Plants and Algae', 'Aq. Herbivores', 'Aq. Detritivores'), pch=19, col = c('black', 'gray40', 'gray60'), bty = 'n')
 dev.off()
+
+
+
+> b.sums
+group        est          se
+1 Aq. Primary Prod.  0.2630658 0.005991561
+2    Aq. Herbivores  0.4697501 0.055009931
+3  Aq. Detritovores  0.5484531 0.024515434
+4  Terr. Prim. Prod  0.1976594 0.004599476
+5     Terr.*Detrit. -0.3128700 0.020256996
+
+##type III sums of squares in lmer mod4
+library(lmerTest)
+anova(mod4, type = 3)
+
+### use lmerTest to estimate confidence intervals for added fixed effects
+library(lmerTest)
+anova(mod4)
+lsmeans(mod4)

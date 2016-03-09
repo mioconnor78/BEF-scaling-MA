@@ -15,14 +15,14 @@ mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + l
 mod <- mod4
 
 rand.cat <- ddply(data, .(Entry, Study, ExptA, Sys1, TG1), summarize, mean(logY.rs))
-names(rand.cat) <- c('Entry', 'Study', 'ExptA','Syst','TG1', 'meanlogY')
+names(rand.cat) <- c('Entry', 'Study', 'ExptA','Syst','TG', 'meanlogY')
 Entry.coefs <- data.frame(coef(mod)$Entry) #this gives us the logS for entry. so we'd need to add only the expt and study level later. let's try that.
 Entry.coefs$Entry <- rownames(Entry.coefs)
 S <- merge(rand.cat, Entry.coefs, by = 'Entry', all = FALSE)
 
 ## constructing predicted slopes
 S$Sys.term <- ifelse(S$Syst == 'T', S$logSc.Sys1T, 0)
-S$TG.term <- ifelse(S$TG1 == '2', S$logSc.TG12, 0)
+S$TG.term <- ifelse(S$TG == '2', S$logSc.TG12, 0)
 S$TG.term <- ifelse(S$TG1 == '4', S$logSc.TG14, S$TG.term)
 S$TG.term <- ifelse((S$Syst=='T' & S$TG1=='4'), (S$logSc.TG14 + S$logSc.Sys1T.TG14), S$TG.term)
 
