@@ -19,7 +19,7 @@ E1 <- lmer (y ~ x + (1 | group), data=adf)
 #what did we get?
 display(E1)
 
-#simulated data to generate predictions
+#simulated coefficients to generate predictions
 E1.sim <- sim(E1)
 
 new_df <- data.frame(x=rnorm(100, 50,20), group=round(runif(100, 1,10)))
@@ -31,6 +31,15 @@ new_df$y_fixed_error <- rnorm(100, new_df$y_fixed, sigma.hat(E1.sim)) #could als
 new_df$y_with_ran <- new_df$y_fixed + sapply(1:100, function(i) a[[1]][i, new_df$group[1], 1]) #could also have done this with ranef(E1.sim) but it's complicated
 new_df$y_with_ran_error <- rnorm(100, new_df$y_with_ran, sigma.hat(E1.sim)) #could also have done this with ranef(E1.sim) but it's complicated
 
+
+###CIs of Ranefs for intercept
+library(tidyr)
+r_for_ci <- data.frame(ranef(E1.sim)[[1]]) %>%
+  gather(group, random_effect)
+
+ggplot(r_for_ci, aes(x=group, y=random_effect)) +
+  geom_jitter() +
+  stat_summary(fun.data="mean_sdl", color="red") #this is SD of the sims - might want a different function
 
 
 
