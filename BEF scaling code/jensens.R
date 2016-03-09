@@ -11,7 +11,9 @@ fun_lost <- function(s, ch, b=0.53)
 m <- 20 #mean richness
 ch <- 10 #deviation from mean - loss or gain
 
-par(mfrow=c(1,2))
+
+jpeg("jensens.jpg", width=800, height=400)
+par(mfrow=c(1,2), cex=1.2)
 
 #
 plot(s, f(s), type="l", xlab="Number of Species", ylab="Productivity", xlim=c(-5, 50))
@@ -20,17 +22,21 @@ points(m-ch, f(m-ch), col="red", pch=19)
 points(m+ch, f(m+ch), col="red", pch=19)
 segments(20,0,20,f(m), lty=2, col="blue")
 text(20.0, 3, "Average Richness", pos=4)
-text(m-ch+0.2, 4, "Function After\nLoss", pos=2)
+text(m-ch+0.2, 4, "Function\nAfter Loss", pos=2)
 text(m+ch+0.5, 5.3, "Function After\nGain", pos=4)
+text(-5,7,"A)")
 
 plot(s, f(s), type="l", xlim=c(19,21), ylim=c(4.5, 5.1), xlab="Number of Species", ylab="Productivity")
 segments(m-ch, f(m-ch), m+ch, f(m+ch), col="red")
 points(m, f(m), col="black", pch=19)
 points(m, (f(m-ch)+f(m+ch))/2, col="red", pch=19)
 segments(m, (f(m-ch)+f(m+ch))/2, m, f(m), lty=2, col="blue", lwd=2)
-text(20.01, f(m)-0.04, "Loss of Productivity", pos=4)
+text(20.01, f(m)-0.02, "Loss of Productivity", pos=4)
+text(19,5.1, "B)")
 
 par(mfrow=c(1,1))
+dev.off()
+
 
 ggplot() +
   geom_line(mapping=aes(x=s, y=f(s))) +
