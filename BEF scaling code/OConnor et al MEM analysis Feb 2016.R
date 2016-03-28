@@ -214,7 +214,7 @@ mod3F <- lmer(logY.rs ~ logSc*log(Tscale) + (1 + logSc|Entry) +  (1 + logSc|Expt
 
 mod3Fa <- lmer(logY.rs ~ logSc*log(Tscale)*Sys1 + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-mod3Fb <- lmer(logY.rs ~ logSc*log(Tscale)*TG1 + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
+mod3Fb <- lmer(logY.rs ~ logSc*log(Tscale)*TG1 + (1 + logSc|Entry) +  (1 + logSc|ExptA) +  (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 model.sel(mod3F, mod3Fa, mod3Fb)
 

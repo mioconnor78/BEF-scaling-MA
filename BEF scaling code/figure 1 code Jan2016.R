@@ -28,67 +28,36 @@ b <- as.numeric(fixef(mod4)[2])
 se <- function(x) sd(x)/sqrt(length(x))
 
 ## constructing predicted b values (slopes) from fixed effects for each group.
-## doing it for TG.term is straighforward, but I think I need to do it for Sys at the same time...
-S$TG.term <- ifelse(S$TG1 == '1', S$logSc, 0)
-S$TG.term <- ifelse(S$TG1 == '2', (S$logSc + S$logSc.TG12), S$TG.term)
-S$TG.term <- ifelse(S$TG1 == '4', (S$logSc + S$logSc.TG14), S$TG.term)
-S$Sys.term <- ifelse(S$Syst == 'T', (S$logSc + S$logSc.Sys1T), S$logSc)
-S$TG.S.int <- ifelse((S$Syst=='T' & S$TG1=='4'), (S$logSc + S$logSc.Sys1T.TG14), S$logSc)
+S$Trt <- paste(S$Syst, S$TG1)
+S$Trt.term <- ifelse(S$Trt == 'A 1', S$logSc, 0)
+S$Trt.term <- ifelse(S$Trt == 'A 2', (S$logSc + S$logSc.TG12), S$Trt.term)
+S$Trt.term <- ifelse(S$Trt == 'A 4', (S$logSc + S$logSc.TG14), S$Trt.term)
+S$Trt.term <- ifelse(S$Trt == 'T 1', (S$logSc + S$logSc.Sys1T), S$Trt.term)
+S$Trt.term <- ifelse(S$Trt == 'T 4', (S$logSc + S$logSc.TG14 + S$logSc.Sys1T.TG14), S$Trt.term)
 
-## testing: this produces what I think are the right estimates for trophic groups. whew! So a new figure one, with several panels, I think (?), could do this for system and then the interaction (still need to think through the interaction code above; might be right but I need to double check.)
-b.sum <- ddply(S, .(TG1), summarize, mean(TG.term))
-b.sum2 <- ddply(S, .(TG1), summarize, se(TG.term))
-b.sumt <- merge(b.sum, b.sum2, by = 'TG1')
-names(b.sumt) <- c('group', 'est', 'se')
+## producing Treatment mean coefficients
+b.sum <- ddply(S, .(Trt), summarize, mean(Trt.term))
+b.sum2 <- ddply(S, .(Trt), summarize, se(Trt.term))
+b.sums <- merge(b.sum, b.sum2, by = 'Trt')
+names(b.sums) <- c('group', 'est', 'se')
 
-b.sumS <- ddply(S, .(System), summarize, mean(Sys.term))
-b.sumS2 <- ddply(S, .(System), summarize, se(Sys.term))
-b.sumSm <- merge(b.sumS, b.sumS2, by = 'System')
-names(b.sumSm) <- c('group', 'est', 'se')
-
-# this isn't working, there is some problem with the class that the final row comes out as. just look at this and simplify it.
-## these are the standard errors of the observations, not the model output.
-b.TG.S <- ddply(S, .(System, TG1), summarize, mean(TG.S.int))
-b.TG.S2 <- ddply(S, .(System, TG1), summarize, se(TG.S.int))
-b.TGS <- cbind(b.TG.S, b.TG.S2)
-b.TGS$group <- paste(b.TGS$Syst, b.TGS$TG1, sep = "")
-names(b.TGS) <- c('Syst', 'TG1', 'est', 'Syst', 'TG1', 'se', 'group')
-b.TGS2 <- as.data.frame(cbind(b.TGS$group, b.TGS$est, b.TGS$se))
-names(b.TGS2) <- c('group', 'est', 'se')
-TGint <- b.TGS2[(b.TGS2$group == 'T4'),]
-
-
-class(b.sums$group)
-
-#row <- (c(as.factor('NA'), 'NA','NA'))
-b.sums <- (rbind(b.sumt, b.sumSm, c(as.factor('T4'), '-0.31286869838985', '0.0202570171561124'))) # just have to add that interaction coefficient, and then the slopes are done. decide on intercepts.
-b.sums$se <- as.numeric(b.sums$se)
-b.sums$est <- as.numeric(b.sums$est)
-b.sums$group <- c("Primary Prod.", "Herbivores", "Detritovores", "Aquatic", "Terrestrial", "Terr.*Detrit.")
-
-## really, the levels need to be: Aquatic PP, Aquatic H, Aquatic D, Terr PP and Terr D.
-newbs <- (rbind(b.sumt, b.sumSm[2,], b.TGS2[5,]))
-rownames(newbs) <- c(1, 2, 3, 4, 5)
-newbs$se <- as.numeric(newbs$se)
-newbs$est <- as.numeric(newbs$est)
-b.sums <-  newbs                
 b.sums$group <- c("Aq. Primary Prod.", "Aq. Herbivores", "Aq. Detritovores", "Terr. Prim. Prod", "Terr.*Detrit.")
 
 ### two-paneled figure
 
-pdf(file = "figure 1B.pdf", width = 7.5, height = 4)
+pdf(file = "figure 1B.pdf", width = 4, height = 4)
 par(
   family = "serif",  
   oma = c(0,0,0,0),  # Since it is a single plot, I set the outer margins to zero.
   #fin = c(7,5), pty = "m",
   mar = c(5,10,4,0),  # Inner margins are set through a little trial and error.
-  mfcol = c(1,2)
+  mfcol = c(1,1)
 )
 
 #TOP PANEL: SLOPES
 par(mar=(c(5,9,4,2))) #pin = c(2.3, 3.5), 
 plot(NULL,                                
-     xlim = c(-0.4, 0.6),                        	
+     xlim = c(-0.2, 0.6),                        	
      ylim = c(.7, length(b.sums[,1]) + .3), 	
      axes = F, xlab = NA, ylab = NA, cex = 0.8)
 
@@ -101,7 +70,7 @@ a <- 0
 for (i in 1:length(b.sums[,1])) {                                            
   points(ests.B[i], i+a, pch = 19, cex = 1.2, col = 1) 
   lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+a, i+a), col = 'gray60', lwd = 2)
-  text(-0.45, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
+  text(-0.3, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
   text(0.6, length(b.sums[,1])+ .2, 'B', cex = 1.2)
 }
 
@@ -116,6 +85,13 @@ mtext(side = 3, "", line = 1, cex = 0.8)   # add title
 box()                                          
 
 dev.off()
+
+
+
+
+
+
+
 
 ### INTERCEPTS
 par(mar=c(5,8,4,4))  #pin = c(2.3, 3.5)), but this doesn't seem to work with mar

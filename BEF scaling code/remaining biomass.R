@@ -163,23 +163,27 @@ dev.off()
 ## plot of all scaling functions
 
 pdf(file = "figure 1C.pdf", width = 6, height = 4)
-plot(5*S.1^b ~ S.1, pch = '', xlim = c(1, 150), ylim = c(0, 80), xlab = 'Species richness (S)', ylab = 'estimated biomass (Y)')
+plot(5*S.1^b ~ S.1, pch = '', xlim = c(1, 100), ylim = c(0, 80), xlab = 'Species richness (S)', ylab = 'estimated biomass (Y)')
 b.min <- 0.263 - 0.006
 b.max <- 0.263 + 0.006
 polygon(c((S.1), rev(S.1)), c((5*S.1^b.min), rev(5*S.1^b.max)), col = 'grey80', border = NA)
 b <- 0.263
 lines(5*S.1^b ~ S.1, lwd = 2, col = 1)
 
-b.min <- 0.16
-b.max <- 0.37
-polygon(c((S.1), rev(S.1)), c((5*S.1^b.min), rev(5*S.1^b.max)), col = 'grey80', border = NA)
+#b.min <- 0.16
+#b.max <- 0.37
+#polygon(c((S.1), rev(S.1)), c((5*S.1^b.min), rev(5*S.1^b.max)), col = 'grey80', border = NA)
 b <- 0.47
 lines(5*S.1^b ~ S.1, lwd = 2, col = 'gray40')
 
 b <- 0.52
 lines(5*S.1^b ~ S.1, lwd = 2, col = 'gray60')
 
-legend(0, 80, c('Plants and Algae', 'Aq. Herbivores', 'Aq. Detritivores'), pch=19, col = c('black', 'gray40', 'gray60'), bty = 'n')
+b <- -0.001
+lines(5*S.1^b ~ S.1, lwd = 2, col = 'gray80')
+
+legend(0, 80, c('Plants and Algae', 'Aq. Herbivores', 'Aq. Detritivores' ,'Terr. Detritivores'), pch=19, col = c('black', 'gray40', 'gray60', 'gray80'), bty = 'n')
+text(95, 70, 'C', cex = 2)
 dev.off()
 
 
