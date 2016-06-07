@@ -41,7 +41,7 @@ b.sum2 <- ddply(S, .(Trt), summarize, se(Trt.term))
 b.sums <- merge(b.sum, b.sum2, by = 'Trt')
 names(b.sums) <- c('group', 'est', 'se')
 
-b.sums$group <- c("Aq. Primary Prod.", "Aq. Herbivores", "Aq. Detritovores", "Terr. Prim. Prod", "Terr.*Detrit.")
+b.sums$group <- c("Aq. Primary Prod.", "Aq. Herbivores", "Aq. Detritovores", "Terr. Prim. Prod", "Terr. Detrit.")
 
 ### two-paneled figure
 
@@ -69,16 +69,17 @@ var.names <- (b.sums[,1])
 a <- 0
 for (i in 1:length(b.sums[,1])) {                                            
   points(ests.B[i], i+a, pch = 19, cex = 1.2, col = 1) 
-  lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+a, i+a), col = 'gray60', lwd = 2)
+  lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+a, i+a), col = 'gray80', lwd = 3)
   text(-0.3, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
   text(0.6, length(b.sums[,1])+ .2, 'B', cex = 1.2)
 }
 
 # add axes and labels
 axis(side = 1)                                                                                         
-#abline(v = 0, lty = 3, col = "grey40")                                                         
-abline(h = 3.5, lty = 3, col = 'grey40')     
-abline(h = 5.5, lty = 3, col = 'grey40')  
+#abline(v = 0, lty = 3, col = "grey40")                                     
+abline(v = 0, lty = 1, col = 'grey60')               
+#abline(h = 3.5, lty = 3, col = 'grey40')     
+#abline(h = 5.5, lty = 3, col = 'grey40')  
 
 mtext(side = 1, "Slope coefficients", line = 3)                                              
 mtext(side = 3, "", line = 1, cex = 0.8)   # add title
@@ -86,8 +87,22 @@ box()
 
 dev.off()
 
+#### repeat for slopes
+## constructing predicted b values (slopes) from fixed effects for each group.
+S$Trt <- paste(S$Syst, S$TG1)
+S$Trt.term <- ifelse(S$Trt == 'A 1', S$logSc, 0)
+S$Trt.term <- ifelse(S$Trt == 'A 2', (S$logSc + S$logSc.TG12), S$Trt.term)
+S$Trt.term <- ifelse(S$Trt == 'A 4', (S$logSc + S$logSc.TG14), S$Trt.term)
+S$Trt.term <- ifelse(S$Trt == 'T 1', (S$logSc + S$logSc.Sys1T), S$Trt.term)
+S$Trt.term <- ifelse(S$Trt == 'T 4', (S$logSc + S$logSc.TG14 + S$logSc.Sys1T.TG14), S$Trt.term)
 
+## producing Treatment mean coefficients
+b.sum <- ddply(S, .(Trt), summarize, mean(Trt.term))
+b.sum2 <- ddply(S, .(Trt), summarize, se(Trt.term))
+b.sums <- merge(b.sum, b.sum2, by = 'Trt')
+names(b.sums) <- c('group', 'est', 'se')
 
+b.sums$group <- c("Aq. Primary Prod.", "Aq. Herbivores", "Aq. Detritovores", "Terr. Prim. Prod", "Terr. Detrit.")
 
 
 
