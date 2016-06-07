@@ -40,12 +40,16 @@ fitted_plot + facet_grid(. ~ Sys1) +
 ####
 
 ###The master plot #added -log(8) to x-axis.
+pdf(file = "Figure 1A.pdf", width = 4, height = 4)
 fitted_plot <- ggplot() +
   geom_line(data=SST5, aes(x=exp(logSc+log(8)), y=exp(modBtrophic3.fitted), group=Entry), color="black", alpha = "0.2", size = 1) +
   theme_bw(base_size=17) +
   xlab("Species Richness") +
-  ylab("Standing Stock")
+  ylab("Standing Biomass") +
+  geom_text() +
+  annotate("text", label = "A", x = 41, y = 15300, size = 8)
 fitted_plot
+dev.off()
 
 #create some predictions - the intercepts all come out too low, and I'm not sure why...
 modBtrophicPred.varyall <- data.frame(expand.grid(logSc=log(seq(1,5,.01))-log(8), Tscale=mean(SST5$Tscale),

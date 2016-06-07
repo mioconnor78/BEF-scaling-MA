@@ -3,6 +3,8 @@
 
 ### O'Connor, Gonzalez, Byrnes, Cardinale, Duffy, Gamfeldt, Griffin, Hooper, Hungate, Paquette, Thompson, Dee and Matulich
 
+### start with data processing march 2016 code
+
 ### Author of code: Mary O'Connor
 
 #######################################################################
@@ -151,6 +153,43 @@ mod4iv <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Study), data=
 
 
 model.sel(mod4, mod4i, mod4iii, mod4iv, mod4v)
+
+
+
+##### 
+## creating standardized residual plots for mixed models
+#####
+pdf(file = "Figure A2a.pdf", width = 4, height = 4)
+plot(mod4, ylab = "Standardized Residuals", xlab = "Fitted values", main = "Model 4")
+dev.off()
+
+pdf(file = "Figure A2b.pdf", width = 4, height = 4)
+plot(mod4.2, ylab = "Standardized Residuals", xlab = "Fitted values", main = "Model 4.2")
+dev.off()
+
+pdf(file = "Figure A2c.pdf", width = 4, height = 4)
+plot(mod5, ylab = "Standardized Residuals", xlab = "Fitted values", main = "Model 5")
+dev.off()
+
+pdf(file = "Figure A2d.pdf", width = 4, height = 4)
+plot(mod6, ylab = "Standardized Residuals", xlab = "Fitted values", main = "Model 6")
+dev.off()
+
+pdf(file = "Figure A2e.pdf", width = 4, height = 4)
+plot(mod7, ylab = "Standardized Residuals", xlab = "Fitted values", main = "Model 7")
+dev.off()
+
+pdf(file = "Figure A2f.pdf", width = 4, height = 4)
+plot(mod8, ylab = "Standardized Residuals", xlab = "Fitted values", main = "Model 8")
+dev.off()
+
+pdf(file = "Figure A2g.pdf", width = 4, height = 4)
+plot(mod9, ylab = "Standardized Residuals", xlab = "Fitted values", main = "Model 9")
+dev.off()
+
+pdf(file = "Figure A2h.pdf", width = 4, height = 4)
+plot(mod9.1, ylab = "Standardized Residuals", xlab = "Fitted values", main = "Model 9.1")
+dev.off()
 
 
 

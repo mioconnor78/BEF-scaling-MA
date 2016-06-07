@@ -1,7 +1,7 @@
 #######################################################################
 ### Modeling uncertainty in the biodiversity ecosystem functioning relationship
 ### O'Connor, Gonzalez, et al
-### figure 1
+### figure 1C
 ### Jan 06 2015; Author: Mary O'Connor
 #######################################################################
 

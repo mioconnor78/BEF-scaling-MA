@@ -19,6 +19,11 @@ pdf(file = "catplotEntry.pdf", width = 7.5, height = 3)
 cat.plot <- sjp.lmer(mod, sort = "logSc", ri.nr = 1, fade.ns = TRUE, free.scale = TRUE, geom.colors = c(1, 1), showValueLabels = FALSE)
 dev.off()
 
+## percent of observations deviating from 0: 
+test <- as.data.frame(cat.plot$plot[1])
+test$coefnot0 <- ifelse(test$data.fade == FALSE, "0", "1")
+length(test[(test$coefnot0 == "0"),9])/length(test$data.fade)
+
 pdf(file = "catplotExptA.pdf", width = 7.5, height = 3)
 # make the caterpillar plot for ExptA level coefs
 cat.plot2 <- sjp.lmer(mod, sort = "logSc", ri.nr = 2, fade.ns = TRUE, free.scale = TRUE, geom.colors = c(1, 1), showValueLabels = FALSE)
