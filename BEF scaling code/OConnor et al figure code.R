@@ -23,7 +23,7 @@ data$mod4.fitted <- fitted(mod4)
 ### FIGURE 1: 
 ### Extract slope coefficients for Figure 1B
 ## create the Entry, Study and Expt columns for later matching with random effect values
-rand.cat <- ddply(data, .(Entry, Study, ExptA, Sys1, TG1), summarize, mean(logY.rs))
+rand.cat <- ddply(dat, .(Entry, Study, ExptA, Sys1, TG1), summarize, mean(logY.rs))
 names(rand.cat) <- c('Entry', 'Study', 'ExptA','System','TG1', 'meanlogY')
 Entry.coefs <- data.frame(coef(mod4)$Entry) #this gives us the logS for entry, with study and expt level random effects (?)
 Entry.coefs$Entry <- rownames(Entry.coefs)
@@ -86,7 +86,7 @@ par(
 )
  
 plot(NULL,                                
-     xlim = c(-0.2, 0.6),                        	
+     xlim = c(-0.2, 1.2),                        	
      ylim = c(.7, length(b.sums[,1]) + .3), 	
      axes = F, xlab = NA, ylab = NA, cex = 0.8)
 
@@ -101,7 +101,7 @@ for (i in 1:length(b.sums[,1])) {
   lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+a, i+a), col = 'gray60', lwd = 3)
   points(ests.B[i], i+a, pch = 19, cex = 1.5, col = 1) 
   text(-0.3, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
-  text(0.55, length(b.sums[,1])+ .1, 'B', cex = 1.8)
+  text(1.05, length(b.sums[,1])+ .1, 'B', cex = 1.8)
 }
 
 # add axes and labels
@@ -245,7 +245,6 @@ geom_hline(aes(xintercept = 0.9,color=1, lin)+
              geom_vline(aes(xintercept = 0.80), linetype = 2)
            
            ggMarginal(gg2, type = "histogram")
-           
            
            
            

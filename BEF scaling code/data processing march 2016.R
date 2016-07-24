@@ -25,10 +25,10 @@ library(reshape2)
 # converted FTG to numerical such that: (C = '3', P = '1', H = '2', D = '4', M = '5', O = '6'))
 
 #Read in meta master
-# still didn't work: metamaster=read.csv("../data/BEF_MetaMaster_2011_08_29_exptA.csv")
+metamaster=read.csv("./data/BEF_MetaMaster_2011_08_29_exptA.csv")
 
 
-metamaster=read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/BEF_MetaMaster_2011_08_29_exptA.csv")
+#metamaster=read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/BEF_MetaMaster_2011_08_29_exptA.csv")
 
 
 #Subset data
@@ -46,7 +46,7 @@ metamaster.means$value.st <- metamaster.means$value/metamaster.means$Mean.value
 head(metamaster.means)
 
 #bring in restrt col from mary's file
-mo<-read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE);
+mo<-read.csv("./data/input.HMM.stackn0unit23.csv", sep=",",header=T, na.strings="NA", fill=TRUE)
 restrt <- ddply(mo, .(Entry, Mno, restrt, Study), summarize, mean(YEmono)) # we get rid of mean(YEmono later)
 metamaster3 <- merge(restrt, metamaster.means, by.x = "Entry", by.y = "Entry", all = TRUE)
 metamaster3 <- metamaster3[,-(5)]
@@ -86,10 +86,11 @@ SST2 <- SST2[which(SST2$Yunits!='rate'),]
 ### need to estimate the duration of each experiment:
 maxTime <- ddply(SST2, .(ExptA, FinalT), summarise, max(as.numeric(as.character(Tscale))))
 names(maxTime) <- c('ExptA', 'FinalT','maxTscale')
-maxTime2 <- maxTime %>% filter(FinalT=="Y") #get the final time for just the longest time sampled
-SST2 <- merge(SST2, maxTime2, by.x = "ExptA", by.y = "ExptA", all.x = TRUE, all.y = TRUE)
-SST2 <- SST2[,-c(5,30)] # get rid of erroneous finalT and extra study
-SST2$logMaxTime <- log(as.numeric(as.character(SST2$maxTscale)))
+#maxTime2 <- maxTime %>% filter(FinalT=="Y") #get the final time for just the longest time sampled
+SST2 <- merge(SST2, maxTime, by.x = "ExptA", by.y = "ExptA", all.x = TRUE, all.y = TRUE)
+SST2 <- SST2[,-c(5,30)] # get rid of erroneous finalT and extra study column
+SST2$logMaxTime <- log(as.numeric(as.character(SST2$maxTscale))+1)
+SST2.1 <- SST2[-which(SST$FinalT.y =="N"),] 
 
 
 ## transform columns
@@ -149,8 +150,6 @@ SST5 <- SST5[,-c(5,37:39,41, 43)]
 # -c(SST5$Study.y, SST5$convert.min, SST5$convert.max, SST5$logYst, SST5$values.rs)
 
 write.csv(SST5, '/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/SST5.csv')
-
-## somehow the SST5 file here is ok, but the one written to data and then retrieved in the model is not... not sure why. 
 
 
 
