@@ -104,18 +104,18 @@ mod4.2 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*Sys1 + logSc*TG1 + (1 + log
 mod5 <- lmer(logY.rs ~ logSc*Sys1*TG1  + logSc*restrt + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Model 6: All biological factors plus in interaction between richness and duration
-mod6 <- lmer(logY.rs ~ logSc*Sys1*TG1 + logSc*restrt + logSc*log(MaxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod6 <- lmer(logY.rs ~ logSc*Sys1*TG1 + logSc*restrt + logSc*log(maxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Model 7: Fixed factors that have been shown to matter (adding time, nutrients to level-2 model)
-mod7 <- lmer(logY.rs ~ logSc*restrt + logSc*log(MaxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod7 <- lmer(logY.rs ~ logSc*restrt + logSc*log(maxTscale+1) + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Model 8: Experimental design factors (units, smax, time scale, Smax and units) 
-mod8 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod8 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*log(maxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 # Model 9: Full model
-mod9.1 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod9.1 <- lmer(logY.rs ~ logSc + log(Tscale) + logSc*Sys1 + logSc*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(maxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
-mod9 <- lmer(logY.rs ~ log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(MaxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
+mod9 <- lmer(logY.rs ~ log(Tscale) + logSc*Sys1*TG1 + logSc*unit.types2 + logSc*Des1 + logSc*log(Smax) + logSc*restrt + logSc*log(maxTscale+1) + (1 + logSc|Entry) + (1 + logSc|ExptA)  + (1 + logSc|Study), data=data, REML = FALSE, na.action=na.omit)
 
 
 ###### Comparing models ##############

@@ -11,8 +11,10 @@
 
 ## MO: I know how painful and inefficient this code is! I would love it (and learn from it) if someone felt like presenting an alternative approach to generating this figure. I know there are better ways.
 
+data <- read.csv("/Users/maryo/Documents/projects/BEF synthesis/BEF-scaling-MA/data/SST5.csv")
 data <- SST5
 
+library(lme4)
 library(plyr)
 
 mod4 <- lmer(logY.rs ~ logSc*Sys1*TG1 + log(Tscale) + (1 + logSc|Entry) + (1 + logSc|ExptA) + (1 + logSc|Study), data=data, REML = TRUE, na.action=na.omit)
@@ -28,7 +30,7 @@ b <- as.numeric(fixef(mod4)[2])
 se <- function(x) sd(x)/sqrt(length(x))
 
 ## constructing predicted b values (slopes) from fixed effects for each group.
-S$Trt <- paste(S$Syst, S$TG1)
+S$Trt <- paste(S$System, S$TG1)
 S$Trt.term <- ifelse(S$Trt == 'A 1', S$logSc, 0)
 S$Trt.term <- ifelse(S$Trt == 'A 2', (S$logSc + S$logSc.TG12), S$Trt.term)
 S$Trt.term <- ifelse(S$Trt == 'A 4', (S$logSc + S$logSc.TG14), S$Trt.term)
@@ -67,9 +69,10 @@ ses.B <- (b.sums[,3])
 var.names <- (b.sums[,1])
 
 a <- 0
+abline(v = 0, lty = 1, col = 'grey60')
 for (i in 1:length(b.sums[,1])) {                                            
-  points(ests.B[i], i+a, pch = 19, cex = 1.2, col = 1) 
-  lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+a, i+a), col = 'gray80', lwd = 3)
+  lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+a, i+a), col = 'gray60', lwd = 3)
+  points(ests.B[i], i+a, pch = 19, cex = 1.5, col = 1) 
   text(-0.3, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
   text(0.6, length(b.sums[,1])+ .2, 'B', cex = 1.2)
 }
@@ -77,7 +80,7 @@ for (i in 1:length(b.sums[,1])) {
 # add axes and labels
 axis(side = 1)                                                                                         
 #abline(v = 0, lty = 3, col = "grey40")                                     
-abline(v = 0, lty = 1, col = 'grey60')               
+               
 #abline(h = 3.5, lty = 3, col = 'grey40')     
 #abline(h = 5.5, lty = 3, col = 'grey40')  
 
@@ -87,62 +90,67 @@ box()
 
 dev.off()
 
-#### repeat for slopes
+#### repeat for intercepts
 ## constructing predicted b values (slopes) from fixed effects for each group.
-S$Trt <- paste(S$Syst, S$TG1)
-S$Trt.term <- ifelse(S$Trt == 'A 1', S$logSc, 0)
-S$Trt.term <- ifelse(S$Trt == 'A 2', (S$logSc + S$logSc.TG12), S$Trt.term)
-S$Trt.term <- ifelse(S$Trt == 'A 4', (S$logSc + S$logSc.TG14), S$Trt.term)
-S$Trt.term <- ifelse(S$Trt == 'T 1', (S$logSc + S$logSc.Sys1T), S$Trt.term)
-S$Trt.term <- ifelse(S$Trt == 'T 4', (S$logSc + S$logSc.TG14 + S$logSc.Sys1T.TG14), S$Trt.term)
+#S$Trt <- paste(S$Syst, S$TG1)
+S$ITrt.term <- ifelse(S$Trt == 'A 1', S$X.Intercept., 0)
+S$ITrt.term <- ifelse(S$Trt == 'A 2', (S$X.Intercept. + S$TG12), S$ITrt.term)
+S$ITrt.term <- ifelse(S$Trt == 'A 4', (S$X.Intercept. + S$TG14), S$ITrt.term)
+S$ITrt.term <- ifelse(S$Trt == 'T 1', (S$X.Intercept. + S$Sys1T), S$ITrt.term)
+S$ITrt.term <- ifelse(S$Trt == 'T 4', (S$X.Intercept. + S$TG14 + S$Sys1T.TG14), S$ITrt.term)
 
 ## producing Treatment mean coefficients
-b.sum <- ddply(S, .(Trt), summarize, mean(Trt.term))
-b.sum2 <- ddply(S, .(Trt), summarize, se(Trt.term))
-b.sums <- merge(b.sum, b.sum2, by = 'Trt')
-names(b.sums) <- c('group', 'est', 'se')
+I.sum <- ddply(S, .(Trt), summarize, mean(ITrt.term))
+I.sum2 <- ddply(S, .(Trt), summarize, se(ITrt.term))
+I.sums <- merge(I.sum, I.sum2, by = 'Trt')
+names(I.sums) <- c('group', 'est', 'se')
 
-b.sums$group <- c("Aq. Primary Prod.", "Aq. Herbivores", "Aq. Detritovores", "Terr. Prim. Prod", "Terr. Detrit.")
-
-
+I.sums$group <- c("Aq. Primary Prod.", "Aq. Herbivores", "Aq. Detritovores", "Terr. Prim. Prod", "Terr. Detrit.")
 
 
 
 ### INTERCEPTS
-par(mar=c(5,8,4,4))  #pin = c(2.3, 3.5)), but this doesn't seem to work with mar
+pdf(file = "figure 1B ints.pdf", width = 4, height = 4)
+
+par(
+  family = "serif",  
+  oma = c(0,0,0,0),  # Since it is a single plot, I set the outer margins to zero.
+  #fin = c(7,5), pty = "m",
+  mar = c(5,10,4,0),  # Inner margins are set through a little trial and error.
+  mfcol = c(1,1)
+)
+
+#TOP PANEL: SLOPES
+par(mar=(c(5,9,4,2))) #pin = c(2.3, 3.5), 
 plot(NULL,                                
-     xlim = c(-6, 6),                          
-     ylim = c(.7, length(est.B.int[,1]) + .3), 	
-     axes = F, xlab = NA, ylab = NA)
+     xlim = c(2, 6),                        	
+     ylim = c(.7, length(I.sums[,1]) + .3), 	
+     axes = F, xlab = NA, ylab = NA, cex = 0.8)
 
 # add the data
-#est <- as.numeric(est.int[,1]) 
-#se <- as.numeric(est.int[,2] )                                         
-ests.B <- as.numeric(est.B.int[,1])
-ses.B <- as.numeric(est.B.int[,2])
-ests.Ba <- as.numeric(est.Ba.int[,1])
-ses.Ba <- as.numeric(est.Ba.int[,2])
-var.names<-rownames(est.B.int)
+ests.I <- (I.sums[,2])
+ses.I <- (I.sums[,3])
+var.names <- (I.sums[,1])
 
-b <- 0
-for (i in 1:length(ests.B)) {                                            
-  #points(est[i], i, pch = 19, cex = 1.2)                              
-  #lines(c(est[i] + 1.96*se[i], est[i] - 1.96*se[i]), c(i, i), lwd = 2)  
-  points(ests.B[i], i+b, pch = 19, cex = 1.2, col = 1) 
-  lines(c(ests.B[i] + 1.96*ses.B[i], ests.B[i] - 1.96*ses.B[i]), c(i+b, i+b), col = 1, lwd = 2)
-  lines(c(ests.Ba[i] + 1.96*ses.Ba[i], ests.Ba[i] - 1.96*ses.Ba[i]), c(i+2*b, i+2*b), col = 'gray50', lwd = 2)
-  points(ests.Ba[i], i+2*b, pch = 19, cex = 1.2, col = 'gray50')   # add 95% CIs
-  text(-7, i, adj = c(1,0), var.namesi[i], xpd = T, cex = .8)        # add the variable names
-  text(5.5, length(est.B.int[,1])+ 0.2, 'C', cex = 1.2)
+a <- 0
+for (i in 1:length(I.sums[,1])) {                                            
+  points(ests.I[i], i+a, pch = 19, cex = 1.2, col = 1) 
+  lines(c(ests.I[i] + 1.96*ses.I[i], ests.I[i] - 1.96*ses.I[i]), c(i+a, i+a), col = 'gray80', lwd = 3)
+  text(1.5, i, adj = c(1,0), var.names[i], xpd = T, cex = .8)        # add the variable names
+  text(0.6, length(I.sums[,1])+ .2, '', cex = 1.2)
 }
 
 # add axes and labels
-axis(side = 1, at = c(-6, 0, 6))
-#axis(side = 2, pos = -2)
-abline(v = 0, lty = 3, col = "grey40")                                                                   
+axis(side = 1)                                                                                         
+#abline(v = 0, lty = 3, col = "grey40")                                     
+abline(v = 0, lty = 1, col = 'grey60')               
+#abline(h = 3.5, lty = 3, col = 'grey40')     
+#abline(h = 5.5, lty = 3, col = 'grey40')  
+
 mtext(side = 1, "Intercept coefficients", line = 3)                                              
 mtext(side = 3, "", line = 1, cex = 0.8)   # add title
-box()                    
+box()                                          
+
 
 dev.off()
 
